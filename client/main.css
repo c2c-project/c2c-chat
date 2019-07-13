@@ -1,4 +1,15 @@
+html,
 body {
-  padding: 10px;
-  font-family: sans-serif;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+div#react-target {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex: 1;
 }
