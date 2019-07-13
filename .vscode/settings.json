@@ -1,0 +1,33 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/.meteor": true,
+        "**/OLD GIT": true,
+        "**/.*": false,
+        "**/packages": true,
+        "**/node_modules": true,
+        "**/cordova-build-override": true,
+        "**/private": true,
+        "**/public": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/.meteor": true,
+        "**/OLD GIT": true,
+        "**/.*": true,
+        "**/packages": true
+    },
+    "workbench.colorCustomizations": {
+        "editorLineNumber.foreground": "#808080",
+        "editor.lineHighlightBackground": "#c5c5c57a"
+    },
+    "editor.detectIndentation": false,
+    "editor.autoIndent": false,
+    "workbench.editor.revealIfOpen": true,
+    "javascript.preferences.importModuleSpecifier": "non-relative"
+}

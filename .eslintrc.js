@@ -1,0 +1,41 @@
+module.exports = {
+    // parser: 'babel-eslint',
+    // plugins: ['import', 'jsx-a11y', 'meteor'],
+    //meteorjs/eslint-config-meteor uses airbnb
+    extends: ['@meteorjs/eslint-config-meteor', 'airbnb', 'prettier'],
+    rules: {
+        quotes: ['error', 'single'],
+        indent: ['error', 4, { SwitchCase: 1 }],
+        'react/jsx-indent': ['error', 4],
+        'react/jsx-indent-props': ['error', 4],
+        'react/no-array-index-key': 0,
+        'react/forbid-prop-types': 0,
+        'react/no-find-dom-node': 0,
+        'jsx-quotes': ['error', 'prefer-single'],
+        'meteor/audit-argument-checks': 0,
+        'import/no-extraneous-dependencies': [
+            'error',
+            { devDependencies: ['**/*.tests.js'] }
+        ],
+        'import/no-absolute-path': 0,
+        'no-underscore-dangle': 'off'
+    },
+    env: {
+        meteor: true,
+        mongo: true,
+        node: true,
+        browser: true,
+        mocha: true
+    },
+    settings: {
+        'import/resolver': {
+            node: {
+                paths: ['.']
+            },
+            alias: {
+                map: [['/src', './src']],
+                extensions: ['.ts', '.js', '.jsx', '.json']
+            }
+        }
+    }
+};
