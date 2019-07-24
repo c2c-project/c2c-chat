@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.2.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1"
@@ -11,7 +12,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -29,6 +31,12 @@
     ]
   },
   "devDependencies": {
-    "eslint-config-airbnb": "^17.1.1"
+    "@babel/core": "^7.5.5",
+    "@storybook/cli": "^5.1.9",
+    "@storybook/react": "^5.1.9",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-config-prettier": "^6.0.0",
+    "init": "^0.1.2",
+    "sb": "^0.2.1"
   }
 }
