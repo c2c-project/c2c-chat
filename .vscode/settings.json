@@ -12,7 +12,6 @@
         "**/node_modules": true,
         "**/cordova-build-override": true,
         "**/private": true,
-        "**/public": true
     },
     "search.exclude": {
         "**/node_modules": true,

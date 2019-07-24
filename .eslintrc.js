@@ -2,7 +2,7 @@ module.exports = {
     // parser: 'babel-eslint',
     // plugins: ['import', 'jsx-a11y', 'meteor'],
     //meteorjs/eslint-config-meteor uses airbnb
-    extends: ['@meteorjs/eslint-config-meteor', 'airbnb', 'prettier'],
+    extends: ['airbnb', 'prettier'],
     rules: {
         quotes: ['error', 'single'],
         indent: ['error', 4, { SwitchCase: 1 }],
@@ -12,7 +12,6 @@ module.exports = {
         'react/forbid-prop-types': 0,
         'react/no-find-dom-node': 0,
         'jsx-quotes': ['error', 'prefer-single'],
-        'meteor/audit-argument-checks': 0,
         'import/no-extraneous-dependencies': [
             'error',
             { devDependencies: ['**/*.tests.js'] }
@@ -21,7 +20,6 @@ module.exports = {
         'no-underscore-dangle': 'off'
     },
     env: {
-        meteor: true,
         mongo: true,
         node: true,
         browser: true,
