@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 
-function Chatbar() {
+function Chatbar({ sendMsg }) {
     const [msg, setMsg] = React.useState('');
     const handleKeyPress = event => {
         if (event.key !== 'Enter') {
@@ -11,7 +12,9 @@ function Chatbar() {
             return;
         }
         event.preventDefault();
-        console.log('Msg: ', msg);
+        // TODO: send this over the wire
+        // console.log('Msg: ', msg);
+        sendMsg(msg);
         setMsg('');
     };
     return (
@@ -25,6 +28,10 @@ function Chatbar() {
             fullWidth
         />
     );
+}
+
+Chatbar.propTypes = {
+    sendMsg: PropTypes.func.isRequired
 }
 
 export default Chatbar;

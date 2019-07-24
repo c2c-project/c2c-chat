@@ -14,7 +14,7 @@ module.exports = {
         'jsx-quotes': ['error', 'prefer-single'],
         'import/no-extraneous-dependencies': [
             'error',
-            { devDependencies: ['**/*.tests.js'] }
+            { devDependencies: ['**/*.tests.js', '**/*.stories.*'] }
         ],
         'import/no-absolute-path': 0,
         'no-underscore-dangle': 'off'
