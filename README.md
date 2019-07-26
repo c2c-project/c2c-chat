@@ -6,15 +6,16 @@ Notes about development and progress go here.
 
 **NOTE:** More specific packages can be found in package.json
 
--   Framework: [Meteor](https://www.meteor.com)
+-   Framework: [Express](https://expressjs.com)
 -   Front-End: [React](https://reactjs.org)
     -   UI Library: [Material UI](https://material-ui.com)
--   Back-End: [Node](https://nodejs.org/en/) (mostly handled by meteor though)
+-   Back-End: [Node](https://nodejs.org/en/) also express from above
 -   Chat Connection: [Socket.IO](https://socket.io)
--   Database: [MongoDB](https://www.mongodb.com) -- [Node Driver](https://mongodb.github.io/node-mongodb-native/), due to Meteor.
--   
+-   Database: [RethinkDB](https://www.rethinkdb.com)
+-
 
 ### Other Considerations
+
 Starting out with a more flat file structure, may change as project gets larger.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -85,5 +86,3 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-
-
