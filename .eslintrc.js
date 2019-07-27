@@ -17,7 +17,8 @@ module.exports = {
             { devDependencies: ['**/*.tests.js', '**/*.stories.*'] }
         ],
         'import/no-absolute-path': 0,
-        'no-underscore-dangle': 'off'
+        'no-underscore-dangle': 'off',
+        'func-names': 'off'
     },
     env: {
         mongo: true,

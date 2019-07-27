@@ -1,46 +1,49 @@
 {
-  "name": "c2c-chat",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.2.1",
-    "express": "^4.17.1",
-    "prop-types": "^15.7.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-player": "^1.11.1",
-    "react-scripts": "3.0.1",
-    "rethinkdb": "^2.3.3"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "storybook": "start-storybook --port 3003"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@storybook/cli": "^5.1.9",
-    "@storybook/react": "^5.1.9",
-    "eslint-config-airbnb": "^17.1.1",
-    "eslint-config-prettier": "^6.0.0",
-    "init": "^0.1.2",
-    "sb": "^0.2.1"
-  }
+    "name": "c2c-chat",
+    "version": "0.1.0",
+    "private": true,
+    "main": "src/server/startup.js",
+    "proxy": "http://localhost:4000",
+    "dependencies": {
+        "@material-ui/core": "^4.2.1",
+        "express": "^4.17.1",
+        "prop-types": "^15.7.2",
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6",
+        "react-player": "^1.11.1",
+        "react-scripts": "3.0.1",
+        "rethinkdb": "^2.3.3",
+        "socket.io": "^2.2.0"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "storybook": "start-storybook --port 3003"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@babel/core": "^7.5.5",
+        "@storybook/cli": "^5.1.9",
+        "@storybook/react": "^5.1.9",
+        "eslint-config-airbnb": "^17.1.1",
+        "eslint-config-prettier": "^6.0.0",
+        "init": "^0.1.2",
+        "sb": "^0.2.1"
+    }
 }

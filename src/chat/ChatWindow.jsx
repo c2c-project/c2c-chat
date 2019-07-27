@@ -14,19 +14,26 @@ import useMessages from '../hooks/useMessages';
 const mock = [
     {
         _id: 1,
-        author: 'David Silva',
+        author: 'Mr. Foo',
         message: 'the message'
     },
     {
         _id: 2,
-        author: 'Kevin Esterling',
+        author: 'Mrs. Bar',
         message: 'the message part 2'
     }
 ];
 
 const useStyles = makeStyles(theme => ({
+    root: {
+        height: '100%',
+        flex: 1
+    },
     messages: {
         marginBottom: theme.spacing(2)
+    },
+    paper: {
+        height: '100%'
     }
 }));
 
@@ -42,33 +49,37 @@ function ChatWindow() {
     const classes = useStyles();
 
     return (
-        <>
-            <Paper className={classes.messages}>
-                <List>
-                    <ListItem alignItems='flex-start'>
-                        <Grid container>
-                            {mock.map(({ author, message, _id }) => (
-                                <Grid item xs={12} key={_id}>
-                                    <ListItemText
-                                        secondaryTypographyProps={{
-                                            variant: 'body1',
-                                            color: 'textPrimary'
-                                        }}
-                                        primaryTypographyProps={{
-                                            variant: 'subtitle1',
-                                            component: Bold
-                                        }}
-                                        primary={author}
-                                        secondary={message}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </ListItem>
-                </List>
-            </Paper>
-            <Chatbar sendMsg={sendMsg} />
-        </>
+        <Grid container direction='column' >
+            <Grid item xs={8} className={classes.messages}>
+                <Paper className={classes.paper}>
+                    <List>
+                        <ListItem>
+                            <Grid container>
+                                {mock.map(({ author, message, _id }) => (
+                                    <Grid item xs={12} key={_id}>
+                                        <ListItemText
+                                            secondaryTypographyProps={{
+                                                variant: 'body1',
+                                                color: 'textPrimary'
+                                            }}
+                                            primaryTypographyProps={{
+                                                variant: 'subtitle1',
+                                                component: Bold
+                                            }}
+                                            primary={author}
+                                            secondary={message}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </ListItem>
+                    </List>
+                </Paper>
+            </Grid>
+            <Grid item xs={3}>
+                <Chatbar sendMsg={sendMsg} />
+            </Grid>
+        </Grid>
     );
 }
 
