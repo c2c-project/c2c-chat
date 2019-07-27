@@ -16,7 +16,7 @@ function App() {
     const classes = useStyles();
     return (
         <Grid container className={classes.root}>
-            <Chat />
+            <Chat roomId='home' />
         </Grid>
     );
 }

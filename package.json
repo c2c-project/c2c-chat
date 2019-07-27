@@ -3,17 +3,20 @@
     "version": "0.1.0",
     "private": true,
     "main": "src/server/startup.js",
-    "proxy": "http://localhost:4000",
+    "proxy": "http://localhost:3001",
     "dependencies": {
         "@material-ui/core": "^4.2.1",
         "express": "^4.17.1",
+        "global": "^4.4.0",
+        "nodemon": "^1.19.1",
         "prop-types": "^15.7.2",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
         "react-player": "^1.11.1",
         "react-scripts": "3.0.1",
         "rethinkdb": "^2.3.3",
-        "socket.io": "^2.2.0"
+        "socket.io": "^2.2.0",
+        "socket.io-client": "^2.2.0"
     },
     "scripts": {
         "start": "react-scripts start",
