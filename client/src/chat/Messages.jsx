@@ -7,7 +7,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grow from '@material-ui/core/Grow';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -27,8 +28,8 @@ const useStyles = makeStyles(theme => ({
 
 // eslint-disable-next-line
 const Bold = ({ children }) => (
-    <Typography component='div'>
-        <Box fontWeight='fontWeightBold'>{children}</Box>
+    <Typography component="div">
+        <Box fontWeight="fontWeightBold">{children}</Box>
     </Typography>
 );
 
@@ -41,22 +42,24 @@ function Messages({ messages }) {
                     <Grid
                         container
                         className={classes.full}
-                        alignContent='flex-end'
+                        alignContent="flex-end"
                     >
                         {messages.map(({ author, message, _id }) => (
                             <Grid item xs={12} key={_id}>
-                                <ListItemText
-                                    secondaryTypographyProps={{
-                                        variant: 'body1',
-                                        color: 'textPrimary'
-                                    }}
-                                    primaryTypographyProps={{
-                                        variant: 'subtitle1',
-                                        component: Bold
-                                    }}
-                                    primary={author}
-                                    secondary={message}
-                                />
+                                <Grow in timeout={300}>
+                                    <ListItemText
+                                        secondaryTypographyProps={{
+                                            variant: 'body1',
+                                            color: 'textPrimary'
+                                        }}
+                                        primaryTypographyProps={{
+                                            variant: 'subtitle1',
+                                            component: Bold
+                                        }}
+                                        primary={author}
+                                        secondary={message}
+                                    />
+                                </Grow>
                             </Grid>
                         ))}
                     </Grid>
