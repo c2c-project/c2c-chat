@@ -9,12 +9,12 @@
     "scripts": {
         "client": "cd client && npm start",
         "server": "cd server && npm start",
-        "start": "concurrently - kill-others \"npm run server\" \"npm run client\""
+        "start": "concurrently - - kill-others \"npm run server\" \"npm run client\""
     },
     "dependencies": {},
     "devDependencies": {
         "concurrently": "^4.1.1",
-        "eslint": "^6.1.0",
+        "eslint": "5.16.0",
         "eslint-config-airbnb": "^18.0.0",
         "eslint-plugin-import": "^2.18.2",
         "eslint-plugin-jsx-a11y": "^6.2.3",
