@@ -20,8 +20,9 @@ function Chatbar({ sendMsg }) {
     return (
         <TextField
             value={msg}
-            id='chatbar'
-            variant='outlined'
+            id="chatbar"
+            label="Message"
+            variant="outlined"
             onKeyDown={handleKeyPress}
             onChange={e => setMsg(e.target.value)}
             multiline
@@ -32,6 +33,6 @@ function Chatbar({ sendMsg }) {
 
 Chatbar.propTypes = {
     sendMsg: PropTypes.func.isRequired
-}
+};
 
 export default Chatbar;

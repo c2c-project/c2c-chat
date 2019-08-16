@@ -23,6 +23,14 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
  *  Create Socket IO
  */
 const io = createSocketIO(server);
@@ -31,19 +39,22 @@ const io = createSocketIO(server);
  * listen
  */
 io.on('connection', function(socket) {
-    socket.emit('new', { hello: 'world' });
+    console.log('new connection');
+    socket.emit('news', { hello: 'world' });
     socket.on('my other event', function(data) {
         console.log(data);
     });
 });
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+var chat = io.of('/chat').on('connection', function(socket) {
+    socket.emit('a message', {
+        that: 'only',
+        '/chat': 'will get'
+    });
+    chat.emit('a message', {
+        everyone: 'in',
+        '/chat': 'will get'
+    });
+});
 
 /**
  * Normalize a port into a number, string, or false.

@@ -1,6 +1,24 @@
 import React from 'react';
+import io from 'socket.io-client';
+
+function connect(roomId = 'chat') {
+    const url = `http://localhost:3001/${roomId}`;
+    const chat = io.connect(url);
+    chat.on('connect', function(something) {
+        chat.emit('hi!');
+        console.log(something);
+    });
+    chat.on('a message', function(message) {
+        console.log(message);
+    });
+    // socket.on('news', function(data) {
+    //     console.log(data);
+    //     socket.emit('my other event', { my: 'data' });
+    // });
+}
 
 function useMessages(roomId = '') {
+    connect();
     React.useEffect(() => {
         // some subscription here for the room
         // return some cleanup function too
