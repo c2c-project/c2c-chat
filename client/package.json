@@ -38,8 +38,8 @@
     },
     "devDependencies": {
         "@babel/core": "^7.5.5",
-        "@storybook/cli": "^5.1.9",
-        "@storybook/react": "^5.1.9",
+        "@storybook/cli": "^5.2.5",
+        "@storybook/react": "^5.2.5",
         "eslint-config-airbnb": "^17.1.1",
         "eslint-config-prettier": "^6.0.0",
         "init": "^0.1.2",
