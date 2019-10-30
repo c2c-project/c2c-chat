@@ -11,7 +11,7 @@ function ChatWindow({ roomId }) {
     return (
         <Grid container direction='column'>
             <Messages messages={messages} />
-            <Chatbar sendMsg={sendMsg} />
+            <Chatbar onMessageSend={sendMsg} />
         </Grid>
     );
 }

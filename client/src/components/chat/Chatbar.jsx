@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 
-function Chatbar({ sendMsg }) {
+function Chatbar({ onMessageSend }) {
     const [msg, setMsg] = React.useState('');
     const handleKeyPress = event => {
         if (event.key !== 'Enter') {
@@ -14,15 +14,15 @@ function Chatbar({ sendMsg }) {
         event.preventDefault();
         // TODO: send this over the wire
         // console.log('Msg: ', msg);
-        sendMsg(msg);
+        onMessageSend(msg);
         setMsg('');
     };
     return (
         <TextField
             value={msg}
-            id="chatbar"
-            label="Message"
-            variant="outlined"
+            id='chatbar'
+            label='Message'
+            variant='outlined'
             onKeyDown={handleKeyPress}
             onChange={e => setMsg(e.target.value)}
             multiline
@@ -32,7 +32,7 @@ function Chatbar({ sendMsg }) {
 }
 
 Chatbar.propTypes = {
-    sendMsg: PropTypes.func.isRequired
+    onMessageSend: PropTypes.func.isRequired
 };
 
 export default Chatbar;
