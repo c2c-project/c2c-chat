@@ -11,7 +11,9 @@
         "server": "cd server && npm start",
         "start": "concurrently - k \"npm run server --scripts-prepend-node-path\" \"npm run client --scripts-prepend-node-path\""
     },
-    "dependencies": {},
+    "dependencies": {
+        "eslint-config-prettier": "^6.5.0"
+    },
     "devDependencies": {
         "concurrently": "^4.1.1",
         "eslint": "^6.5.1",

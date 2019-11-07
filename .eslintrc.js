@@ -16,6 +16,7 @@ module.exports = {
             'error',
             { devDependencies: ['**/*.tests.js', '**/*.stories.*'] }
         ],
+        'no-unused-vars': ['warn'],
         'import/no-absolute-path': 0,
         'no-underscore-dangle': 'off',
         'func-names': 'off'

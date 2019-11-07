@@ -1,17 +1,13 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
-
-// view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -39,22 +35,5 @@ app.use(function(err, req, res, next) {
     res.json({ message: 'error' });
 });
 
-module.exports = app;
+export default app;
 
-// import express from 'express';
-// import http from 'http';
-// import socketIO from 'socket.io';
-
-// const app = express();
-// const server = http.Server(app);
-// const io = socketIO(server);
-// const port = process.env.PORT || 3000;
-
-// io.on('connection', function(socket) {
-//     socket.emit('new', { hello: 'world' });
-//     socket.on('my other event', function(data) {
-//         console.log(data);
-//     });
-// });
-
-// server.listen(port, () => console.log(`Listening on port ${port}`));
