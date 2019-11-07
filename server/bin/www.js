@@ -1,14 +1,13 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 /**
  * Module dependencies.
  */
 import debug from 'debug';
 import http from 'http';
+import socketio from 'socket.io';
 import app from '../app';
-
-const debugServer = debug('server:server');
-const createSocketIO = require('socket.io');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -30,6 +29,7 @@ function normalizePort(val) {
     return false;
 }
 
+const debugServer = debug('server:server');
 
 /**
  * Get port from environment and store in Express.
@@ -59,12 +59,10 @@ server.on('error', error => {
     // handle specific listen errors with friendly messages
     switch (error.code) {
         case 'EACCES':
-            // eslint-disable-next-line
             console.error(`${bind} requires elevated privileges`);
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            // eslint-disable-next-line
             console.error(`${bind} is already in use`);
             process.exit(1);
             break;
@@ -82,7 +80,7 @@ server.on('listening', () => {
 /**
  *  Create Socket IO
  */
-const io = createSocketIO(server);
+const io = socketio(server);
 
 /**
  * listen
@@ -94,6 +92,7 @@ io.on('connection', function(socket) {
         console.log(data);
     });
 });
+
 const chat = io.of('/chat').on('connection', function(socket) {
     socket.emit('a message', {
         that: 'only',
@@ -104,4 +103,3 @@ const chat = io.of('/chat').on('connection', function(socket) {
         '/chat': 'will get'
     });
 });
-
