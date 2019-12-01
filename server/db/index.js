@@ -1,19 +1,18 @@
-import r from 'rethinkdb';
-import { rethinkdb as config } from '../config';
+/* eslint-disable no-console */
+import mongo from 'mongodb';
+import assert from 'assert';
 
-function handler(err, connection) {
-    console.log(connection);
-    if (err) {
-        console.error(err);
-        process.exit(1);
-        return;
-    }
-}
+const { MongoClient } = mongo;
+const { DB_URL, DB_PORT } = process.env;
 
-r.connect(config, handler);
+const url = `${DB_URL}:${DB_PORT}`;
 
-function createDatabase() {
-    
-}
+// const dbName = 'c2c-chat-db';
 
+MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log('Connected to mongo');
 
+    // const db = client.db(dbName);
+    client.close();
+});

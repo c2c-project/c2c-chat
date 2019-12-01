@@ -3,8 +3,11 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import dotenv from 'dotenv';
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
+
+dotenv.config();
 
 const app = express();
 
@@ -24,7 +27,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
