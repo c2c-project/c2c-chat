@@ -16,13 +16,11 @@ module.exports = {
             'error',
             { devDependencies: ['**/*.tests.js', '**/*.stories.*'] }
         ],
-        'no-unused-vars': ['warn'],
         'import/no-absolute-path': 0,
         'no-underscore-dangle': 'off',
         'func-names': 'off'
     },
     env: {
-        mongo: true,
         node: true,
         browser: true,
         mocha: true
@@ -31,11 +29,11 @@ module.exports = {
         'import/resolver': {
             node: {
                 paths: ['.']
-            },
-            alias: {
-                map: [['/src', './src']],
-                extensions: ['.ts', '.js', '.jsx', '.json']
             }
+            // alias: {
+            //     map: [['/src', './src']],
+            //     extensions: ['.ts', '.js', '.jsx', '.json']
+            // }
         }
     }
 };

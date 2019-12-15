@@ -1,8 +1,10 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import './App.css';
-import Chat from './chat';
+// import './App.css';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { BrowserRouter, Route } from 'react-router-dom';
+// import Sessions
 
 const useStyles = makeStyles(theme => ({
     root: {
