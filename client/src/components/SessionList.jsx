@@ -8,10 +8,11 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 
 function SessionListItem({ headerProps, description }) {
+    const { primary, secondary, action } = headerProps;
     return (
         <Grid item xs={12}>
             <Card>
-                <CardHeader {...headerProps} />
+                <CardHeader primary={primary} secondary={secondary} action={action} />
                 <CardContent>{description}</CardContent>
             </Card>
         </Grid>
@@ -25,6 +26,7 @@ SessionListItem.propTypes = {
         action: PropTypes.node
     }).isRequired,
     description: PropTypes.oneOfType([PropTypes.node, PropTypes.string])
+        .isRequired
 };
 
 export default function SessionList({ sessions }) {
@@ -46,3 +48,13 @@ export default function SessionList({ sessions }) {
         </List>
     );
 }
+
+SessionList.propTypes = {
+    sessions: PropTypes.arrayOf(
+        PropTypes.shape({
+            speaker: PropTypes.string.isRequired,
+            moderator: PropTypes.string.isRequired,
+            description: PropTypes.string.isRequired
+        })
+    ).isRequired
+};
