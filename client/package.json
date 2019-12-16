@@ -1,5 +1,5 @@
 {
-    "name": "c2c-chat",
+    "name": "c2c-chat-client",
     "version": "0.1.0",
     "private": true,
     "proxy": "http://localhost:3001",
@@ -12,7 +12,7 @@
         "react-dom": "^16.8.6",
         "react-player": "^1.11.1",
         "react-router-dom": "^5.1.2",
-        "react-scripts": "^3.3.0",
+        "react-scripts": "3.2.0",
         "socket.io-client": "^2.2.0"
     },
     "scripts": {
@@ -21,9 +21,6 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "storybook": "start-storybook --port 3003"
-    },
-    "eslintConfig": {
-        "extends": "react-app"
     },
     "browserslist": {
         "production": [
