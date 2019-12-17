@@ -56,7 +56,8 @@ const parseTitle = title =>
 
 const config = [
     { label: 'Sessions', to: '/sessions' },
-    { label: 'Calendar', to: '/calendar' }
+    { label: 'Calendar', to: '/calendar' },
+    { label: 'Chat', to: '/chat/0' }
 ];
 
 function ResponsiveDrawer({ children }) {
