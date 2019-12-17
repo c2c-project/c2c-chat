@@ -35,22 +35,27 @@ function Messages({ messages }) {
     return (
         <div className={classes.root}>
             <List>
-                {messages.map(({ author, message, _id }) => (
-                    <ListItem key={_id} className={classes.message}>
-                        <ListItemText
-                            secondaryTypographyProps={{
-                                variant: 'body1',
-                                color: 'textPrimary'
-                            }}
-                            primaryTypographyProps={{
-                                variant: 'subtitle1',
-                                component: Bold
-                            }}
-                            primary={author}
-                            secondary={message}
-                        />
-                    </ListItem>
-                ))}
+                {messages.map(
+                    (
+                        { author = 'author', message = 'message', _id } = {},
+                        index
+                    ) => (
+                        <ListItem key={index} className={classes.message}>
+                            <ListItemText
+                                secondaryTypographyProps={{
+                                    variant: 'body1',
+                                    color: 'textPrimary'
+                                }}
+                                primaryTypographyProps={{
+                                    variant: 'subtitle1',
+                                    component: Bold
+                                }}
+                                primary={author}
+                                secondary={message}
+                            />
+                        </ListItem>
+                    )
+                )}
             </List>
             <div ref={lastMessageRef} />
         </div>

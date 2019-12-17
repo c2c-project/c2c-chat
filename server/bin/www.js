@@ -6,7 +6,7 @@
  */
 import debug from 'debug';
 import http from 'http';
-import socketio from 'socket.io';
+import socketio from '../lib/socketio';
 import app from '../app';
 
 /**
@@ -77,29 +77,4 @@ server.on('listening', () => {
     debugServer(`Listening on ${bind}`);
 });
 
-/**
- *  Create Socket IO
- */
-const io = socketio(server);
-
-/**
- * listen
- */
-io.on('connection', function(socket) {
-    console.log('new connection');
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function(data) {
-        console.log(data);
-    });
-});
-
-const chat = io.of('/chat').on('connection', function(socket) {
-    socket.emit('a message', {
-        that: 'only',
-        '/chat': 'will get'
-    });
-    chat.emit('a message', {
-        everyone: 'in',
-        '/chat': 'will get'
-    });
-});
+socketio(server);

@@ -2,44 +2,42 @@ import React from 'react';
 import io from 'socket.io-client';
 
 function connect(roomId = 'chat') {
-    const url = `http://localhost:3001/${roomId}`;
+    const url = `${process.env.REACT_APP_SERVER}/${roomId}`;
     const chat = io.connect(url);
-    chat.on('connect', function(something) {
-        chat.emit('hi!');
-        console.log(something);
-    });
-    chat.on('a message', function(message) {
-        console.log(message);
-    });
-    // socket.on('news', function(data) {
-    //     console.log(data);
-    //     socket.emit('my other event', { my: 'data' });
-    // });
+    return chat;
 }
 
 function useMessages(roomId = '') {
-    connect();
+    const [messages, setMessages] = React.useState([]);
+    const [sendFunc, setFunc] = React.useState(() => {
+        // TODO: maybe have a message queue?
+        // i.e. some way to save the messages they're trying to send before ocnnection
+        // or just have a loading screen
+        console.log('not connected');
+    });
+
     React.useEffect(() => {
-        // some subscription here for the room
-        // return some cleanup function too
+        const chat = connect();
+        chat.on('connect', function() {
+            // TODO: login tokens here? or some kind of security?
+            setFunc(chat);
+        });
+        chat.on('loadHistory', history => {
+            const formattedHistory = history.map(message => ({
+                message
+            }));
+            setMessages(formattedHistory);
+        });
+        chat.on('message', function(message) {
+            setMessages(state => [...state, { message }]);
+        });
+        return () => chat.close();
     }, []);
-    // TODO: erase mock and have actual built in messages
-    const mock = [
-        {
-            _id: 1,
-            author: 'Mr. Foo',
-            message: 'the message'
-        },
-        {
-            _id: 2,
-            author: 'Mrs. Bar',
-            message: 'the message part 2'
-        }
-    ];
+
     return [
-        mock,
-        msg => {
-            console.log(msg);
+        messages,
+        message => {
+            sendFunc.emit('message', message);
         }
     ];
 }
