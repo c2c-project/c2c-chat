@@ -25,6 +25,13 @@ const Bold = ({ children }) => (
     </Typography>
 );
 
+// eslint-disable-next-line
+const SystemMessages = ({ children }) => (
+    <Typography color='textSecondary' component='div'>
+        <Box fontWeight='fontWeightBold'>{children}</Box>
+    </Typography>
+);
+
 function Messages({ messages }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);

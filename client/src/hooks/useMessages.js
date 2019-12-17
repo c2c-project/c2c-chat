@@ -3,8 +3,7 @@ import io from 'socket.io-client';
 
 function connect(roomId = 'chat') {
     const url = `${process.env.REACT_APP_SERVER}/${roomId}`;
-    const chat = io.connect(url);
-    return chat;
+    return io(url);
 }
 
 function useMessages(roomId = '') {
@@ -20,6 +19,7 @@ function useMessages(roomId = '') {
         const chat = connect();
         chat.on('connect', function() {
             // TODO: login tokens here? or some kind of security?
+            chat.emit('new-user');
             setFunc(chat);
         });
         chat.on('loadHistory', history => {
@@ -29,15 +29,23 @@ function useMessages(roomId = '') {
             setMessages(formattedHistory);
         });
         chat.on('message', function(message) {
+            console.log(message);
             setMessages(state => [...state, { message }]);
         });
-        return () => chat.close();
+        chat.on('disconnect', () => console.log('disconnected'));
+        chat.on('error', err => console.log(err));
+        return () => {
+            console.log('closing');
+            chat.close();
+        };
     }, []);
 
     return [
         messages,
         message => {
-            sendFunc.emit('message', message);
+            sendFunc.emit('message', message, () => {
+                setMessages(current => [...current, { message }]);
+            });
         }
     ];
 }
