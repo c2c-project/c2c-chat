@@ -9,14 +9,22 @@ import Messages from './Messages';
 import useMessages from '../../hooks/useMessages';
 
 const useStyles = makeStyles(theme => ({
+    root: {
+        height: '100%'
+    },
     chatbar: {
-        padding: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`
+        padding: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`,
+        height: '12vh'
     },
     paper: {
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
+        height: '100%'
     },
     divider: {
         margin: `${theme.spacing(2)}px 0 0 0`
+    },
+    messages: {
+        height: '75vh'
     }
 }));
 
@@ -25,9 +33,11 @@ function ChatWindow({ roomId }) {
     const classes = useStyles();
 
     return (
-        <Grid container direction='column'>
+        <Grid container direction='column' className={classes.root}>
             <Paper className={classes.paper}>
-                <Messages messages={messages} />
+                <div className={classes.messages}>
+                    <Messages messages={messages} />
+                </div>
                 <Divider className={classes.divider} />
                 <div className={classes.chatbar}>
                     <Chatbar onMessageSend={sendMsg} />

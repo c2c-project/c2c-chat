@@ -19,7 +19,9 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
     root: {
-        display: 'flex'
+        display: 'flex',
+        width: '100%',
+        height: '100%'
     },
     drawer: {
         [theme.breakpoints.up('sm')]: {
@@ -45,7 +47,8 @@ const useStyles = makeStyles(theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3)
+        padding: theme.spacing(3),
+        height: '100%'
     }
 }));
 
@@ -97,7 +100,7 @@ function ResponsiveDrawer({ children }) {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <AppBar position='fixed' className={classes.appBar}>
+            <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton
                         color='inherit'

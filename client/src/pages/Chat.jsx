@@ -4,8 +4,11 @@ import ChatWindow from '../components/chat';
 
 const ChatRoom = () => {
     const { roomId } = useParams();
-    console.log(roomId);
-    return <ChatWindow roomId={roomId} />;
+    return (
+        <div style={{ height: '100%', maxHeight: '88vh' }}>
+            <ChatWindow roomId={roomId} />
+        </div>
+    );
 };
 
 export default function Chat() {
