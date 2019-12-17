@@ -13,20 +13,21 @@ export default function init(server) {
     const mockdb = [];
     // let userCount = 0;
     io.of('/chat').on('connection', function(socket) {
-        // console.log(socket.id);
-        // setInterval(() => {
-        //     socket.emit('message', 'hello world');
-        // }, 1000);
-        socket.emit('loadHistory', mockdb);
-        socket.on('message', (message, cb) => {
-            mockdb.push(message);
-            socket.broadcast.emit('message', message);
-            cb();
-            // console.log('message', message);
-        });
-        // socket.on('new-user', () => {
-        //     socket.emit('message', `User ${userCount}`);
-        //     userCount += 1;
+        const { roomId } = socket.handshake.query;
+        if (roomId) {
+            socket.join(roomId);
+            socket.emit('loadHistory', mockdb);
+            socket.to(roomId).on('message', (message, cb) => {
+                mockdb.push(message);
+                socket.broadcast.emit('message', message);
+                cb();
+            });
+        }
+        // socket.emit('loadHistory', mockdb);
+        // socket.on('message', (message, cb) => {
+        //     mockdb.push(message);
+        //     socket.broadcast.emit('message', message);
+        //     cb();
         // });
     });
 }

@@ -2,8 +2,8 @@ import React from 'react';
 import io from 'socket.io-client';
 
 function connect(roomId = 'chat') {
-    const url = `${process.env.REACT_APP_SERVER}/${roomId}`;
-    return io(url);
+    const url = `${process.env.REACT_APP_SERVER}/chat`;
+    return io.connect(url, { query: `roomId=${roomId}` });
 }
 
 function useMessages(roomId = '') {
@@ -16,10 +16,10 @@ function useMessages(roomId = '') {
     });
 
     React.useEffect(() => {
-        const chat = connect();
+        const chat = connect(roomId);
         chat.on('connect', function() {
             // TODO: login tokens here? or some kind of security?
-            chat.emit('new-user');
+            // chat.emit('new-user');
             setFunc(chat);
         });
         chat.on('loadHistory', history => {
@@ -38,7 +38,7 @@ function useMessages(roomId = '') {
             console.log('closing');
             chat.close();
         };
-    }, []);
+    }, [roomId]);
 
     return [
         messages,
