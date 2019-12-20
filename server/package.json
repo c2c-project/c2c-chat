@@ -3,7 +3,8 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "nodemon --exec babel-node ./bin/www.js"
+        "start": "nodemon --exec babel-node ./bin/www.js",
+        "seed": "babel-node db/seed.js"
     },
     "dependencies": {
         "cookie-parser": "~1.4.4",
