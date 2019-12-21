@@ -10,32 +10,22 @@ export default function init(server) {
             console.log('TODO: disconnect -- unregister user');
         });
     });
-    // const mockdb = [];
-    // let userCount = 0;
-    io.of('/chat').on('connection', function(socket) {
+    io.of('/chat').on('connection', socket => {
         const { roomId } = socket.handshake.query;
         if (roomId) {
+            // socket.emit('history', [{ message: 'test' }]);
             socket.join(roomId);
-            Chat.findMessages({ sessionId: 'session' }).then(r => {
-                socket.emit('history', r);
-            });
             socket.to(roomId).on('message', message => {
                 // mockdb.push(message);
                 Chat.addMessage({
                     message,
                     user: 'author',
-                    session: 'session'
+                    session: roomId
                 });
                 io.of('/chat')
                     .to(roomId)
                     .emit('message', message);
             });
         }
-        // socket.emit('loadHistory', mockdb);
-        // socket.on('message', (message, cb) => {
-        //     mockdb.push(message);
-        //     socket.broadcast.emit('message', message);
-        //     cb();
-        // });
     });
 }

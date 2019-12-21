@@ -16,18 +16,12 @@ function useMessages(roomId = 'session') {
     });
 
     React.useEffect(() => {
+        // SOCKET IO
         const chat = connect(roomId);
         chat.on('connect', function() {
             // TODO: login tokens here? or some kind of security?
             // chat.emit('new-user');
             setFunc(chat);
-        });
-        chat.on('history', history => {
-            console.log(history);
-            // const formattedHistory = history.map(message => ({
-            //     message
-            // }));
-            setMessages(history);
         });
         chat.on('message', function(message) {
             console.log(message);
@@ -35,6 +29,15 @@ function useMessages(roomId = 'session') {
         });
         chat.on('disconnect', () => console.log('disconnected'));
         chat.on('error', err => console.log(err));
+
+        // FETCH 
+        fetch(`/api/chat/${roomId}`).then(r => {
+            r.json().then(history => {
+                setMessages(history);
+            });
+        });
+
+        // SOCKET IO CLEANUP
         return () => {
             console.log('closing');
             chat.close();
@@ -45,9 +48,6 @@ function useMessages(roomId = 'session') {
         messages,
         message => {
             sendFunc.emit('message', message);
-            // , () => {
-            //     // setMessages(current => [...current]);
-            // });
         }
     ];
 }
