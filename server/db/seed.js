@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-multi-str */
 import assert from 'assert';
 import { mongo, close } from './mongo';
@@ -36,7 +37,7 @@ const sessions = [
 const messages = [
     {
         _id: 2,
-        session_id: 0,
+        sessionId: 0,
         message:
             'The first order recently tried to overthrow the Republic,\
          but you have seemingly refused to take a stance on the subject.\
@@ -52,6 +53,7 @@ function seedSessions() {
         db.collection('sessions').insertMany(sessions, (err, r) => {
             assert.equal(null, err);
             assert.equal(2, r.insertedCount);
+            close();
         })
     );
 }
@@ -62,6 +64,7 @@ function seedMessages() {
         db.collection('messages').insertMany(messages, (err, r) => {
             assert.equal(null, err);
             assert.equal(1, r.insertedCount);
+            close();
         })
     );
 }

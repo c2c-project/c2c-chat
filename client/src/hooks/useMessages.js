@@ -6,13 +6,13 @@ function connect(roomId = 'chat') {
     return io.connect(url, { query: `roomId=${roomId}` });
 }
 
-function useMessages(roomId = '') {
+function useMessages(roomId = 'session') {
     const [messages, setMessages] = React.useState([]);
     const [sendFunc, setFunc] = React.useState(() => {
         // TODO: maybe have a message queue?
         // i.e. some way to save the messages they're trying to send before ocnnection
         // or just have a loading screen
-        console.log('not connected');
+        // console.log('not connected');
     });
 
     React.useEffect(() => {
@@ -22,11 +22,12 @@ function useMessages(roomId = '') {
             // chat.emit('new-user');
             setFunc(chat);
         });
-        chat.on('loadHistory', history => {
-            const formattedHistory = history.map(message => ({
-                message
-            }));
-            setMessages(formattedHistory);
+        chat.on('history', history => {
+            console.log(history);
+            // const formattedHistory = history.map(message => ({
+            //     message
+            // }));
+            setMessages(history);
         });
         chat.on('message', function(message) {
             console.log(message);
@@ -43,9 +44,10 @@ function useMessages(roomId = '') {
     return [
         messages,
         message => {
-            sendFunc.emit('message', message, () => {
-                setMessages(current => [...current, { message }]);
-            });
+            sendFunc.emit('message', message);
+            // , () => {
+            //     // setMessages(current => [...current]);
+            // });
         }
     ];
 }
