@@ -8,37 +8,44 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 
 function SessionListItem({ headerProps, description }) {
-    const { primary, secondary, action } = headerProps;
+    const { title, subheader, action } = headerProps;
     return (
         <Grid item xs={12}>
             <Card>
-                <CardHeader primary={primary} secondary={secondary} action={action} />
+                <CardHeader
+                    title={title}
+                    subheader={subheader}
+                    action={action}
+                />
                 <CardContent>{description}</CardContent>
             </Card>
         </Grid>
     );
 }
 
+SessionListItem.defaultProps = {
+    description: ''
+};
+
 SessionListItem.propTypes = {
     headerProps: PropTypes.shape({
-        primary: PropTypes.string.isRequired,
-        secondary: PropTypes.string,
+        title: PropTypes.string.isRequired,
+        subheader: PropTypes.string,
         action: PropTypes.node
     }).isRequired,
     description: PropTypes.oneOfType([PropTypes.node, PropTypes.string])
-        .isRequired
 };
 
 export default function SessionList({ sessions }) {
     return (
         <List>
             <Grid container justify='center'>
-                {sessions.map(({ speaker, moderator, description }) => (
-                    <ListItem>
+                {sessions.map(({ _id, speaker, moderator, description }) => (
+                    <ListItem key={_id}>
                         <SessionListItem
                             headerProps={{
-                                primary: speaker,
-                                secondary: moderator
+                                title: speaker,
+                                subheader: `Moderator: ${moderator}`
                             }}
                             description={description}
                         />
@@ -54,7 +61,7 @@ SessionList.propTypes = {
         PropTypes.shape({
             speaker: PropTypes.string.isRequired,
             moderator: PropTypes.string.isRequired,
-            description: PropTypes.string.isRequired
+            description: PropTypes.string
         })
     ).isRequired
 };

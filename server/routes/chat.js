@@ -1,12 +1,11 @@
 import express from 'express';
-import Chat from '../lib/chat';
+import Chat from '../db/collections/chat';
 
 const router = express.Router();
 
-router.get('/:roomId', function(req, res, next) {
+router.get('/:roomId', (req, res) => {
     const { roomId } = req.params;
     Chat.findMessages({ sessionId: roomId }).then(r => res.json(r));
-    // res.json({ message: 'Hello World' });
 });
 
 module.exports = router;

@@ -1,5 +1,5 @@
 import socketio from 'socket.io';
-import Chat from './chat';
+import Chat from '../db/collections/chat';
 
 export default function init(server) {
     const io = socketio(server);

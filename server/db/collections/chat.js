@@ -1,4 +1,4 @@
-import { mongo, close } from '../db';
+import { mongo } from '..';
 
 const addMessage = ({ message, user, session }) => {
     mongo.then(db => {
