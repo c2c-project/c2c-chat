@@ -5,6 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import Grow from '@material-ui/core/Grow';
 import Grid from '@material-ui/core/Grid';
 
 function SessionListItem({ headerProps, description }) {
@@ -36,21 +37,27 @@ SessionListItem.propTypes = {
     description: PropTypes.oneOfType([PropTypes.node, PropTypes.string])
 };
 
+const calcTimeout = idx => (idx + 1) * 200;
+
 export default function SessionList({ sessions }) {
     return (
         <List>
             <Grid container justify='center'>
-                {sessions.map(({ _id, speaker, moderator, description }) => (
-                    <ListItem key={_id}>
-                        <SessionListItem
-                            headerProps={{
-                                title: speaker,
-                                subheader: `Moderator: ${moderator}`
-                            }}
-                            description={description}
-                        />
-                    </ListItem>
-                ))}
+                {sessions.map(
+                    ({ _id, speaker, moderator, description }, idx) => (
+                        <Grow key={_id} in timeout={calcTimeout(idx)}>
+                            <ListItem>
+                                <SessionListItem
+                                    headerProps={{
+                                        title: speaker,
+                                        subheader: `Moderator: ${moderator}`
+                                    }}
+                                    description={description}
+                                />
+                            </ListItem>
+                        </Grow>
+                    )
+                )}
             </Grid>
         </List>
     );
