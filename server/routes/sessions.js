@@ -27,7 +27,7 @@ router.post('/create', (req, res) => {
 router.post('/update', (req, res) => {
     const { sessionId, form } = req.body;
     console.log(form);
-    Sessions.editSession({ sessionId, changes: form })
+    Sessions.updateSession({ sessionId, changes: form })
         .then(r => {
             // console.log(r);
             if (r.modifiedCount === 1) {

@@ -23,7 +23,7 @@ const removeMessage = ({ messageId, reason }) => {
     });
 };
 
-const editMessage = ({ messageId, message }) => {
+const updateMessage = ({ messageId, message }) => {
     mongo.then(db => {
         db.collection('messages').updateOne(
             { _id: messageId },
@@ -44,6 +44,6 @@ const findMessages = ({ sessionId }) =>
 export default {
     addMessage,
     removeMessage,
-    editMessage,
+    updateMessage,
     findMessages
 };

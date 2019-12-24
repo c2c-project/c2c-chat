@@ -30,7 +30,7 @@ const removeSession = ({ sessionId }) =>
         db.collection('sessions').remove({ _id: new ObjectID(sessionId) })
     );
 
-const editSession = ({ sessionId, changes }) =>
+const updateSession = ({ sessionId, changes }) =>
     mongo.then(db =>
         db
             .collection('sessions')
@@ -42,5 +42,5 @@ export default {
     findSessionById,
     addSession,
     removeSession,
-    editSession
+    updateSession
 };
