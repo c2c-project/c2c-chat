@@ -169,7 +169,7 @@ export default function Sessions() {
     // edit & delete are options inside the card actions
     const handleEdit = () => {
         // close the popout menu
-        handleSessionOptionsClose();
+        setAnchor(null);
         // set the form type
         setFormType('update');
         // open the form

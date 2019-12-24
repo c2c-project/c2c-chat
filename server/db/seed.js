@@ -1,11 +1,13 @@
 /* eslint-disable no-console */
 /* eslint-disable no-multi-str */
 import assert from 'assert';
+import { ObjectID } from 'mongodb';
 import { mongo, close } from './mongo';
 
+const sessionIds = [new ObjectID(), new ObjectID()];
 const sessions = [
     {
-        _id: 0,
+        _id: sessionIds[0],
         speaker: 'George Washington',
         moderator: 'Darth Vader',
         attendees: {
@@ -19,7 +21,7 @@ const sessions = [
         }
     },
     {
-        _id: 1,
+        _id: sessionIds[1],
         speaker: 'Abraham Lincoln',
         moderator: 'Zeus',
         attendees: {
@@ -36,8 +38,8 @@ const sessions = [
 
 const messages = [
     {
-        _id: 2,
-        sessionId: 0,
+        _id: new ObjectID(),
+        sessionId: sessionIds[0],
         message:
             'The first order recently tried to overthrow the Republic,\
          but you have seemingly refused to take a stance on the subject.\

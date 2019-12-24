@@ -26,7 +26,6 @@ router.post('/create', (req, res) => {
 
 router.post('/update', (req, res) => {
     const { sessionId, form } = req.body;
-    console.log(form);
     Sessions.updateSession({ sessionId, changes: form })
         .then(r => {
             // console.log(r);
