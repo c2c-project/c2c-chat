@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 import React from 'react';
 import PropTypes from 'prop-types';
 import List from '@material-ui/core/List';
@@ -7,6 +8,8 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Grow from '@material-ui/core/Grow';
 import Grid from '@material-ui/core/Grid';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import IconButton from '@material-ui/core/IconButton';
 
 function SessionListItem({ headerProps, description }) {
     const { title, subheader, action } = headerProps;
@@ -39,7 +42,7 @@ SessionListItem.propTypes = {
 
 const calcTimeout = idx => (idx + 1) * 200;
 
-export default function SessionList({ sessions }) {
+export default function SessionList({ sessions, onClickOptions }) {
     return (
         <List>
             <Grid container justify='center'>
@@ -50,7 +53,17 @@ export default function SessionList({ sessions }) {
                                 <SessionListItem
                                     headerProps={{
                                         title: speaker,
-                                        subheader: `Moderator: ${moderator}`
+                                        subheader: `Moderator: ${moderator}`,
+                                        action: (
+                                            <IconButton
+                                                onClick={e =>
+                                                    onClickOptions(e, _id)
+                                                }
+                                                aria-label='session options'
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        )
                                     }}
                                     description={description}
                                 />
@@ -70,5 +83,6 @@ SessionList.propTypes = {
             moderator: PropTypes.string.isRequired,
             description: PropTypes.string
         })
-    ).isRequired
+    ).isRequired,
+    onClickOptions: PropTypes.func.isRequired
 };
