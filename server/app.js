@@ -4,6 +4,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import dotenv from 'dotenv';
+import passport from 'passport';
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 import chatRouter from './routes/chat';
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

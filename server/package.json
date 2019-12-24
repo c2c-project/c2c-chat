@@ -7,6 +7,7 @@
         "seed": "babel-node db/seed.js"
     },
     "dependencies": {
+        "bcrypt": "^3.0.7",
         "cookie-parser": "~1.4.4",
         "debug": "~2.6.9",
         "dotenv": "^8.2.0",
@@ -15,6 +16,9 @@
         "mongodb": "^3.3.5",
         "morgan": "~1.9.1",
         "nodemon": "^1.19.1",
+        "passport": "^0.4.1",
+        "passport-jwt": "^4.0.0",
+        "passport-local": "^1.0.0",
         "socket.io": "^2.2.0"
     },
     "devDependencies": {
