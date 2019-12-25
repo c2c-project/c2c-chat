@@ -41,14 +41,16 @@ const useStyles = makeStyles(theme => ({
             display: 'none'
         }
     },
-    toolbar: theme.mixins.toolbar,
+    // toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
-        height: '100%'
+        height: '100%',
+        [theme.breakpoints.down('sm')]: {
+            paddingTop: '64px'
+        }
     }
 }));
 
@@ -59,7 +61,7 @@ const parseTitle = title =>
 
 const config = [
     { label: 'Sessions', to: '/sessions' },
-    { label: 'Calendar', to: '/calendar' },
+    // { label: 'Calendar', to: '/calendar' },
     { label: 'Chat', to: '/chat/0' }
 ];
 
@@ -100,22 +102,24 @@ function ResponsiveDrawer({ children }) {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <AppBar className={classes.appBar}>
-                <Toolbar>
-                    <IconButton
-                        color='inherit'
-                        aria-label='open drawer'
-                        edge='start'
-                        onClick={handleDrawerToggle}
-                        className={classes.menuButton}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant='h6' noWrap>
-                        {parseTitle(title)}
-                    </Typography>
-                </Toolbar>
-            </AppBar>
+            <Hidden smUp>
+                <AppBar className={classes.appBar}>
+                    <Toolbar>
+                        <IconButton
+                            color='inherit'
+                            aria-label='open drawer'
+                            edge='start'
+                            onClick={handleDrawerToggle}
+                            className={classes.menuButton}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant='h6' noWrap>
+                            {parseTitle(title)}
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+            </Hidden>
             <nav className={classes.drawer} aria-label='mailbox folders'>
                 {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
                 <Hidden smUp implementation='css'>
@@ -147,7 +151,9 @@ function ResponsiveDrawer({ children }) {
                 </Hidden>
             </nav>
             <main className={classes.content}>
-                <div className={classes.toolbar} />
+                {/* <Hidden smUp>
+                    <div className={classes.toolbar} />
+                </Hidden> */}
                 {children}
             </main>
         </div>

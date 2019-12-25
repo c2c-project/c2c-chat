@@ -10,8 +10,8 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles({
     root: {
         height: '100%',
-        width: '100%',
-        overflowY: 'scroll'
+        width: '100%'
+        // overflowY: 'scroll'
     },
     message: {
         width: '100%'
@@ -36,9 +36,12 @@ function Messages({ messages }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const scrollToBottom = () => {
-        lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
+        lastMessageRef.current.scrollIntoView({
+            behavior: 'smooth'
+        });
     };
     React.useEffect(scrollToBottom, [messages]);
+    // TODO: CHANGE KEY TO USE _ID INSTEAD OF INDEX
     return (
         <div className={classes.root}>
             <List>

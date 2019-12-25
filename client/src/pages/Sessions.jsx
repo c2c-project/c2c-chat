@@ -13,6 +13,7 @@ import SessionList from '../components/SessionList';
 import Fab from '../components/Fab';
 import Dialog from '../components/Dialoag';
 import DateTimePicker from '../components/DateTimePicker';
+import PageContainer from '../layout/PageContainer';
 
 function SessionForm({ type, onSubmit: cb, editTarget }) {
     const [state, setState] = React.useState({
@@ -191,39 +192,41 @@ export default function Sessions() {
     // TODO: add ics download option w/ icon, probably inside the session component
     return (
         <Route path='/sessions'>
-            <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
-                <Container maxWidth='lg' className={classes.dialogForm}>
-                    <SessionForm
-                        type={formType}
-                        onSubmit={() => {
-                            setFormOpen(false);
-                            refetch();
-                        }}
-                        editTarget={target}
-                    />
-                </Container>
-            </Dialog>
-            <SessionList
-                sessions={data}
-                onClickOptions={handleSessionOptionsClick}
-            />
-            <Fab
-                onClick={() => {
-                    setFormOpen(true);
-                    setFormType('create');
-                }}
-            />
-            <Menu
-                id='session-options'
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleSessionOptionsClose}
-            >
-                <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
-            </Menu>
+            <PageContainer>
+                <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
+                    <Container maxWidth='lg' className={classes.dialogForm}>
+                        <SessionForm
+                            type={formType}
+                            onSubmit={() => {
+                                setFormOpen(false);
+                                refetch();
+                            }}
+                            editTarget={target}
+                        />
+                    </Container>
+                </Dialog>
+                <SessionList
+                    sessions={data}
+                    onClickOptions={handleSessionOptionsClick}
+                />
+                <Fab
+                    onClick={() => {
+                        setFormOpen(true);
+                        setFormType('create');
+                    }}
+                />
+                <Menu
+                    id='session-options'
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleSessionOptionsClose}
+                >
+                    <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                    {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
+                </Menu>
+            </PageContainer>
         </Route>
     );
 }
