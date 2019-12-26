@@ -6,6 +6,9 @@ function VideoPlayer() {
         <ReactPlayer
             url='https://www.youtube.com/watch?v=hHW1oY26kxQ'
             playing={false}
+            width='100%'
+            // heigh=''
+            playsinline
         />
     );
 }

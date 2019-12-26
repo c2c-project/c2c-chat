@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
     content: {
         flexGrow: 1,
         height: '100%',
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('xs')]: {
             paddingTop: '64px'
         }
     }

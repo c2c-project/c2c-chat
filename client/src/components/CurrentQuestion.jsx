@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Paper, Grid, Divider } from '@material-ui/core';
+import { Typography, Grid, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 export default function CurrentQuestion({ title, question }) {
     const classes = useStyles();
     return (
-        <Paper className={classes.root}>
+        <div className={classes.root}>
             <Grid container>
                 <Grid item xs={12} className={classes.item}>
                     <Typography align='center' variant='h5'>
@@ -32,7 +32,7 @@ export default function CurrentQuestion({ title, question }) {
                     </Typography>
                 </Grid>
             </Grid>
-        </Paper>
+        </div>
     );
 }
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, useParams } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Hidden from '@material-ui/core/Hidden';
 import { makeStyles } from '@material-ui/core/styles';
 import ChatWindow from '../components/chat';
 import VideoPlayer from '../components/video-player';
@@ -11,58 +13,61 @@ const ChatRoom = () => {
     return <ChatWindow roomId={roomId} />;
 };
 
-const useVideoStyles = makeStyles(theme => ({
-    noBasis: {
-        flexBasis: 0
-        // [theme.breakpoints.up('md')]: {
-        //     padding: `${theme.spacing(2)}px ${theme.spacing(
-        //         2
-        //     )}px 0 ${theme.spacing(2)}px`
-        // }
+const useVideoStyles = makeStyles({
+    root: {
+        width: '100%',
+        display: 'flex',
+        flex: 1,
+        flexBasis: 'auto'
     },
     question: {
-        flexBasis: 0,
         width: '100%'
     }
-}));
+});
 
 const Video = () => {
     const classes = useVideoStyles();
     return (
-        <Grid container direction='column' alignItems='center'>
-            {/* <Grid item xs={12}> */}
-            <Grid item xs={12} md={10} className={classes.noBasis}>
-                <VideoPlayer />
+        <Paper className={classes.paper}>
+            <Grid container>
+                <Grid container justify='center' item xs={12}>
+                    <VideoPlayer />
+                </Grid>
+                <Hidden mdDown>
+                    <Grid item xs={12} className={classes.question}>
+                        <CurrentQuestion
+                            title='Current Question'
+                            question={{ text: 'hello', author: 'world' }}
+                        />
+                    </Grid>
+                </Hidden>
             </Grid>
-            {/* <div className={classes.question}> */}
-            <Grid item xs={12} md={10} className={classes.question}>
-                <CurrentQuestion
-                    title='Current Question'
-                    question={{ text: 'hello', author: 'world' }}
-                />
-            </Grid>
-            {/* </div> */}
-            {/* </Grid> */}
-        </Grid>
+        </Paper>
     );
 };
 
 const useStyles = makeStyles(theme => ({
     root: {
-        height: '100%'
+        height: '100%',
+        flex: 1
     },
     video: {
         [theme.breakpoints.down('sm')]: {
-            height: '40vh'
+            maxHeight: '30vh'
         }
+        // flexBasis: 'auto',
+        // flexGrow: 0
     },
     chat: {
-        [theme.breakpoints.up('md')]: {
-            height: '100%'
-        },
-        [theme.breakpoints.down('sm')]: {
-            height: '50vh'
-        }
+        // [theme.breakpoints.up('md')]: {
+        //     height: '100%'
+        // },
+        // [theme.breakpoints.down('sm')]: {
+        //     height: '50vh'
+        // }
+        flexBasis: '100%',
+        flexGrow: 1
+        // minHeight: '50vh'
     }
 }));
 
