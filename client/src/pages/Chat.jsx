@@ -74,7 +74,7 @@ const useStyles = makeStyles(theme => ({
 export default function Chat() {
     const classes = useStyles();
     return (
-        <Route path='/chat/:roomId'>
+        <Route path='/app/chat/:roomId'>
             <Grid container className={classes.root}>
                 <Grid item xs={12} md={6} className={classes.video}>
                     <Video />

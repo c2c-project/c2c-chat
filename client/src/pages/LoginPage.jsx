@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-curly-newline */
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, useHistory } from 'react-router-dom';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Loginpage() {
     const classes = useStyles();
+    const history = useHistory();
     const [form, setForm] = React.useState({
         email: '',
         password: ''
@@ -35,6 +36,7 @@ export default function Loginpage() {
         e.preventDefault();
         console.log(form);
         console.log('TODO: handle submit for login');
+        history.push('/app/sessions');
     };
 
     return (

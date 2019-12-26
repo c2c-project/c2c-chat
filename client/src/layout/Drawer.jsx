@@ -60,9 +60,10 @@ const parseTitle = title =>
         .reduce((accum, word) => `${accum} ${word.toUpperCase()}`, '');
 
 const config = [
-    { label: 'Sessions', to: '/sessions' },
+    { label: 'Sessions', to: '/app/sessions' },
     // { label: 'Calendar', to: '/calendar' },
-    { label: 'Chat', to: '/chat/0' }
+    { label: 'Chat', to: '/app/chat/0' },
+    { label: 'Logout', to: '/logout' }
 ];
 
 function ResponsiveDrawer({ children }) {

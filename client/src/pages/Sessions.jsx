@@ -191,7 +191,7 @@ export default function Sessions() {
     // TODO: generate menu options based on user role
     // TODO: add ics download option w/ icon, probably inside the session component
     return (
-        <Route path='/sessions'>
+        <Route path='/app/sessions'>
             <PageContainer>
                 <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
                     <Container maxWidth='lg' className={classes.dialogForm}>

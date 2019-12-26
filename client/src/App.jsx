@@ -6,23 +6,23 @@ import DateFnsUtils from '@date-io/date-fns';
 import Layout from './layout';
 import Pages from './pages';
 import LoginPage from './pages/LoginPage';
+import LogoutPage from './pages/Logout';
 
 function App() {
     return (
         <BrowserRouter>
             <CssBaseline />
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Switch>
-                    <Route exact path='/'>
-                        <Redirect to='/login' />
-                    </Route>
-                    <LoginPage />
-                    <Route path='/:title'>
-                        <Layout>
-                            <Pages />
-                        </Layout>
-                    </Route>
-                </Switch>
+                <LoginPage />
+                <LogoutPage />
+                <Route path='/app/:title'>
+                    <Layout>
+                        <Pages />
+                    </Layout>
+                </Route>
+                <Route exact path='/'>
+                    <Redirect to='/login' />
+                </Route>
             </MuiPickersUtilsProvider>
         </BrowserRouter>
     );
