@@ -10,9 +10,19 @@ import Grow from '@material-ui/core/Grow';
 import Grid from '@material-ui/core/Grid';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
+import CardActions from '@material-ui/core/CardActions';
+import ArrowRightIcon from '@material-ui/icons/ArrowRightAltOutlined';
+import { makeStyles } from '@material-ui/core/styles';
 
-function SessionListItem({ headerProps, description }) {
+const useStyles = makeStyles({
+    button: {
+        marginLeft: 'auto'
+    }
+});
+
+function SessionListItem({ headerProps, description, onClickGoToSession }) {
     const { title, subheader, action } = headerProps;
+    const classes = useStyles();
     return (
         <Grid item xs={12}>
             <Card>
@@ -22,6 +32,14 @@ function SessionListItem({ headerProps, description }) {
                     action={action}
                 />
                 <CardContent>{description}</CardContent>
+                <CardActions>
+                    <IconButton
+                        className={classes.button}
+                        onClick={onClickGoToSession}
+                    >
+                        <ArrowRightIcon />
+                    </IconButton>
+                </CardActions>
             </Card>
         </Grid>
     );
@@ -37,12 +55,17 @@ SessionListItem.propTypes = {
         subheader: PropTypes.string,
         action: PropTypes.node
     }).isRequired,
-    description: PropTypes.oneOfType([PropTypes.node, PropTypes.string])
+    description: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
+    onClickGoToSession: PropTypes.func.isRequired
 };
 
 const calcTimeout = idx => (idx + 1) * 200;
 
-export default function SessionList({ sessions, onClickOptions }) {
+export default function SessionList({
+    sessions,
+    onClickOptions,
+    onClickGoToSession
+}) {
     return (
         <List>
             <Grid container justify='center'>
@@ -65,6 +88,9 @@ export default function SessionList({ sessions, onClickOptions }) {
                                             </IconButton>
                                         )
                                     }}
+                                    onClickGoToSession={() =>
+                                        onClickGoToSession(_id)
+                                    }
                                     description={description}
                                 />
                             </ListItem>
@@ -84,5 +110,6 @@ SessionList.propTypes = {
             description: PropTypes.string
         })
     ).isRequired,
-    onClickOptions: PropTypes.func.isRequired
+    onClickOptions: PropTypes.func.isRequired,
+    onClickGoToSession: PropTypes.func.isRequired
 };

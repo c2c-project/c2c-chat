@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Route } from 'react-router-dom';
+import { Route, useHistory } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -143,6 +143,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Sessions() {
     const classes = useStyles();
+    const history = useHistory();
     const [data, setData] = React.useState([]);
     const [isFormOpen, setFormOpen] = React.useState(false);
     const [formType, setFormType] = React.useState('create');
@@ -188,10 +189,14 @@ export default function Sessions() {
             refetch();
         });
     };
+
+    const goToSession = sessionId => {
+        history.push(`/app/sessions/${sessionId}/live`);
+    };
     // TODO: generate menu options based on user role
     // TODO: add ics download option w/ icon, probably inside the session component
     return (
-        <Route path='/app/sessions'>
+        <Route path='/app/sessions/list'>
             <PageContainer>
                 <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
                     <Container maxWidth='lg' className={classes.dialogForm}>
@@ -208,6 +213,7 @@ export default function Sessions() {
                 <SessionList
                     sessions={data}
                     onClickOptions={handleSessionOptionsClick}
+                    onClickGoToSession={goToSession}
                 />
                 <Fab
                     onClick={() => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, useParams } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Slide from '@material-ui/core/Slide';
 import Hidden from '@material-ui/core/Hidden';
 import { makeStyles } from '@material-ui/core/styles';
 import ChatWindow from '../components/chat';
@@ -9,6 +10,7 @@ import VideoPlayer from '../components/video-player';
 import CurrentQuestion from '../components/CurrentQuestion';
 
 const ChatRoom = () => {
+    // roomId = sessionId
     const { roomId } = useParams();
     return <ChatWindow roomId={roomId} />;
 };
@@ -73,15 +75,20 @@ const useStyles = makeStyles(theme => ({
 
 export default function Chat() {
     const classes = useStyles();
+    // NOTE: room id = session id
     return (
-        <Route path='/app/chat/:roomId'>
+        <Route path='/app/sessions/:roomId/live'>
             <Grid container className={classes.root}>
-                <Grid item xs={12} md={6} className={classes.video}>
-                    <Video />
-                </Grid>
-                <Grid item xs={12} md={6} className={classes.chat}>
-                    <ChatRoom />
-                </Grid>
+                <Slide in direction='right' timeout={300}>
+                    <Grid item xs={12} md={6} className={classes.video}>
+                        <Video />
+                    </Grid>
+                </Slide>
+                <Slide in direction='left' timeout={300}>
+                    <Grid item xs={12} md={6} className={classes.chat}>
+                        <ChatRoom />
+                    </Grid>
+                </Slide>
             </Grid>
         </Route>
     );

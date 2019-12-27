@@ -36,7 +36,7 @@ export default function Loginpage() {
         e.preventDefault();
         console.log(form);
         console.log('TODO: handle submit for login');
-        history.push('/app/sessions');
+        history.push('/app/sessions/list');
     };
 
     return (

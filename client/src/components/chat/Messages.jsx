@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -44,25 +44,26 @@ function Messages({ messages }) {
     // TODO: CHANGE KEY TO USE _ID INSTEAD OF INDEX
     return (
         <div className={classes.root}>
-            <List>
+            <List dense>
                 {messages.map(
                     (
                         { author = 'author', message = 'message', _id } = {},
                         index
                     ) => (
                         <ListItem key={index} className={classes.message}>
-                            <ListItemText
-                                secondaryTypographyProps={{
-                                    variant: 'body1',
-                                    color: 'textPrimary'
-                                }}
-                                primaryTypographyProps={{
-                                    variant: 'subtitle1',
-                                    component: Bold
-                                }}
-                                primary={author}
-                                secondary={message}
-                            />
+                            <Grid container>
+                                <Grid item xs='auto'>
+                                    <Bold>{`${author}:`}</Bold>
+                                </Grid>
+                                <Grid item xs='auto'>
+                                    <Typography
+                                        color='textPrimary'
+                                        variant='body1'
+                                    >
+                                        {message}
+                                    </Typography>
+                                </Grid>
+                            </Grid>
                         </ListItem>
                     )
                 )}
