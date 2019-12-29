@@ -4,6 +4,51 @@ import assert from 'assert';
 import { ObjectID } from 'mongodb';
 import { mongo, close } from './mongo';
 
+const userIds = [
+    new ObjectID(),
+    new ObjectID(),
+    new ObjectID(),
+    new ObjectID()
+];
+const users = [
+    {
+        _id: userIds[0],
+        email: 'admin@example.com',
+        roles: ['admin', 'user', 'moderator', 'speaker'],
+        name: {
+            first: 'Darth',
+            last: 'Vader'
+        }
+    },
+    {
+        _id: userIds[1],
+        email: 'mod@example.com',
+        roles: ['moderator', 'user'],
+        name: {
+            first: 'George',
+            last: 'Washington'
+        }
+    },
+    {
+        _id: userIds[2],
+        email: 'speaker@example.com',
+        roles: ['speaker', 'user'],
+        name: {
+            first: 'Winnie',
+            last: 'Pooh'
+        }
+    },
+    {
+        _id: userIds[3],
+        email: 'user@example.com',
+        roles: ['user'],
+        name: {
+            first: 'Christopher',
+            last: 'Robinson'
+        }
+    }
+];
+
 const sessionIds = [new ObjectID(), new ObjectID()];
 const sessions = [
     {
@@ -71,7 +116,18 @@ function seedMessages() {
     );
 }
 
-Promise.all([seedSessions(), seedMessages()]).then(() => {
+function seedUsers() {
+    console.log('users');
+    return mongo.then(db => {
+        db.collection('users').insertMany(users, (err, r) => {
+            assert.equal(null, err);
+            assert.equal(4, r.insertedCount);
+            close();
+        })
+    });
+}
+
+Promise.all([seedUsers(), seedSessions(), seedMessages()]).then(() => {
     console.log('finished seeding, closing...');
     close();
 });
