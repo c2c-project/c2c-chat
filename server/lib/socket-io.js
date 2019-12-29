@@ -1,6 +1,7 @@
 import socketio from 'socket.io';
 import Chat from '../db/collections/chat';
 
+// TODO: send a jwt with the message
 export default function init(server) {
     const io = socketio(server);
 

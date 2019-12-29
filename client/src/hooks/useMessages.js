@@ -30,7 +30,7 @@ function useMessages(roomId = 'session') {
         chat.on('disconnect', () => console.log('disconnected'));
         chat.on('error', err => console.log(err));
 
-        // FETCH 
+        // FETCH
         fetch(`/api/chat/${roomId}`).then(r => {
             r.json().then(history => {
                 setMessages(history);
@@ -47,6 +47,7 @@ function useMessages(roomId = 'session') {
     return [
         messages,
         message => {
+            // TODO: send the jwt with the message
             sendFunc.emit('message', message);
         }
     ];
