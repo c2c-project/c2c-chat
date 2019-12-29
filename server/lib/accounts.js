@@ -37,25 +37,40 @@ const verifyPassword = (textPw, hash, cb) => {
 const register = (username, password, additionalFields = {}) =>
     Users.findByUsername({ username }).then(doc => {
         if (!doc) {
-            bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
-                if (!err) {
+            return bcrypt
+                .hash(password, SALT_ROUNDS)
+                .then(hash =>
                     Users.addUser({
                         username,
                         password: hash,
                         ...additionalFields
-                    });
-                } else {
-                    console.log(err);
-                }
-            });
-        } else {
-            console.log('non-unique username');
-            console.log('TODO: send this back to client');
+                    }).catch(err => console.log(err))
+                )
+                .catch(err => console.log(err));
         }
+        console.log('non-unique username');
+        console.log('TODO: send this back to client');
+        return 'error';
     });
+
+/**
+ *  use whitelist method instead of blacklist
+ * */
+
+const filterSensitiveData = userDoc => {
+    // okay fields to send to client via jwt or any given time
+    const okayFields = ['_id', 'email', 'username', 'roles', 'name'];
+    return Object.entries(userDoc).reduce((accum, [key, value]) => {
+        if (okayFields.includes(key)) {
+            return { ...accum, [key]: value };
+        }
+        return accum;
+    }, {});
+};
 
 export default {
     register,
     verifyPassword,
-    isAllowed
+    isAllowed,
+    filterSensitiveData
 };
