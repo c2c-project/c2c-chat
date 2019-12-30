@@ -41,7 +41,7 @@ describe('users', function() {
                 .send({ username: 'mod@example.com', password: '1' })
                 .end(function(err, res) {
                     res.should.have.status(200);
-                    jwt = res.body.token;
+                    jwt = res.body.jwt;
                     done();
                 });
         });
@@ -51,6 +51,7 @@ describe('users', function() {
             chai.request(server)
                 .post('/api/users/authenticate')
                 .set('Authorization', `bearer ${jwt}`)
+                // .set('credentials', 'same-origin')
                 .end(function(err, res) {
                     res.should.have.status(200);
                     done();

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Route, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +14,7 @@ import Fab from '../components/Fab';
 import Dialog from '../components/Dialoag';
 import DateTimePicker from '../components/DateTimePicker';
 import PageContainer from '../layout/PageContainer';
+import GateKeep from '../components/GateKeep';
 
 function SessionForm({ type, onSubmit: cb, editTarget }) {
     const [state, setState] = React.useState({
@@ -39,6 +40,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
     const onSubmit = e => {
         e.preventDefault();
         fetch(`/api/sessions/${type}`, {
+            credentials: 'same-origin',
             method: 'POST',
             body:
                 type === 'create'
@@ -196,43 +198,43 @@ export default function Sessions() {
     // TODO: generate menu options based on user role
     // TODO: add ics download option w/ icon, probably inside the session component
     return (
-        <Route path='/app/sessions/list'>
-            <PageContainer>
-                <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
-                    <Container maxWidth='lg' className={classes.dialogForm}>
-                        <SessionForm
-                            type={formType}
-                            onSubmit={() => {
-                                setFormOpen(false);
-                                refetch();
-                            }}
-                            editTarget={target}
-                        />
-                    </Container>
-                </Dialog>
-                <SessionList
-                    sessions={data}
-                    onClickOptions={handleSessionOptionsClick}
-                    onClickGoToSession={goToSession}
-                />
+        <PageContainer>
+            <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
+                <Container maxWidth='lg' className={classes.dialogForm}>
+                    <SessionForm
+                        type={formType}
+                        onSubmit={() => {
+                            setFormOpen(false);
+                            refetch();
+                        }}
+                        editTarget={target}
+                    />
+                </Container>
+            </Dialog>
+            <SessionList
+                sessions={data}
+                onClickOptions={handleSessionOptionsClick}
+                onClickGoToSession={goToSession}
+            />
+            <GateKeep permissions={{ requiredAny: ['moderator', 'admin'] }}>
                 <Fab
                     onClick={() => {
                         setFormOpen(true);
                         setFormType('create');
                     }}
                 />
-                <Menu
-                    id='session-options'
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleSessionOptionsClose}
-                >
-                    <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                    {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
-                </Menu>
-            </PageContainer>
-        </Route>
+            </GateKeep>
+            <Menu
+                id='session-options'
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleSessionOptionsClose}
+            >
+                <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
+            </Menu>
+        </PageContainer>
     );
 }
