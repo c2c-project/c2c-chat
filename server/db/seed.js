@@ -3,6 +3,60 @@
 import assert from 'assert';
 import { ObjectID } from 'mongodb';
 import { mongo, close } from './mongo';
+import Accounts from '../lib/accounts';
+
+const userIds = [
+    new ObjectID(),
+    new ObjectID(),
+    new ObjectID(),
+    new ObjectID()
+];
+const users = [
+    {
+        _id: userIds[0],
+        username: 'admin@example.com',
+        email: 'admin@example.com',
+        roles: ['admin', 'user', 'moderator', 'speaker'],
+        password: '1',
+        name: {
+            first: 'Darth',
+            last: 'Vader'
+        }
+    },
+    {
+        _id: userIds[1],
+        username: 'mod@example.com',
+        email: 'mod@example.com',
+        roles: ['moderator', 'user'],
+        password: '1',
+        name: {
+            first: 'George',
+            last: 'Washington'
+        }
+    },
+    {
+        _id: userIds[2],
+        username: 'speaker@example.com',
+        email: 'speaker@example.com',
+        roles: ['speaker', 'user'],
+        password: '1',
+        name: {
+            first: 'Winnie',
+            last: 'Pooh'
+        }
+    },
+    {
+        _id: userIds[3],
+        username: 'user@example.com',
+        email: 'user@example.com',
+        roles: ['user'],
+        password: '1',
+        name: {
+            first: 'Christopher',
+            last: 'Robinson'
+        }
+    }
+];
 
 const sessionIds = [new ObjectID(), new ObjectID()];
 const sessions = [
@@ -55,7 +109,7 @@ function seedSessions() {
         db.collection('sessions').insertMany(sessions, (err, r) => {
             assert.equal(null, err);
             assert.equal(2, r.insertedCount);
-            close();
+            // close();
         })
     );
 }
@@ -66,12 +120,20 @@ function seedMessages() {
         db.collection('messages').insertMany(messages, (err, r) => {
             assert.equal(null, err);
             assert.equal(1, r.insertedCount);
-            close();
+            // close();
         })
     );
 }
 
-Promise.all([seedSessions(), seedMessages()]).then(() => {
+function seedUsers() {
+    console.log('users');
+    const promises = users.map(({ username, password, ...rest }) =>
+        Accounts.register(username, password, rest)
+    );
+    return Promise.all(promises);
+}
+
+Promise.all([seedUsers(), seedSessions(), seedMessages()]).then(() => {
     console.log('finished seeding, closing...');
     close();
 });
