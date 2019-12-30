@@ -1,7 +1,8 @@
 import chai from 'chai';
 import chaihttp from 'chai-http';
-import server from '../app';
+import server from '../../app';
 
+chai.should();
 chai.use(chaihttp);
 
 // NOTE: database must be seeded with a mod@example.com w/ password 1 for these to work properly

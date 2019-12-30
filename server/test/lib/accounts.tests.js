@@ -1,5 +1,5 @@
 import chai from 'chai';
-import Accounts from '../lib/accounts';
+import Accounts from '../../lib/accounts';
 
 describe('Accounts', function() {
     describe('#isAllowed()', function() {
