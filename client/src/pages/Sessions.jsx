@@ -99,7 +99,9 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                                 label='Date & Time'
                                 variant='outlined'
                                 value={state.date}
-                                onChange={e => handleChange(e, 'date')}
+                                onChange={value =>
+                                    handleChange({ target: value }, 'date')
+                                }
                             />
                         </Grid>
                         <Grid item xs={12}>
