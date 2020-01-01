@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
@@ -40,7 +41,6 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
     const onSubmit = e => {
         e.preventDefault();
         fetch(`/api/sessions/${type}`, {
-            credentials: 'same-origin',
             method: 'POST',
             body:
                 type === 'create'
@@ -218,7 +218,10 @@ export default function Sessions() {
                 onClickOptions={handleSessionOptionsClick}
                 onClickGoToSession={goToSession}
             />
-            <GateKeep permissions={{ requiredAny: ['moderator', 'admin'] }}>
+            <GateKeep
+                local
+                permissions={{ requiredAny: ['moderator', 'admin'] }}
+            >
                 <Fab
                     onClick={() => {
                         setFormOpen(true);

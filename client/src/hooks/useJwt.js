@@ -1,3 +1,4 @@
+import jwtDecode from 'jwt-decode';
 // import React from 'react';
 // not technically a "hook" -- not stateful and no side effects but yeah
 export default function useJwt() {
@@ -8,5 +9,5 @@ export default function useJwt() {
     //         console.log(window.localStorage);
     //     };
     // });
-    return [jwt];
+    return [jwt, jwtDecode(jwt)];
 }

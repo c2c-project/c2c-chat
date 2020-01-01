@@ -2,27 +2,41 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import useJwt from '../hooks/useJwt';
 
-export default function GateKeep({ permissions, children }) {
+export default function GateKeep({ permissions, children, local }) {
     const [isLoading, setLoading] = React.useState(true);
     const [isAllowed, setAllowed] = React.useState(false);
-    const jwt = useJwt();
+    const [jwt, decodedJwt] = useJwt();
     React.useEffect(() => {
-        fetch('/api/users/authenticate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `bearer ${jwt}`
-            },
-            body: JSON.stringify(permissions)
-        }).then(res => {
-            res.json().then(({ allowed }) => {
-                setLoading(false);
-                setAllowed(allowed);
+        if (!local) {
+            fetch('/api/users/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `bearer ${jwt}`
+                },
+                body: JSON.stringify(permissions)
+            }).then(res => {
+                res.json().then(({ allowed }) => {
+                    setLoading(false);
+                    setAllowed(allowed);
+                });
             });
-        });
-    }, [permissions, jwt]);
+        } else {
+            // only implementing requiredAny b/c that should be sufficient for the UI
+            const { requiredAny } = permissions;
+            const result = requiredAny.some(permission =>
+                decodedJwt.roles.includes(permission)
+            );
+            setLoading(false);
+            setAllowed(result);
+        }
+    }, [permissions, jwt, local]);
     return !isLoading && isAllowed ? children : <></>;
 }
+
+GateKeep.defaultProps = {
+    local: false
+};
 
 GateKeep.propTypes = {
     permissions: PropTypes.shape({
@@ -30,5 +44,6 @@ GateKeep.propTypes = {
         requiredAll: PropTypes.arrayOf(PropTypes.string),
         requiredNot: PropTypes.arrayOf(PropTypes.string)
     }).isRequired,
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.array]).isRequired
+    children: PropTypes.oneOfType([PropTypes.node, PropTypes.array]).isRequired,
+    local: PropTypes.bool
 };
