@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import useJwt from '../hooks/useJwt';
 
 export default function GateKeep({ permissions, children }) {
     const [isLoading, setLoading] = React.useState(true);
     const [isAllowed, setAllowed] = React.useState(false);
+    const jwt = useJwt();
     React.useEffect(() => {
         fetch('/api/users/authenticate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `bearer ${window.localStorage.jwt}`
+                Authorization: `bearer ${jwt}`
             },
             body: JSON.stringify(permissions)
         }).then(res => {
@@ -18,7 +20,7 @@ export default function GateKeep({ permissions, children }) {
                 setAllowed(allowed);
             });
         });
-    });
+    }, [permissions, jwt]);
     return !isLoading && isAllowed ? children : <></>;
 }
 
