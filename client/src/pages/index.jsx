@@ -11,16 +11,20 @@ export default function Routes() {
         <>
             <Route path='/app/:title'>
                 <Layout>
+                    {/* <Switch> */}
                     <Route path='/app/sessions/list'>
                         <Sessions />
                     </Route>
+                    <Route path='/app/sessions/:roomId/live'>
+                        <Chat />
+                    </Route>
+                    {/* </Switch> */}
                 </Layout>
             </Route>
-            <Chat />
-            <Route path='/login'>
+            <Route exact path='/login'>
                 <Login />
             </Route>
-            <Route path='/logout'>
+            <Route exact path='/logout'>
                 <Logout />
             </Route>
             <Route exact path='/'>

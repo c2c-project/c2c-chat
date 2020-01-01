@@ -77,19 +77,17 @@ export default function Chat() {
     const classes = useStyles();
     // NOTE: room id = session id
     return (
-        <Route path='/app/sessions/:roomId/live'>
-            <Grid container className={classes.root}>
-                <Slide in direction='right' timeout={300}>
-                    <Grid item xs={12} md={6} className={classes.video}>
-                        <Video />
-                    </Grid>
-                </Slide>
-                <Slide in direction='left' timeout={300}>
-                    <Grid item xs={12} md={6} className={classes.chat}>
-                        <ChatRoom />
-                    </Grid>
-                </Slide>
-            </Grid>
-        </Route>
+        <Grid container className={classes.root}>
+            <Slide in direction='right' timeout={300}>
+                <Grid item xs={12} md={6} className={classes.video}>
+                    <Video />
+                </Grid>
+            </Slide>
+            <Slide in direction='left' timeout={300}>
+                <Grid item xs={12} md={6} className={classes.chat}>
+                    <ChatRoom />
+                </Grid>
+            </Slide>
+        </Grid>
     );
 }
