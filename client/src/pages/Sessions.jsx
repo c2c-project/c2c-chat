@@ -33,7 +33,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                         speaker: r.speaker,
                         moderator: r.moderator,
                         date: r.date,
-                        descritpion: r.description
+                        description: r.description
                     });
                 })
             );
