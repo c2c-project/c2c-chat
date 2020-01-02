@@ -2,6 +2,7 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import CurrentQuestionComponent from './CurrentQuestion';
+import Clipper from './Clipper';
 
 export default { title: 'components' };
 
@@ -40,4 +41,8 @@ export const CurrentQuestion = () => {
             </Grid>
         </Grid>
     );
+};
+
+export const Clips = () => {
+    return <Clipper />;
 };
