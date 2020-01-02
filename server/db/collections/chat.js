@@ -1,17 +1,18 @@
 import { mongo } from '..';
 
-const addMessage = ({ message, user, session }) => {
-    mongo.then(db => {
-        db.collection('messages').insertOne({
-            message,
-            userId: user,
-            sessionId: session
-        });
+const addMessage = ({ message, userId, username, session }) =>
+    mongo.then(
+        db =>
+            db.collection('messages').insertOne({
+                message,
+                userId,
+                username,
+                sessionId: session
+            })
         // close();
-    });
-};
+    );
 
-const removeMessage = ({ messageId, reason }) => {
+const removeMessage = ({ messageId, reason }) =>
     mongo.then(db => {
         db.collection('messages').updateOne(
             {
@@ -21,9 +22,8 @@ const removeMessage = ({ messageId, reason }) => {
         );
         // close();
     });
-};
 
-const updateMessage = ({ messageId, message }) => {
+const updateMessage = ({ messageId, message }) =>
     mongo.then(db => {
         db.collection('messages').updateOne(
             { _id: messageId },
@@ -31,7 +31,6 @@ const updateMessage = ({ messageId, message }) => {
         );
         // close();
     });
-};
 
 const findMessages = ({ sessionId }) =>
     mongo.then(db =>

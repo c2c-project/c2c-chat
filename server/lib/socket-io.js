@@ -1,7 +1,9 @@
 import socketio from 'socket.io';
+import JWT from 'jsonwebtoken';
 import Chat from '../db/collections/chat';
 
-// TODO: send a jwt with the message
+// NOTE: it's probably better to use a session rather than jwt's for a chat
+// but not expecting high enough volume for it to  matter right now
 export default function init(server) {
     const io = socketio(server);
 
@@ -16,16 +18,23 @@ export default function init(server) {
         if (roomId) {
             // socket.emit('history', [{ message: 'test' }]);
             socket.join(roomId);
-            socket.to(roomId).on('message', message => {
-                // mockdb.push(message);
-                Chat.addMessage({
-                    message,
-                    user: 'author',
-                    session: roomId
+            socket.to(roomId).on('message', ({ message, jwt }) => {
+                JWT.verify(jwt, process.env.JWT_SECRET, (err, decodedJwt) => {
+                    if (!err) {
+                        const { username, _id } = decodedJwt;
+                        Chat.addMessage({
+                            message,
+                            username,
+                            userId: _id,
+                            session: roomId
+                        }).then(r => {
+                            const messageDoc = r.ops[0];
+                            io.of('/chat')
+                                .to(roomId)
+                                .emit('message', messageDoc);
+                        });
+                    }
                 });
-                io.of('/chat')
-                    .to(roomId)
-                    .emit('message', message);
             });
         }
     });

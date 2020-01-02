@@ -40,20 +40,22 @@ function Messages({ messages }) {
             behavior: 'smooth'
         });
     };
+    console.log(messages);
     React.useEffect(scrollToBottom, [messages]);
     // TODO: CHANGE KEY TO USE _ID INSTEAD OF INDEX
     return (
         <div className={classes.root}>
             <List dense>
                 {messages.map(
-                    (
-                        { author = 'author', message = 'message', _id } = {},
-                        index
-                    ) => (
-                        <ListItem key={index} className={classes.message}>
+                    ({
+                        username = 'author',
+                        message = 'message',
+                        _id
+                    } = {}) => (
+                        <ListItem key={_id} className={classes.message}>
                             <Grid container>
                                 <Grid item xs='auto'>
-                                    <Bold>{`${author}:`}</Bold>
+                                    <Bold>{`${username}:`}</Bold>
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
