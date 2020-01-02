@@ -30,7 +30,7 @@ export default function GateKeep({ permissions, children, local }) {
             setLoading(false);
             setAllowed(result);
         }
-    }, [permissions, jwt, local]);
+    }, [permissions, jwt, local, decodedJwt]);
     return !isLoading && isAllowed ? children : <></>;
 }
 
