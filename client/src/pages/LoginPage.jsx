@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
+import useSnack from '../hooks/useSnack';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -25,6 +26,7 @@ export default function Loginpage() {
         email: '',
         password: ''
     });
+    const [snack] = useSnack();
 
     const handleChange = (e, id) => {
         e.preventDefault();
@@ -51,7 +53,7 @@ export default function Loginpage() {
                         history.push('/app/sessions/list');
                     });
                 } else {
-                    // TODO: notification for incorrect login if 401 or 400
+                    snack('Failed login, please try again!', 'error');
                 }
             })
             .catch(console.err);

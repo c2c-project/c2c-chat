@@ -16,6 +16,7 @@ import Dialog from '../components/Dialoag';
 import DateTimePicker from '../components/DateTimePicker';
 import PageContainer from '../layout/PageContainer';
 import GateKeep from '../components/GateKeep';
+import useSnack from '../hooks/useSnack';
 
 function SessionForm({ type, onSubmit: cb, editTarget }) {
     const [state, setState] = React.useState({
@@ -148,6 +149,7 @@ const useStyles = makeStyles(theme => ({
 export default function Sessions() {
     const classes = useStyles();
     const history = useHistory();
+    const [snack] = useSnack();
     const [data, setData] = React.useState([]);
     const [isFormOpen, setFormOpen] = React.useState(false);
     const [formType, setFormType] = React.useState('create');
@@ -188,10 +190,15 @@ export default function Sessions() {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(() => {
-            handleSessionOptionsClose();
-            refetch();
-        });
+        })
+            .then(() => {
+                handleSessionOptionsClose();
+                refetch();
+                snack('Successfully deleted the session!', 'success');
+            })
+            .catch(() => {
+                snack('Error deleting, please try again.', 'error');
+            });
     };
 
     const goToSession = sessionId => {
@@ -208,6 +215,12 @@ export default function Sessions() {
                         onSubmit={() => {
                             setFormOpen(false);
                             refetch();
+                            snack(
+                                formType === 'update'
+                                    ? 'Successfully updated the session!'
+                                    : 'Successfully created a new session!',
+                                'success'
+                            );
                         }}
                         editTarget={target}
                     />
