@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Chat from '../db/collections/chat';
+import ioInterface from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -14,14 +15,21 @@ router.get(
 );
 
 router.post(
-    '/remove-message/:messageId',
+    '/remove-message/:roomId/:messageId',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         const { user } = req;
-        const { messageId } = req.params;
+        const { messageId, roomId } = req.params;
         const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
         removeMessage(messageId)
-            .then(() => res.send({ success: true }))
+            .then(() => {
+                ioInterface
+                    .io()
+                    .of('/chat')
+                    .to(roomId)
+                    .emit('moderate', messageId);
+                res.send({ success: true });
+            })
             .catch(err => {
                 console.log(err);
                 res.send({ success: false });

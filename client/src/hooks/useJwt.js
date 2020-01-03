@@ -9,5 +9,7 @@ export default function useJwt() {
     //         console.log(window.localStorage);
     //     };
     // });
-    return [jwt, jwtDecode(jwt)];
+    // don't decode unless the token exists
+    const rawToken = jwt ? jwtDecode(jwt) : null;
+    return [jwt, rawToken];
 }

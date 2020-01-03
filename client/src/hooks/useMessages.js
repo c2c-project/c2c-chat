@@ -30,7 +30,11 @@ function useMessages(roomId = 'session') {
         });
         chat.on('disconnect', () => console.log('disconnected'));
         chat.on('error', err => console.log(err));
-
+        chat.on('moderate', messageId => {
+            setMessages(curMessages =>
+                curMessages.filter(msg => msg._id !== messageId)
+            );
+        });
         // FETCH
         fetch(`/api/chat/${roomId}`, {
             headers: {
@@ -48,6 +52,7 @@ function useMessages(roomId = 'session') {
             chat.close();
         };
     }, [roomId, jwt]);
+    console.log(messages);
 
     return [
         messages,

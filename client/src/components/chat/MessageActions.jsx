@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { useParams } from 'react-router-dom';
 import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
 import useSnack from '../../hooks/useSnack';
@@ -10,11 +11,12 @@ import useSnack from '../../hooks/useSnack';
 export default function MessageActions({ targetMsg, onClick }) {
     const [jwt] = useJwt();
     const [snack] = useSnack();
+    const { roomId } = useParams();
     const handleEdit = () => {
         console.log('TODO: handlEdit');
     };
     const handleDelete = () => {
-        fetch(`/api/chat/remove-message/${targetMsg._id}`, {
+        fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
@@ -23,7 +25,6 @@ export default function MessageActions({ targetMsg, onClick }) {
         })
             .then(r => {
                 r.json().then(res => {
-                    console.log(res);
                     if (res.success) {
                         snack('Successfully moderated messsage', 'success');
                         onClick();

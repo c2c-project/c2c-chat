@@ -39,9 +39,13 @@ router.post('/update', (req, res) => {
 router.post('/delete', (req, res) => {
     const { sessionId } = req.body;
     Sessions.removeSession({ sessionId })
-        .then(r =>
-            r.modifiedCount === 1 ? res.send('success') : res.send('err')
-        )
+        .then(r => {
+            if (r.modifiedCount === 1) {
+                res.send({ success: true });
+            } else {
+                res.send({ success: false });
+            }
+        })
         .catch(err => console.log(err));
 });
 
