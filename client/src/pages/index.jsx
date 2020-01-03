@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Redirect, Switch } from 'react-router-dom';
 import Sessions from './Sessions';
 import Chat from './Chat';
 import Logout from './Logout';
@@ -9,18 +9,16 @@ import LoggedIn from '../components/LoggedIn';
 
 export default function Routes() {
     return (
-        <>
+        <Switch>
             <Route path='/app/:title'>
                 <LoggedIn>
                     <Layout>
-                        {/* <Switch> */}
                         <Route path='/app/sessions/list'>
                             <Sessions />
                         </Route>
                         <Route path='/app/sessions/:roomId/live'>
                             <Chat />
                         </Route>
-                        {/* </Switch> */}
                     </Layout>
                 </LoggedIn>
             </Route>
@@ -30,9 +28,9 @@ export default function Routes() {
             <Route exact path='/logout'>
                 <Logout />
             </Route>
-            <Route exact path='/'>
+            <Route path='/'>
                 <Redirect to='/login' />
             </Route>
-        </>
+        </Switch>
     );
 }

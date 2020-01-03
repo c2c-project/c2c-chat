@@ -56,11 +56,20 @@ const useStyles = makeStyles(theme => ({
     video: {
         [theme.breakpoints.down('sm')]: {
             maxHeight: '30vh'
+        },
+        [theme.breakpoints.up('md')]: {
+            padding: `${theme.spacing(7)}px 0 ${theme.spacing(7)}px 0`
+        },
+        [theme.breakpoints.down('md')]: {
+            maxWidth: '100vw'
         }
         // flexBasis: 'auto',
         // flexGrow: 0
     },
     chat: {
+        [theme.breakpoints.down('md')]: {
+            maxWidth: '100vw'
+        },
         // [theme.breakpoints.up('md')]: {
         //     height: '100%'
         // },
@@ -69,6 +78,7 @@ const useStyles = makeStyles(theme => ({
         // }
         flexBasis: '100%',
         flexGrow: 1
+        // border: '1px solid #80808029'
         // minHeight: '50vh'
     }
 }));
@@ -77,10 +87,19 @@ export default function Chat() {
     const classes = useStyles();
     // NOTE: room id = session id
     return (
-        <Grid container className={classes.root}>
+        <Grid container className={classes.root} justify='flex-end'>
             <Slide in direction='right' timeout={300}>
-                <Grid item xs={12} md={6} className={classes.video}>
-                    <Video />
+                <Grid
+                    container
+                    item
+                    xs={12}
+                    md={6}
+                    className={classes.height}
+                    justify='center'
+                >
+                    <Grid item xs={12} md={10} className={classes.video}>
+                        <Video />
+                    </Grid>
                 </Grid>
             </Slide>
             <Slide in direction='left' timeout={300}>

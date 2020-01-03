@@ -5,8 +5,8 @@ describe('Accounts', function() {
     describe('#isAllowed()', function() {
         const userRoles = ['moderator'];
 
-        it('should allow if there are no required roles', function() {
-            chai.assert.equal(Accounts.isAllowed(userRoles, {}), true);
+        it('should reject if there are no required roles', function() {
+            chai.assert.equal(Accounts.isAllowed(userRoles, {}), false);
         });
         it('should reject if there are no user roles', function() {
             chai.assert.equal(Accounts.isAllowed([], {}), false);

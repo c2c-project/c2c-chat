@@ -15,6 +15,13 @@ const isAllowed = (
     if (userRoles.length === 0) {
         return false;
     }
+    const isNull =
+        requiredAll.length === 0 &&
+        requiredAny.length === 0 &&
+        requiredNot.length === 0;
+    if (isNull) {
+        return false;
+    }
     const every =
         requiredAll.length > 0
             ? requiredAll.every(role => userRoles.includes(role))
@@ -27,6 +34,7 @@ const isAllowed = (
         requiredNot.length > 0
             ? userRoles.every(role => !requiredNot.includes(role))
             : true;
+
     return every && any && not;
 };
 
@@ -68,9 +76,17 @@ const filterSensitiveData = userDoc => {
     }, {});
 };
 
+/**
+ * all docs must have a userId field if they want to have a concept of ownership
+ */
+const isOwner = (userId, doc) => {
+    return doc.userId === userId;
+};
+
 export default {
     register,
     verifyPassword,
     isAllowed,
-    filterSensitiveData
+    filterSensitiveData,
+    isOwner
 };

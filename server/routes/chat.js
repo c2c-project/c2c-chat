@@ -13,4 +13,20 @@ router.get(
     }
 );
 
+router.post(
+    '/remove-message/:messageId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { user } = req;
+        const { messageId } = req.params;
+        const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
+        removeMessage(messageId)
+            .then(() => res.send({ success: true }))
+            .catch(err => {
+                console.log(err);
+                res.send({ success: false });
+            });
+    }
+);
+
 module.exports = router;

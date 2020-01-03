@@ -6,6 +6,11 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import useJwt from '../../hooks/useJwt';
+import MessageActions from './MessageActions';
+import Dialog from '../Dialoag';
+import Bold from '../Bold';
 
 const useStyles = makeStyles({
     root: {
@@ -15,15 +20,11 @@ const useStyles = makeStyles({
     },
     message: {
         width: '100%'
+    },
+    maxHeight: {
+        height: '100%'
     }
 });
-
-// eslint-disable-next-line
-const Bold = ({ children }) => (
-    <Typography component='div'>
-        <Box fontWeight='fontWeightBold'>{children}</Box>
-    </Typography>
-);
 
 // eslint-disable-next-line
 const SystemMessages = ({ children }) => (
@@ -35,14 +36,30 @@ const SystemMessages = ({ children }) => (
 function Messages({ messages }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
+    const [jwt] = useJwt();
+    const [isModerator, setModerator] = React.useState(false);
+    const [targetMsg, setTargetMsg] = React.useState(null);
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
             behavior: 'smooth'
         });
     };
-    console.log(messages);
+    React.useEffect(() => {
+        fetch('/api/users/authenticate', {
+            method: 'POST',
+            body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(r => {
+            r.json().then(result => {
+                setModerator(result.allowed);
+            });
+        });
+    }, [jwt]);
     React.useEffect(scrollToBottom, [messages]);
-    // TODO: CHANGE KEY TO USE _ID INSTEAD OF INDEX
+
     return (
         <div className={classes.root}>
             <List dense>
@@ -52,7 +69,20 @@ function Messages({ messages }) {
                         message = 'message',
                         _id
                     } = {}) => (
-                        <ListItem key={_id} className={classes.message}>
+                        <ListItem
+                            button={isModerator}
+                            onClick={() => {
+                                if (isModerator) {
+                                    setTargetMsg({
+                                        _id,
+                                        message,
+                                        username
+                                    });
+                                }
+                            }}
+                            key={_id}
+                            className={classes.message}
+                        >
                             <Grid container>
                                 <Grid item xs='auto'>
                                     <Bold>{`${username}:`}</Bold>
@@ -71,6 +101,27 @@ function Messages({ messages }) {
                 )}
             </List>
             <div ref={lastMessageRef} />
+            <Dialog
+                open={Boolean(targetMsg)}
+                onClose={() => setTargetMsg(null)}
+            >
+                <Container maxWidth='sm' className={classes.maxHeight}>
+                    <Grid
+                        container
+                        className={classes.maxHeight}
+                        alignContent='center'
+                    >
+                        {targetMsg && isModerator ? (
+                            <MessageActions
+                                targetMsg={targetMsg}
+                                onClick={() => setTargetMsg(null)}
+                            />
+                        ) : (
+                            <></>
+                        )}
+                    </Grid>
+                </Container>
+            </Dialog>
         </div>
     );
 }
