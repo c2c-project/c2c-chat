@@ -9,6 +9,7 @@ import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 import chatRouter from './routes/chat';
 import sessionRouter from './routes/sessions';
+import questionRouter from './routes/questions';
 import './lib/passport';
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/sessions', sessionRouter);
+app.use('/api/questions', questionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

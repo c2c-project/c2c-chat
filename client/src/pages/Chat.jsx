@@ -5,17 +5,16 @@ import Paper from '@material-ui/core/Paper';
 import Slide from '@material-ui/core/Slide';
 import Hidden from '@material-ui/core/Hidden';
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
 import ChatWindow from '../components/chat';
 import VideoPlayer from '../components/video-player';
 import CurrentQuestion from '../components/CurrentQuestion';
+import Dialog from '../components/Dialoag';
+import FormQuestion from '../components/FormQuestion';
 
-const ChatRoom = () => {
-    // roomId = sessionId
-    const { roomId } = useParams();
-    return <ChatWindow roomId={roomId} />;
-};
-
-const useVideoStyles = makeStyles({
+const useVideoStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         display: 'flex',
@@ -24,11 +23,22 @@ const useVideoStyles = makeStyles({
     },
     question: {
         width: '100%'
+    },
+    btn: {
+        padding: theme.spacing(2)
+    },
+    questionContent: {
+        paddingTop: theme.spacing(8)
+    },
+    title: {
+        paddingBottom: theme.spacing(3)
     }
-});
+}));
 
-const Video = () => {
+// eslint-disable-next-line
+const Video = ({ roomId }) => {
     const classes = useVideoStyles();
+    const [isOpen, setOpen] = React.useState(false);
     return (
         <Paper className={classes.paper}>
             <Grid container>
@@ -43,6 +53,32 @@ const Video = () => {
                         />
                     </Grid>
                 </Hidden>
+                <Grid item xs={12}>
+                    <div className={classes.btn}>
+                        <Button
+                            onClick={() => setOpen(true)}
+                            fullWidth
+                            variant='contained'
+                            color='primary'
+                        >
+                            Ask a Question
+                        </Button>
+                    </div>
+                    <Dialog open={isOpen} onClose={() => setOpen(false)}>
+                        <Container
+                            maxWidth='md'
+                            className={classes.questionContent}
+                        >
+                            <Typography variant='h4' className={classes.title}>
+                                Ask a Question
+                            </Typography>
+                            <FormQuestion
+                                onSubmit={() => setOpen(false)}
+                                roomId={roomId}
+                            />
+                        </Container>
+                    </Dialog>
+                </Grid>
             </Grid>
         </Paper>
     );
@@ -85,7 +121,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Chat() {
     const classes = useStyles();
-    // NOTE: room id = session id
+    const { roomId } = useParams();
     return (
         <Grid container className={classes.root} justify='flex-end'>
             <Slide in direction='right' timeout={300}>
@@ -98,13 +134,13 @@ export default function Chat() {
                     justify='center'
                 >
                     <Grid item xs={12} md={10} className={classes.video}>
-                        <Video />
+                        <Video roomId={roomId} />
                     </Grid>
                 </Grid>
             </Slide>
             <Slide in direction='left' timeout={300}>
                 <Grid item xs={12} md={6} className={classes.chat}>
-                    <ChatRoom />
+                    <ChatWindow roomId={roomId} />
                 </Grid>
             </Slide>
         </Grid>

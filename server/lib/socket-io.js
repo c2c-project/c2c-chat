@@ -48,7 +48,6 @@ export default (function socketioInterface() {
         init: server => {
             io = socketio(server);
             initChat();
-            console.log('init');
         },
         io: () => io
     };

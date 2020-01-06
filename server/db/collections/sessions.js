@@ -1,5 +1,6 @@
 import { ObjectID } from 'mongodb';
 import { mongo } from '..';
+import Accounts from '../../lib/accounts';
 
 const findAllSessions = () =>
     mongo.then(db =>
@@ -36,6 +37,20 @@ const updateSession = ({ sessionId, changes }) =>
             .collection('sessions')
             .updateOne({ _id: new ObjectID(sessionId) }, { $set: changes })
     );
+
+// const privilegedActions = (action, userDoc) => {
+//     const { roles } = userDoc;
+//     switch (action) {
+//         case 'SET_QUESTION': {
+//             const requiredAny = ['admin', 'moderator'];
+//             return (sessionId, questionId) => {
+//                 if (Accounts.isallowed(roles, { requiredAny })) {
+//                     return updateSession();
+//                 }
+//             };
+//         }
+//     }
+// };
 
 export default {
     findAllSessions,

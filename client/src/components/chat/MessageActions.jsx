@@ -38,6 +38,17 @@ export default function MessageActions({ targetMsg, onClick }) {
                 snack('Something went wrong! Try again.', 'error');
             });
     };
+    const handleSetCurrent = () => {
+        // fetch(`/api/sessions/set-question/:${roomId}`, {
+        //     method: 'POST',
+        //     headers: {
+        //         Authorization: `bearer ${jwt}`,
+        //         'Content-Type': 'application/json'
+        //     }
+        // }).then( res => {
+            
+        // });
+    };
     return (
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
@@ -54,6 +65,16 @@ export default function MessageActions({ targetMsg, onClick }) {
                     </Grid>
                 </Grid>
             </Grid>
+            {/* <Grid item xs={12}>
+                <Button
+                    color='secondary'
+                    variant='contained'
+                    fullWidth
+                    onClick={handleSetCurrent}
+                >
+                    Set as Current Question
+                </Button>
+            </Grid> */}
             <Grid item xs={12}>
                 <Button
                     color='secondary'
