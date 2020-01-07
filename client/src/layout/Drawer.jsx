@@ -40,17 +40,17 @@ const useStyles = makeStyles(theme => ({
             display: 'none'
         }
     },
-    // toolbar: theme.mixins.toolbar,
+    toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth
     },
-    content: {
+    content: ({ tabState }) => ({
         flexGrow: 1,
         height: '100%',
         // [theme.breakpoints.down('xs')]: {
-        paddingTop: '64px'
+        paddingTop: tabState ? '112px' : '64px'
         // }
-    }
+    })
 }));
 
 const parseTitle = title =>
@@ -65,14 +65,17 @@ const config = [
     { label: 'Logout', to: '/logout' }
 ];
 
+export const TabContext = React.createContext();
+
 function ResponsiveDrawer({ children }) {
-    const classes = useStyles();
     const theme = useTheme();
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const { title } = useParams();
+    const [tabState, setTabs] = React.useState(null);
     // TODO: add effects for if it is selected
     // eslint-disable-next-line
     const [selected, setSelected] = React.useState('');
+    const classes = useStyles({ tabState });
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -101,8 +104,6 @@ function ResponsiveDrawer({ children }) {
 
     return (
         <div className={classes.root}>
-            {/* <CssBaseline /> */}
-            {/* <Hidden smUp> */}
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton
@@ -118,11 +119,10 @@ function ResponsiveDrawer({ children }) {
                         {parseTitle(title)}
                     </Typography>
                 </Toolbar>
+                {tabState}
             </AppBar>
             {/* </Hidden> */}
-            <nav className={classes.drawer} aria-label='mailbox folders'>
-                {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                {/* <Hidden smUp implementation='css'> */}
+            <nav className={classes.drawer}>
                 <Drawer
                     variant='temporary'
                     anchor={theme.direction === 'rtl' ? 'right' : 'left'}
@@ -151,10 +151,9 @@ function ResponsiveDrawer({ children }) {
                 </Hidden>
             </nav>
             <main className={classes.content}>
-                {/* <Hidden smUp>
-                    <div className={classes.toolbar} />
-                </Hidden> */}
-                {children}
+                <TabContext.Provider value={tabs => setTabs(tabs)}>
+                    {children}
+                </TabContext.Provider>
             </main>
         </div>
     );

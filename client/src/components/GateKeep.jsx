@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import useJwt from '../hooks/useJwt';
 
-export default function GateKeep({ permissions, children, local }) {
+export default function GateKeep({ permissions, children, local, elseRender }) {
     const [isLoading, setLoading] = React.useState(true);
     const [isAllowed, setAllowed] = React.useState(false);
     const [jwt, decodedJwt] = useJwt();
@@ -31,11 +31,12 @@ export default function GateKeep({ permissions, children, local }) {
             setAllowed(result);
         }
     }, [permissions, jwt, local, decodedJwt]);
-    return !isLoading && isAllowed ? children : <></>;
+    return !isLoading && isAllowed ? children : elseRender;
 }
 
 GateKeep.defaultProps = {
-    local: false
+    local: false,
+    elseRender: <></>
 };
 
 GateKeep.propTypes = {
@@ -45,5 +46,6 @@ GateKeep.propTypes = {
         requiredNot: PropTypes.arrayOf(PropTypes.string)
     }).isRequired,
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.array]).isRequired,
-    local: PropTypes.bool
+    local: PropTypes.bool,
+    elseRender: PropTypes.node
 };

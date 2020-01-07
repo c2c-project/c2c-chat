@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Chatbar from './Chatbar';
 import Messages from './Messages';
 import useMessages from '../../hooks/useMessages';
@@ -35,6 +36,10 @@ function ChatWindow({ roomId }) {
     return (
         <Paper className={classes.paper}>
             <Grid container direction='column' spacing={2}>
+                <Grid item xs='auto'>
+                    <Typography variant='h4'>Discussion</Typography>
+                </Grid>
+                <Divider className={classes.divider} />
                 <Grid item xs={12} className={classes.messages}>
                     <Messages messages={messages} />
                 </Grid>

@@ -4,7 +4,7 @@ import Sessions from '../db/collections/sessions';
 
 const router = express.Router();
 
-// TODO: add authentification here
+// TODO: add role checking here
 
 router.get('/find', (req, res) => {
     Sessions.findAllSessions().then(r => res.json(r));

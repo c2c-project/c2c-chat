@@ -13,6 +13,8 @@ import VideoPlayer from '../components/video-player';
 import CurrentQuestion from '../components/CurrentQuestion';
 import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
+import Tabs from '../components/Tabs';
+import GateKeep from '../components/GateKeep';
 
 const useVideoStyles = makeStyles(theme => ({
     root: {
@@ -122,7 +124,57 @@ const useStyles = makeStyles(theme => ({
 export default function Chat() {
     const classes = useStyles();
     const { roomId } = useParams();
-    return (
+    const modView = (
+        <Tabs
+            pages={[
+                {
+                    label: 'User View',
+                    component: (
+                        <Grid
+                            container
+                            className={classes.root}
+                            justify='flex-end'
+                        >
+                            <Slide in direction='right' timeout={300}>
+                                <Grid
+                                    container
+                                    item
+                                    xs={12}
+                                    md={6}
+                                    className={classes.height}
+                                    justify='center'
+                                >
+                                    <Grid
+                                        item
+                                        xs={12}
+                                        md={10}
+                                        className={classes.video}
+                                    >
+                                        <Video roomId={roomId} />
+                                    </Grid>
+                                </Grid>
+                            </Slide>
+                            <Slide in direction='left' timeout={300}>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={6}
+                                    className={classes.chat}
+                                >
+                                    <ChatWindow roomId={roomId} />
+                                </Grid>
+                            </Slide>
+                        </Grid>
+                    )
+                },
+                {
+                    label: 'Mod View',
+                    component: <h1> Hello World </h1>
+                }
+            ]}
+        />
+    );
+    const unprivilegedView = (
         <Grid container className={classes.root} justify='flex-end'>
             <Slide in direction='right' timeout={300}>
                 <Grid
@@ -144,5 +196,14 @@ export default function Chat() {
                 </Grid>
             </Slide>
         </Grid>
+    );
+    return (
+        <GateKeep
+            local
+            permissions={{ requiredAny: ['moderator', 'admin'] }}
+            elseRender={unprivilegedView}
+        >
+            {modView}
+        </GateKeep>
     );
 }
