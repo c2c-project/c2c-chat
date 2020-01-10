@@ -16,8 +16,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // eslint-disable-next-line
-export default function CenteredGrid({ clips, clipEvent }) {
+export default function CenteredGrid({ clips, clipEvent, playerTime }) {
     const classes = useStyles();
+
+    function playerNewTime(x) {
+        
+    };
+
 
     return (
         <div className={classes.root}>
@@ -31,7 +36,10 @@ export default function CenteredGrid({ clips, clipEvent }) {
                         <button
                             type='button'
                             color='primary'
-                            onClick={clipEvent}
+                            onClick={() => {
+                                playerTime(x.startTime);
+                                clipEvent();
+                            }}
                         >
                             {x.clipTitle}
                         </button>

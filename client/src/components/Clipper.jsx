@@ -4,6 +4,7 @@ import Grid from './ClipGrid';
 
 function Clipper() {
     const [timeStamp, setTimeStamp] = useState(false);
+    const [currPlayerTime, setPlayerTime] = useState(5);
     const player = useRef();
     const grid = useRef();
 
@@ -74,9 +75,11 @@ function Clipper() {
     };
 
     const handleClipEvent = () => {
-        console.log('you clicked a button');
-        player.current.seekTo(10, 'seconds');
+        // console.log('you clicked a button');
+        player.current.seekTo(currPlayerTime, 'seconds');
     };
+
+    
 
     return (
         <div>
@@ -99,7 +102,7 @@ function Clipper() {
                 10 secs
             </button>
 
-            <Grid ref={grid} clips={clipState} clipEvent={handleClipEvent} />
+            <Grid ref={grid} clips={clipState} clipEvent={handleClipEvent} playerTime={setPlayerTime} />
         </div>
     );
 }
