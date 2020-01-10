@@ -1,7 +1,6 @@
-import React, {useRef, createRef} from 'react';
-import ReactPlayer from 'react-player';
+import React, {createRef} from 'react';
+// import ReactPlayer from 'react-player';
 import Clipper from '../Clipper';
-import TimeLine from '../TimeLine';
 
 
 function VideoPlayer() {
@@ -19,7 +18,6 @@ function VideoPlayer() {
                 ref={player}
             /> */}
             <Clipper playerRef={player} />
-            <TimeLine />
         </div>
         
     );

@@ -19,11 +19,6 @@ const useStyles = makeStyles(theme => ({
 export default function CenteredGrid({ clips, clipEvent, playerTime }) {
     const classes = useStyles();
 
-    function playerNewTime(x) {
-        
-    };
-
-
     return (
         <div className={classes.root}>
             <Grid container spacing={3}>

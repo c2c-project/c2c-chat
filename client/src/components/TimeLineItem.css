@@ -7,9 +7,7 @@ https://www.youtube.com/watch?v=tcUVUBlyXX8
 }
 
 body {
-    background-color: wheat;
     background-image: linear-gradient(135deg, #f5f7fa 0%, );
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -36,9 +34,9 @@ h1 {
     margin: 40px 0;
 }
 
-/* line */
+/* bar or line of the timeline*/
 .timeline-container::after {
-    background-color: #42adf5;
+    background-color: orangered;
     content: '';
     position: absolute;
     /* sets our line at the center */
@@ -126,7 +124,7 @@ h1 {
 }
 
 .timeline-item-content p {
-    color: teal;
+    color: rosybrown;
     font-size: 16px;
     line-height: 24px;
     margin: 15px 0;
@@ -143,7 +141,7 @@ h1 {
 /* circle on the bar */
 .timeline-item-content .circle {
     background-color: white;
-    border: 3px solid teal; 
+    border: 3px solid orangered; 
     border-radius: 50%;
     position: absolute;
     top: calc(50% - 10px);
