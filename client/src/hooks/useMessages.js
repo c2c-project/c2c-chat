@@ -18,22 +18,29 @@ function useMessages(roomId = 'session') {
     });
 
     React.useEffect(() => {
+        let isMounted = true;
         // SOCKET IO
         const chat = connect(roomId);
         chat.on('connect', function() {
             // TODO: login tokens here? or some kind of security?
             // chat.emit('new-user');
-            setFunc(chat);
+            if (isMounted) {
+                setFunc(chat);
+            }
         });
         chat.on('message', function(message) {
-            setMessages(state => [...state, message]);
+            if (isMounted) {
+                setMessages(state => [...state, message]);
+            }
         });
         chat.on('disconnect', () => console.log('disconnected'));
         chat.on('error', err => console.log(err));
         chat.on('moderate', messageId => {
-            setMessages(curMessages =>
-                curMessages.filter(msg => msg._id !== messageId)
-            );
+            if (isMounted) {
+                setMessages(curMessages =>
+                    curMessages.filter(msg => msg._id !== messageId)
+                );
+            }
         });
         // FETCH
         fetch(`/api/chat/${roomId}`, {
@@ -42,17 +49,19 @@ function useMessages(roomId = 'session') {
             }
         }).then(r => {
             r.json().then(history => {
-                setMessages(history.filter(m => !m.moderated));
+                if (isMounted) {
+                    setMessages(history.filter(m => !m.moderated));
+                }
             });
         });
 
         // SOCKET IO CLEANUP
         return () => {
             console.log('closing');
+            isMounted = false;
             chat.close();
         };
     }, [roomId, jwt]);
-    console.log(messages);
 
     return [
         messages,

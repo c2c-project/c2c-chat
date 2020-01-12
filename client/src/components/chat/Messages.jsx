@@ -45,6 +45,7 @@ function Messages({ messages }) {
         });
     };
     React.useEffect(() => {
+        let isMounted = true;
         fetch('/api/users/authenticate', {
             method: 'POST',
             body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
@@ -54,9 +55,14 @@ function Messages({ messages }) {
             }
         }).then(r => {
             r.json().then(result => {
-                setModerator(result.allowed);
+                if (isMounted) {
+                    setModerator(result.allowed);
+                }
             });
         });
+        return () => {
+            isMounted = false;
+        };
     }, [jwt]);
     React.useEffect(scrollToBottom, [messages]);
 

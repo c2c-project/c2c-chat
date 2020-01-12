@@ -15,6 +15,7 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
+import ModDashboard from '../components/ModDashboard';
 
 const useVideoStyles = makeStyles(theme => ({
     root: {
@@ -118,12 +119,46 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1
         // border: '1px solid #80808029'
         // minHeight: '50vh'
+    },
+    modView: {
+        padding: theme.spacing(2)
     }
 }));
 
 export default function Chat() {
     const classes = useStyles();
     const { roomId } = useParams();
+    const data = {
+        lanes: [
+            {
+                id: 'lane1',
+                title: 'Planned Tasks',
+                label: '2/2',
+                cards: [
+                    {
+                        id: 'Card1',
+                        title: 'Write Blog',
+                        description: 'Can AI make memes',
+                        label: '30 mins',
+                        draggable: false
+                    },
+                    {
+                        id: 'Card2',
+                        title: 'Pay Rent',
+                        description: 'Transfer via NEFT',
+                        label: '5 mins',
+                        metadata: { sha: 'be312a1' }
+                    }
+                ]
+            },
+            {
+                id: 'lane2',
+                title: 'Completed',
+                label: '0/0',
+                cards: []
+            }
+        ]
+    };
     const modView = (
         <Tabs
             pages={[
@@ -169,7 +204,11 @@ export default function Chat() {
                 },
                 {
                     label: 'Mod View',
-                    component: <h1> Hello World </h1>
+                    component: (
+                        <div className={classes.modView}>
+                            <ModDashboard data={data} />
+                        </div>
+                    )
                 }
             ]}
         />

@@ -38,7 +38,7 @@ export default function MessageActions({ targetMsg, onClick }) {
                 snack('Something went wrong! Try again.', 'error');
             });
     };
-    const handleSetCurrent = () => {
+    // const handleSetCurrent = () => {
         // fetch(`/api/sessions/set-question/:${roomId}`, {
         //     method: 'POST',
         //     headers: {
@@ -48,7 +48,7 @@ export default function MessageActions({ targetMsg, onClick }) {
         // }).then( res => {
             
         // });
-    };
+    // };
     return (
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>

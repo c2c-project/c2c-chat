@@ -44,7 +44,7 @@ export default function ModSession({ pages }) {
             </Tabs>
         );
         return () => setTabs(null);
-    }, [dir, currTab]);
+    }, [dir, currTab, pages]);
     return (
         <Grid container direction='column' className={classes.root}>
             <Grid item xs='auto' className={classes.tabViews}>
