@@ -15,7 +15,7 @@ export default function QuestionActions({ targetMsg, onClick }) {
     const handleSetCurrent = () => {
         fetch(`/api/sessions/set-question/${roomId}`, {
             method: 'POST',
-            body: JSON.stringify(targetMsg),
+            body: JSON.stringify({ question: targetMsg }),
             headers: {
                 Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'

@@ -52,8 +52,7 @@ const Video = ({ roomId, url }) => {
                 <Hidden mdDown>
                     <Grid item xs={12} className={classes.question}>
                         <CurrentQuestion
-                            title='Current Question'
-                            question={{ text: 'hello', author: 'world' }}
+                            roomId={roomId}
                         />
                     </Grid>
                 </Hidden>
@@ -134,7 +133,6 @@ export default function Chat() {
     const classes = useStyles();
     const { roomId } = useParams();
     const sessionData = JSON.parse(localStorage.getItem('session'));
-    console.log(sessionData.url);
     const modView = (
         <Tabs
             pages={[
