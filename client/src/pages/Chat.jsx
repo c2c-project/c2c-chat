@@ -9,13 +9,14 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import ChatWindow from '../components/chat';
+import { QuestionWindow } from '../components/chat/ChatWindow';
 import VideoPlayer from '../components/video-player';
 import CurrentQuestion from '../components/CurrentQuestion';
 import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
-import ModDashboard from '../components/ModDashboard';
+// import ModDashboard from '../components/ModDashboard';
 
 const useVideoStyles = makeStyles(theme => ({
     root: {
@@ -121,44 +122,17 @@ const useStyles = makeStyles(theme => ({
         // minHeight: '50vh'
     },
     modView: {
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
+        width: '100%',
+        height: '100%',
+        // display: 'flex',
+        // flex: 1
     }
 }));
 
 export default function Chat() {
     const classes = useStyles();
     const { roomId } = useParams();
-    const data = {
-        lanes: [
-            {
-                id: 'lane1',
-                title: 'Planned Tasks',
-                label: '2/2',
-                cards: [
-                    {
-                        id: 'Card1',
-                        title: 'Write Blog',
-                        description: 'Can AI make memes',
-                        label: '30 mins',
-                        draggable: false
-                    },
-                    {
-                        id: 'Card2',
-                        title: 'Pay Rent',
-                        description: 'Transfer via NEFT',
-                        label: '5 mins',
-                        metadata: { sha: 'be312a1' }
-                    }
-                ]
-            },
-            {
-                id: 'lane2',
-                title: 'Completed',
-                label: '0/0',
-                cards: []
-            }
-        ]
-    };
     const modView = (
         <Tabs
             pages={[
@@ -196,7 +170,10 @@ export default function Chat() {
                                     md={6}
                                     className={classes.chat}
                                 >
-                                    <ChatWindow roomId={roomId} />
+                                    <ChatWindow
+                                        roomId={roomId}
+                                        title='Discussion'
+                                    />
                                 </Grid>
                             </Slide>
                         </Grid>
@@ -205,9 +182,16 @@ export default function Chat() {
                 {
                     label: 'Mod View',
                     component: (
-                        <div className={classes.modView}>
-                            <ModDashboard data={data} />
-                        </div>
+                        <Grid container className={classes.modView}>
+                            <Grid item xs={12}>
+                                <QuestionWindow
+                                    roomId={roomId}
+                                    title='Incoming Questions'
+                                />
+                                {/* <Chat roomId={roomId} /> */}
+                                {/* <ModDashboard data={data} /> */}
+                            </Grid>
+                        </Grid>
                     )
                 }
             ]}
@@ -231,7 +215,7 @@ export default function Chat() {
             </Slide>
             <Slide in direction='left' timeout={300}>
                 <Grid item xs={12} md={6} className={classes.chat}>
-                    <ChatWindow roomId={roomId} />
+                    <ChatWindow title='Discussion' roomId={roomId} />
                 </Grid>
             </Slide>
         </Grid>

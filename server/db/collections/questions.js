@@ -10,6 +10,14 @@ const findById = id =>
             .then(x => x[0])
     );
 
+const findBySession = ({ sessionId }) =>
+    mongo.then(db =>
+        db
+            .collection('questions')
+            .find({ sessionId })
+            .toArray()
+    );
+
 const createQuestion = ({ question, sessionId, username, userId }) =>
     mongo.then(db =>
         db
@@ -19,5 +27,6 @@ const createQuestion = ({ question, sessionId, username, userId }) =>
 
 export default {
     findById,
-    createQuestion
+    createQuestion,
+    findBySession
 };

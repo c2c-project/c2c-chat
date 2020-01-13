@@ -10,7 +10,6 @@ export default function FormQuestion({ onSubmit, roomId }) {
     const [question, setQuestion] = React.useState('');
     const [jwt] = useJwt();
     const [snack] = useSnack();
-
     const handleSubmit = e => {
         e.preventDefault();
         fetch('/api/questions/submit-question', {

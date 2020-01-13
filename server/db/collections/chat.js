@@ -3,7 +3,7 @@ import { mongo } from '..';
 import Accounts from '../../lib/accounts';
 
 /* DB LEVEL CRUD */
-const addMessage = ({ message, userId, username, session }) =>
+const createMessage = ({ message, userId, username, session }) =>
     mongo.then(
         db =>
             db.collection('messages').insertOne({
@@ -70,7 +70,7 @@ const privilegedActions = (action, userDoc) => {
 };
 
 export default {
-    addMessage,
+    createMessage,
     removeMessage,
     updateMessage,
     findMessages,

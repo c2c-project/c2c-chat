@@ -1,6 +1,8 @@
 import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
+import Accounts from '../lib/accounts';
+import ioInterface from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -19,10 +21,34 @@ router.post(
             username: user.username,
             userId: user._id
         })
-            .then(() => {
+            .then(r => {
+                const questionDoc = r.ops[0];
+                ioInterface
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('question', questionDoc);
                 res.send({ success: true });
             })
             .catch(console.error);
+    }
+);
+
+router.get(
+    '/:roomId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { user } = req;
+        const { roomId } = req.params;
+        if (
+            Accounts.isAllowed(user.roles, {
+                requiredAny: ['moderator', 'admin']
+            })
+        ) {
+            Questions.findBySession({ sessionId: roomId }).then(docs => {
+                res.json(docs);
+            });
+        }
     }
 );
 

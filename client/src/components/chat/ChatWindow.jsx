@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Chatbar from './Chatbar';
 import Messages from './Messages';
 import useMessages from '../../hooks/useMessages';
+import useQuestions from '../../hooks/useQuestions';
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -29,7 +30,40 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function ChatWindow({ roomId }) {
+export function QuestionWindow({ roomId, title }) {
+    const [questions] = useQuestions(roomId);
+    const classes = useStyles();
+
+    return (
+        <Paper className={classes.paper}>
+            <Grid container direction='column' spacing={2}>
+                <Grid item xs='auto'>
+                    <Typography variant='h4'>{title}</Typography>
+                </Grid>
+                <Divider className={classes.divider} />
+                <Grid item xs={12} className={classes.messages}>
+                    <Messages
+                        messages={questions.map(question => ({
+                            ...question,
+                            message: question.question
+                        }))}
+                    />
+                </Grid>
+                {/* <Divider className={classes.divider} /> */}
+                {/* <Grid item xs={12} className={classes.chatbar}>
+                    <Chatbar onMessageSend={sendMsg} />
+                </Grid> */}
+            </Grid>
+        </Paper>
+    );
+}
+
+QuestionWindow.propTypes = {
+    roomId: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired
+};
+
+function ChatWindow({ roomId, title }) {
     const [messages, sendMsg] = useMessages(roomId);
     const classes = useStyles();
 
@@ -37,7 +71,7 @@ function ChatWindow({ roomId }) {
         <Paper className={classes.paper}>
             <Grid container direction='column' spacing={2}>
                 <Grid item xs='auto'>
-                    <Typography variant='h4'>Discussion</Typography>
+                    <Typography variant='h4'>{title}</Typography>
                 </Grid>
                 <Divider className={classes.divider} />
                 <Grid item xs={12} className={classes.messages}>
@@ -53,7 +87,8 @@ function ChatWindow({ roomId }) {
 }
 
 ChatWindow.propTypes = {
-    roomId: PropTypes.string.isRequired
+    roomId: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired
 };
 
 export default ChatWindow;
