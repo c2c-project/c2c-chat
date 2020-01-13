@@ -217,6 +217,7 @@ export default function Sessions() {
     };
 
     const goToSession = sessionId => {
+        // TODO: change this when I change how I get the session data
         localStorage.setItem(
             'session',
             JSON.stringify(data.find(session => sessionId === session._id))

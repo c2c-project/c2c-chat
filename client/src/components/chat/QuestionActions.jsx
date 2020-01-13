@@ -8,47 +8,29 @@ import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
 import useSnack from '../../hooks/useSnack';
 
-export default function MessageActions({ targetMsg, onClick }) {
+export default function QuestionActions({ targetMsg, onClick }) {
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
-    const handleEdit = () => {
-        console.log('TODO: handlEdit');
-    };
-    const handleDelete = () => {
-        fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
+    const handleSetCurrent = () => {
+        fetch(`/api/sessions/set-question/${roomId}`, {
             method: 'POST',
+            body: JSON.stringify(targetMsg),
             headers: {
                 Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'
             }
-        })
-            .then(r => {
-                r.json().then(res => {
-                    if (res.success) {
-                        snack('Successfully moderated messsage', 'success');
-                        onClick();
-                    } else {
-                        snack('Something went wrong! Try again.', 'error');
-                    }
-                });
-            })
-            .catch(err => {
-                console.log(err);
-                snack('Something went wrong! Try again.', 'error');
+        }).then(res => {
+            res.json().then(r => {
+                if (r.success) {
+                    snack('Successfully set the current question', 'success');
+                    onClick();
+                } else {
+                    snack('Something went wrong, please try again', 'error');
+                }
             });
+        });
     };
-    // const handleSetCurrent = () => {
-    // fetch(`/api/sessions/set-question/:${roomId}`, {
-    //     method: 'POST',
-    //     headers: {
-    //         Authorization: `bearer ${jwt}`,
-    //         'Content-Type': 'application/json'
-    //     }
-    // }).then( res => {
-
-    // });
-    // };
     return (
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
@@ -65,7 +47,7 @@ export default function MessageActions({ targetMsg, onClick }) {
                     </Grid>
                 </Grid>
             </Grid>
-            {/* <Grid item xs={12}>
+            <Grid item xs={12}>
                 <Button
                     color='secondary'
                     variant='contained'
@@ -74,36 +56,16 @@ export default function MessageActions({ targetMsg, onClick }) {
                 >
                     Set as Current Question
                 </Button>
-            </Grid> */}
-            <Grid item xs={12}>
-                <Button
-                    color='secondary'
-                    variant='contained'
-                    fullWidth
-                    onClick={handleEdit}
-                >
-                    Edit
-                </Button>
-            </Grid>
-            <Grid item xs={12}>
-                <Button
-                    color='secondary'
-                    variant='contained'
-                    fullWidth
-                    onClick={handleDelete}
-                >
-                    Moderate/Hide
-                </Button>
             </Grid>
         </Grid>
     );
 }
 
-MessageActions.defaultProps = {
+QuestionActions.defaultProps = {
     onClick: () => {}
 };
 
-MessageActions.propTypes = {
+QuestionActions.propTypes = {
     targetMsg: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         message: PropTypes.string.isRequired,

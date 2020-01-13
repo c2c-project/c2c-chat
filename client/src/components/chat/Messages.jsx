@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import useJwt from '../../hooks/useJwt';
 import MessageActions from './MessageActions';
+import QuestionActions from './QuestionActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
 
@@ -33,12 +34,13 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
-function Messages({ messages }) {
+function Messages({ messages, variant }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const [jwt] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
+    const Actions = variant === 'questions' ? QuestionActions : MessageActions;
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
             behavior: 'smooth'
@@ -118,7 +120,7 @@ function Messages({ messages }) {
                         alignContent='center'
                     >
                         {targetMsg && isModerator ? (
-                            <MessageActions
+                            <Actions
                                 targetMsg={targetMsg}
                                 onClick={() => setTargetMsg(null)}
                             />
@@ -137,7 +139,8 @@ Messages.defaultProps = {
 };
 
 Messages.propTypes = {
-    messages: PropTypes.array
+    messages: PropTypes.array,
+    variant: PropTypes.oneOf(['questions', 'messages']).isRequired
 };
 
 export default Messages;
