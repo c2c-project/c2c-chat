@@ -40,14 +40,14 @@ const useVideoStyles = makeStyles(theme => ({
 }));
 
 // eslint-disable-next-line
-const Video = ({ roomId }) => {
+const Video = ({ roomId, url }) => {
     const classes = useVideoStyles();
     const [isOpen, setOpen] = React.useState(false);
     return (
         <Paper className={classes.paper}>
             <Grid container>
                 <Grid container justify='center' item xs={12}>
-                    <VideoPlayer />
+                    <VideoPlayer url={url} />
                 </Grid>
                 <Hidden mdDown>
                     <Grid item xs={12} className={classes.question}>
@@ -124,7 +124,7 @@ const useStyles = makeStyles(theme => ({
     modView: {
         padding: theme.spacing(2),
         width: '100%',
-        height: '100%',
+        height: '100%'
         // display: 'flex',
         // flex: 1
     }
@@ -133,6 +133,8 @@ const useStyles = makeStyles(theme => ({
 export default function Chat() {
     const classes = useStyles();
     const { roomId } = useParams();
+    const sessionData = JSON.parse(localStorage.getItem('session'));
+    console.log(sessionData.url);
     const modView = (
         <Tabs
             pages={[
@@ -159,7 +161,10 @@ export default function Chat() {
                                         md={10}
                                         className={classes.video}
                                     >
-                                        <Video roomId={roomId} />
+                                        <Video
+                                            roomId={roomId}
+                                            url={sessionData.url}
+                                        />
                                     </Grid>
                                 </Grid>
                             </Slide>
@@ -209,7 +214,7 @@ export default function Chat() {
                     justify='center'
                 >
                     <Grid item xs={12} md={10} className={classes.video}>
-                        <Video roomId={roomId} />
+                        <Video roomId={roomId} url={sessionData.url} />
                     </Grid>
                 </Grid>
             </Slide>

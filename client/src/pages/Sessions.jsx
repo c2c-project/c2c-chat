@@ -23,7 +23,8 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
         speaker: '',
         moderator: '',
         date: new Date(),
-        description: ''
+        description: '',
+        url: ''
     });
     React.useEffect(() => {
         if (type === 'update') {
@@ -33,7 +34,9 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                         speaker: r.speaker,
                         moderator: r.moderator,
                         date: r.date,
-                        description: r.description
+                        url: r.url,
+                        // MUST HAVE A DEFAULT VALUE IF UNDEFINED
+                        description: r.description || ''
                     });
                 })
             );
@@ -89,6 +92,18 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                                 variant='outlined'
                                 value={state.moderator}
                                 onChange={e => handleChange(e, 'moderator')}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                required
+                                autoComplete='off'
+                                id='url'
+                                label='Session URL'
+                                variant='outlined'
+                                value={state.url}
+                                onChange={e => handleChange(e, 'url')}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -202,6 +217,10 @@ export default function Sessions() {
     };
 
     const goToSession = sessionId => {
+        localStorage.setItem(
+            'session',
+            JSON.stringify(data.find(session => sessionId === session._id))
+        );
         history.push(`/app/sessions/${sessionId}/live`);
     };
     // TODO: generate menu options based on user role

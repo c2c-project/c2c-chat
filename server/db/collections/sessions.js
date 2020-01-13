@@ -19,11 +19,11 @@ const findSessionById = id =>
             .then(x => x[0])
     );
 
-const addSession = ({ speaker, moderator, description, date }) =>
+const addSession = ({ speaker, moderator, description, date, url }) =>
     mongo.then(db =>
         db
             .collection('sessions')
-            .insertOne({ speaker, moderator, description, date })
+            .insertOne({ speaker, moderator, description, date, url })
     );
 
 const removeSession = ({ sessionId }) =>
