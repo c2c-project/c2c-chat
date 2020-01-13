@@ -9,15 +9,10 @@ function VideoPlayer({ url }) {
             url={url}
             playing={false}
             width='100%'
-            // heigh=''
             playsinline
         />
     );
 }
-
-// VideoPlayer.defaultProps = {
-//     ref: {}
-// };
 
 VideoPlayer.propTypes = {
     url: PropTypes.string.isRequired

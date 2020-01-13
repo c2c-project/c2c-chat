@@ -16,6 +16,7 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
+import Speaker from '../components/speaker';
 // import ModDashboard from '../components/ModDashboard';
 
 const useVideoStyles = makeStyles(theme => ({
@@ -51,9 +52,7 @@ const Video = ({ roomId, url }) => {
                 </Grid>
                 <Hidden mdDown>
                     <Grid item xs={12} className={classes.question}>
-                        <CurrentQuestion
-                            roomId={roomId}
-                        />
+                        <CurrentQuestion roomId={roomId} />
                     </Grid>
                 </Hidden>
                 <Grid item xs={12}>
@@ -227,7 +226,19 @@ export default function Chat() {
         <GateKeep
             local
             permissions={{ requiredAny: ['moderator', 'admin'] }}
-            elseRender={unprivilegedView}
+            elseRender={(
+                <GateKeep
+                    local
+                    permissions={{ requiredAny: ['speaker'] }}
+                    elseRender={unprivilegedView}
+                >
+                    <Grid container className={classes.root}>
+                        <Grid item xs={12}>
+                            <Speaker />
+                        </Grid>
+                    </Grid>
+                </GateKeep>
+            )}
         >
             {modView}
         </GateKeep>
