@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Backend from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { makeStyles } from '@material-ui/core/styles';
+import { useParams } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
@@ -20,6 +21,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function ModDashboard() {
     const [lanes, setLanes] = React.useState(['New']);
+    const { roomId } = useParams();
     const [inputLane, setInputLane] = React.useState(false);
     const ref = React.useRef();
     React.useEffect(() => {
@@ -35,7 +37,7 @@ export default function ModDashboard() {
             <Grid container className={classes.root}>
                 {lanes.map(el => (
                     <Grid item xs={12} md={3} key={el} className={classes.lane}>
-                        <Lane title={el} />
+                        <Lane title={el} roomId={roomId} />
                     </Grid>
                 ))}
                 {!inputLane && (

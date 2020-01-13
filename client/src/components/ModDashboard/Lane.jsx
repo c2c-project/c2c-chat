@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import QuestionCard from './QuestionCard';
+import useQuestions from '../../hooks/useQuestions';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -27,7 +28,7 @@ const LaneTitle = ({ title, className }) => {
     );
 };
 
-export default function Lane({ title, api }) {
+export default function Lane({ title, roomId }) {
     const [, drop] = useDrop({
         accept: 'QUESTIONS',
         drop: (item, monitor) => {
@@ -35,9 +36,10 @@ export default function Lane({ title, api }) {
         }
     });
     const [addNewCard, setAddNewCard] = React.useState(false);
-    const [cards, setCards] = React.useState([]);
+    // const [cards, setCards] = React.useState([]);
     const ref = React.useRef();
     const classes = useStyles();
+    const [questions, updateQuestions] = useQuestions(roomId, title);
     React.useEffect(() => {
         if (addNewCard) {
             ref.current.focus();
@@ -47,7 +49,7 @@ export default function Lane({ title, api }) {
         <Paper ref={drop} className={classes.root}>
             <LaneTitle title={title} className={classes.title} />
             <Grid container spacing={2}>
-                {cards.map(card => (
+                {questions.map(card => (
                     <Grid item xs={12} key={card}>
                         <QuestionCard question={card} />
                     </Grid>
@@ -68,7 +70,7 @@ export default function Lane({ title, api }) {
                                 const question = e.target.question.value;
                                 setAddNewCard(false);
                                 // TODO: make this an api call to add the card for everyone
-                                setCards(current => [...current, question]);
+                                updateQuestions(current => [...current, question]);
                             }}
                         >
                             <TextField
