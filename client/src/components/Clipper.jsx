@@ -5,7 +5,6 @@ import TimeLine from './TimeLine';
 
 function Clipper() {
     const [timeStamp, setTimeStamp] = useState(false);
-    const [currPlayerTime, setPlayerTime] = useState(null);
     const player = useRef();
     // const grid = useRef();
     const [clipState, setClipState] = useState([
@@ -60,12 +59,13 @@ function Clipper() {
 
 
     const handleSetPlayerTime = (x) => {
-        setPlayerTime(x);
-        player.current.seekTo(currPlayerTime, 'seconds');
+        // unessessary for a re-render to seek this time.
+        // setPlayerTime(x);
+        // console.log(currPlayerTime);
+        player.current.seekTo(x, 'seconds');
 
     };
 
-    
 
     return (
         <div>
