@@ -27,6 +27,16 @@ router.post(
     }
 );
 
+// NOTE: unprotected route here
+router.post('/login-temporary', (req, res) => {
+    const { username } = req.body;
+    Accounts.registerTemporary(username, { roles: ['user'] }).then(userDoc => {
+        jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
+            res.status(200).send({ jwt: token });
+        });
+    });
+});
+
 router.post(
     '/authenticate',
     passport.authenticate('jwt', { session: false }),

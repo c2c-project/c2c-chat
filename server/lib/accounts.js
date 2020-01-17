@@ -61,6 +61,18 @@ const register = (username, password, additionalFields = {}) =>
         return 'error';
     });
 
+const registerTemporary = (username, additionalFields = {}) =>
+    Users.findByUsername({ username }).then(doc => {
+        if (!doc) {
+            return Users.addUser({
+                username,
+                ...additionalFields,
+                temporary: true
+            }).catch(err => console.log(err));
+        }
+        return 'error';
+    });
+
 /**
  *  use whitelist method instead of blacklist
  * */
@@ -85,6 +97,7 @@ const isOwner = (userId, doc) => {
 
 export default {
     register,
+    registerTemporary,
     verifyPassword,
     isAllowed,
     filterSensitiveData,
