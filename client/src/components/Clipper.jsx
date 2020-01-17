@@ -6,7 +6,7 @@ import TimeLine from './TimeLine';
 function Clipper() {
     const [timeStamp, setTimeStamp] = useState(false);
     const player = useRef();
-    // const grid = useRef();
+    const  [playVideo, setPlayVideo]  = useState(true);
     const [clipState, setClipState] = useState([
         {
             text: 'First Blog Post',
@@ -37,11 +37,7 @@ function Clipper() {
     };
 
     const addToClips = () => {
-        // const newClip = {
-        //     clipTitle: timeStamp,
-        //     startTime: timeStamp,
-        //     endTime: 15
-        // };
+
         const newClip = {
             text: 'new Question',
             date: timeStamp,
@@ -63,7 +59,7 @@ function Clipper() {
         // setPlayerTime(x);
         // console.log(currPlayerTime);
         player.current.seekTo(x, 'seconds');
-
+        setPlayVideo(true);  
     };
 
 
@@ -72,7 +68,7 @@ function Clipper() {
             <ReactPlayer
                 ref={player}
                 url='https://www.youtube.com/watch?v=qJf8N46OEMk'
-                playing={false}
+                playing={playVideo}
                 width='100%'
                 // heigh=''
                 playsinline
