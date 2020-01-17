@@ -44,5 +44,8 @@ export const CurrentQuestion = () => {
 };
 
 export const Clips = () => {
-    return <Clipper />;
+    return(
+        <Clipper /> 
+    );
 };
+

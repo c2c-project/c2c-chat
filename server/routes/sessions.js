@@ -1,6 +1,8 @@
 import express from 'express';
 import passport from 'passport';
 import Sessions from '../db/collections/sessions';
+import Accounts from '../lib/accounts';
+import ioInterface from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -58,7 +60,16 @@ router.post(
     (req, res) => {
         const { user } = req;
         const { sessionId } = req.params;
-        
+        const { question } = req.body;
+        const doAction = Sessions.privilegedActions('SET_QUESTION', user);
+        doAction(sessionId, question).then(() => {
+            ioInterface
+                .io()
+                .of('/questions')
+                .to(sessionId)
+                .emit('set-question', question);
+            res.send({ success: true });
+        });
     }
 );
 

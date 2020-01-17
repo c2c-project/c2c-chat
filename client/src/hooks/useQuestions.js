@@ -8,7 +8,14 @@ function connect(roomId = 'chat') {
 }
 
 function useQuestions(roomId = 'session') {
+    const session = JSON.parse(localStorage.getItem('session'));
+    console.log(session);
+    const initialQuestion =
+        session && session.questionHistory
+            ? session.questionHistory[session.questionHistory.length - 1]
+            : false;
     const [questions, setQuestions] = React.useState([]);
+    const [current, setCurrent] = React.useState(initialQuestion);
     const [jwt] = useJwt();
     const [sendFunc, setFunc] = React.useState(() => {
         // TODO: maybe have a message queue?
@@ -35,6 +42,10 @@ function useQuestions(roomId = 'session') {
         });
         question.on('disconnect', () => console.log('disconnected'));
         question.on('error', err => console.log(err));
+        question.on('set-question', q => {
+            console.log('set question');
+            setCurrent(q);
+        });
         // question.on('moderate', messageId => {
         //     if (isMounted) {
         //         setQuestions(curMessages =>
@@ -72,7 +83,7 @@ function useQuestions(roomId = 'session') {
             }
         },
         // raw sendFunc so that privileged actions take place inside the components themselves, which are protected
-        sendFunc
+        current
     ];
 }
 

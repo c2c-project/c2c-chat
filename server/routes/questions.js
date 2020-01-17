@@ -40,6 +40,8 @@ router.get(
     (req, res) => {
         const { user } = req;
         const { roomId } = req.params;
+
+        // TODO: move this to the privileged actions code
         if (
             Accounts.isAllowed(user.roles, {
                 requiredAny: ['moderator', 'admin']

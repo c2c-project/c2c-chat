@@ -38,24 +38,39 @@ const updateSession = ({ sessionId, changes }) =>
             .updateOne({ _id: new ObjectID(sessionId) }, { $set: changes })
     );
 
-// const privilegedActions = (action, userDoc) => {
-//     const { roles } = userDoc;
-//     switch (action) {
-//         case 'SET_QUESTION': {
-//             const requiredAny = ['admin', 'moderator'];
-//             return (sessionId, questionId) => {
-//                 if (Accounts.isallowed(roles, { requiredAny })) {
-//                     return updateSession();
-//                 }
-//             };
-//         }
-//     }
-// };
+const privilegedActions = (action, userDoc) => {
+    const { roles } = userDoc;
+    switch (action) {
+        case 'SET_QUESTION': {
+            const requiredAny = ['admin', 'moderator'];
+            return (sessionId, question) => {
+                if (Accounts.isAllowed(roles, { requiredAny })) {
+                    return mongo.then(db =>
+                        db
+                            .collection('sessions')
+                            .updateOne(
+                                { _id: new ObjectID(sessionId) },
+                                { $push: { questionHistory: question } }
+                            )
+                    );
+                }
+                console.log(
+                    'TODO:  not allowed but trying to set the question'
+                );
+                return Promise.reject(Error('Not allowed'));
+            };
+        }
+        default: {
+            throw new TypeError('Invalid action');
+        }
+    }
+};
 
 export default {
     findAllSessions,
     findSessionById,
     addSession,
     removeSession,
-    updateSession
+    updateSession,
+    privilegedActions
 };

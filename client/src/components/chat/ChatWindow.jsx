@@ -47,6 +47,7 @@ export function QuestionWindow({ roomId, title }) {
                             ...question,
                             message: question.question
                         }))}
+                        variant='questions'
                     />
                 </Grid>
                 {/* <Divider className={classes.divider} /> */}
@@ -75,7 +76,7 @@ function ChatWindow({ roomId, title }) {
                 </Grid>
                 <Divider className={classes.divider} />
                 <Grid item xs={12} className={classes.messages}>
-                    <Messages messages={messages} />
+                    <Messages messages={messages} variant='messages' />
                 </Grid>
                 <Divider className={classes.divider} />
                 <Grid item xs={12} className={classes.chatbar}>
