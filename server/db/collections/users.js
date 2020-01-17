@@ -6,12 +6,14 @@ import { mongo } from '..';
  */
 
 const addUser = userDoc =>
-    mongo.then(db => {
+    mongo.then(db =>
         // eslint-disable-next-line
-        db.collection('users').insertOne(userDoc, (err, r) => {
-            console.log('TODO: addUser error checking');
-        });
-    });
+        db
+            .collection('users')
+            .insertOne(userDoc)
+            .then(r => r.ops[0])
+            .catch(e => console.log('TODO: addUser error checking', e))
+    );
 const updateUser = () => {};
 const removeUser = () => {};
 const findByUsername = ({ username }) =>
