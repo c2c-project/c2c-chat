@@ -35,6 +35,12 @@ export default (function socketioInterface() {
                                     io.of('/chat')
                                         .to(roomId)
                                         .emit('message', messageDoc);
+                                    // TODO: 193
+                                    /**
+                                     * @messageDoc is the message json
+                                     * Ideally, you'd just take the messageDoc
+                                     * and feed that into the text toxicity
+                                     */
                                 });
                             }
                         }

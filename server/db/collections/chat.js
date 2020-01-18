@@ -48,6 +48,12 @@ const findMessages = ({ sessionId }) =>
  * Actions that a non-owner may take and the permissions required to do so
  */
 const privilegedActions = (action, userDoc) => {
+    // TODO: 193
+    /**
+     * This is where you'll "remove" (really it's just hidden) the toxic messages
+     * If you've gotten to this point, you probably should just contact me and I'll help out.
+     * This part is kinda specific my coding/how I coded privileged actions
+     */
     const { roles } = userDoc;
     switch (action) {
         case 'REMOVE_MESSAGE': {

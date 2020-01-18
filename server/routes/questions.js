@@ -27,6 +27,12 @@ router.post(
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
+                // TODO: 193
+                /**
+                 * @questionDoc is the question json
+                 * Ideally, you'd just take the questionDoc
+                 * and feed that into the text toxicity
+                 */
             })
             .catch(console.error);
     }

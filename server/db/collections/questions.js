@@ -25,6 +25,11 @@ const createQuestion = ({ question, sessionId, username, userId }) =>
             .insertOne({ question, sessionId, username, userId })
     );
 
+// TODO: 193
+/**
+ * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
+ */
+
 export default {
     findById,
     createQuestion,
