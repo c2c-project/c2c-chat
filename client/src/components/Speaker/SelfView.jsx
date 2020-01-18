@@ -9,13 +9,12 @@ export default function() {
         facingMode: 'user'
     };
     const webcamRef = React.useRef(null);
-
     const capture = React.useCallback(() => {
         const imageSrc = webcamRef.current.getScreenshot();
     }, [webcamRef]);
 
     return (
-        <div style={{ maxHeight: '50vh', maxWidth: '50vh'}}>
+        <div style={{ maxHeight: '50vh', maxWidth: '50vh' }}>
             <Webcam
                 audio={false}
                 height={720}

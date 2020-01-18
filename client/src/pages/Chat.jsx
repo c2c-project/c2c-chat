@@ -16,7 +16,7 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
-import Speaker from '../components/speaker';
+import Speaker from '../components/Speaker';
 // import ModDashboard from '../components/ModDashboard';
 
 const useVideoStyles = makeStyles(theme => ({
@@ -226,7 +226,7 @@ export default function Chat() {
         <GateKeep
             local
             permissions={{ requiredAny: ['moderator', 'admin'] }}
-            elseRender={(
+            elseRender={
                 <GateKeep
                     local
                     permissions={{ requiredAny: ['speaker'] }}
@@ -238,7 +238,7 @@ export default function Chat() {
                         </Grid>
                     </Grid>
                 </GateKeep>
-            )}
+            }
         >
             {modView}
         </GateKeep>

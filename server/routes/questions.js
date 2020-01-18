@@ -6,8 +6,6 @@ import ioInterface from '../lib/socket-io';
 
 const router = express.Router();
 
-// TODO: add authentification here
-
 router.post(
     '/submit-question',
     passport.authenticate('jwt', { session: false }),
