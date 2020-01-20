@@ -46,12 +46,17 @@ const privilegedActions = (action, userDoc) => {
             return (sessionId, question) => {
                 if (Accounts.isAllowed(roles, { requiredAny })) {
                     return mongo.then(db =>
-                        db
-                            .collection('sessions')
-                            .updateOne(
-                                { _id: new ObjectID(sessionId) },
-                                { $push: { questionHistory: question } }
-                            )
+                        db.collection('sessions').updateOne(
+                            { _id: new ObjectID(sessionId) },
+                            {
+                                $push: {
+                                    questionHistory: {
+                                        ...question,
+                                        timestamp: new Date()
+                                    }
+                                }
+                            }
+                        )
                     );
                 }
                 console.log(

@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import dotenv from 'dotenv';
 import passport from 'passport';
-import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 import chatRouter from './routes/chat';
 import sessionRouter from './routes/sessions';
@@ -24,7 +23,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(passport.initialize());
 
-app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/sessions', sessionRouter);
