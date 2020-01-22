@@ -5,7 +5,9 @@
     "scripts": {
         "start": "nodemon --exec babel-node ./bin/www.js",
         "seed": "babel-node db/seed.js",
-        "test": "mocha"
+        "test": "mocha",
+        "build": "babel ./bin/www.js -d dist",
+        "serve": "node dist/index.js"
     },
     "dependencies": {
         "bcrypt": "^3.0.7",
