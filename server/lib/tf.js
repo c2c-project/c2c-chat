@@ -14,21 +14,22 @@
 import * as toxicity from '@tensorflow-models/toxicity';
                                                                                                      
 const threshold = 0.8
-
-export default async function tf_toxicity(question){
+async function tf_toxicity(question){
+    const return_value = {};
     try{
         await toxicity.load(threshold).then(async model => {
             await model.classify(question).then(async predictions => {
-                const return_value = {};
                 await predictions.forEach(prediction=>{
                     return_value[prediction.label] = prediction.results[0].match
                 })
-                return {predictions: return_value};
+                return return_value;
             })
         })
-
     }catch(exception){
-        console.log(exception)
         return { message: 'fail' };
     }
+    if(return_value !== {}){
+        return return_value
+    }
 }
+export default {tf_toxicity};

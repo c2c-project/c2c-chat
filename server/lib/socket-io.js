@@ -36,10 +36,9 @@ export default (function socketioInterface() {
                                         .to(roomId)
                                         .emit('message', messageDoc);
                                     // TODO: 193
-                                    console.log(messageDoc)
                                     try{
                                         if(messageDoc){
-                                            console.log(await Toxicity(messageDoc.message).prediction);
+                                            const result = await Toxicity.tf_toxicity(messageDoc.message);
                                         }
                                     }catch(Exception){
                                         console.log(Exception)
