@@ -1,7 +1,7 @@
 import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
 import Chat from '../db/collections/chat';
-
+import Toxicity from './tf';
 // NOTE: it's probably better to use a session rather than jwt's for a chat
 // but not expecting high enough volume for it to  matter right now
 export default (function socketioInterface() {
@@ -30,12 +30,21 @@ export default (function socketioInterface() {
                                     username,
                                     userId: _id,
                                     session: roomId
-                                }).then(r => {
+                                }).then(async r => {
                                     const messageDoc = r.ops[0];
                                     io.of('/chat')
                                         .to(roomId)
                                         .emit('message', messageDoc);
                                     // TODO: 193
+                                    console.log(messageDoc)
+                                    try{
+                                        if(messageDoc){
+                                            console.log(await Toxicity(messageDoc.message).prediction);
+                                        }
+                                    }catch(Exception){
+                                        console.log(Exception)
+                                    }
+                                    
                                     /**
                                      * @messageDoc is the message json
                                      * Ideally, you'd just take the messageDoc

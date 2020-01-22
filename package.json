@@ -9,7 +9,7 @@
     "scripts": {
         "client": "cd client && npm start",
         "server": "cd server && npm start",
-        "start": "concurrently - k \"npm run server --scripts-prepend-node-path\" \"npm run client --scripts-prepend-node-path\""
+        "start": "concurrently \"cd server && yarn start\" \"cd client && yarn start\""
     },
     "dependencies": {},
     "devDependencies": {

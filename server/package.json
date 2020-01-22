@@ -8,6 +8,10 @@
         "test": "mocha"
     },
     "dependencies": {
+        "@tensorflow-models/toxicity": "^1.2.2",
+        "@tensorflow-models/universal-sentence-encoder": "^1.2.2",
+        "@tensorflow/tfjs": "^1.5.1",
+        "babel-runtime": "^6.26.0",
         "bcrypt": "^3.0.7",
         "cookie-parser": "~1.4.4",
         "debug": "~2.6.9",
@@ -20,6 +24,7 @@
         "mongodb": "^3.3.5",
         "morgan": "~1.9.1",
         "nodemon": "^1.19.1",
+        "pandas-js": "^0.2.4",
         "passport": "^0.4.1",
         "passport-jwt": "^4.0.0",
         "passport-local": "^1.0.0",
