@@ -6,8 +6,8 @@
         "start": "nodemon --exec babel-node ./bin/www.js",
         "seed": "babel-node db/seed.js",
         "test": "mocha",
-        "build": "babel ./bin/www.js -d dist",
-        "serve": "node dist/index.js"
+        "build": "babel . -d dist --ignore \"**/*.test.js\",\"node_modules\",\"dist\",\"samples\",\"test\"",
+        "serve": "node dist/bin/www.js"
     },
     "dependencies": {
         "bcrypt": "^3.0.7",
