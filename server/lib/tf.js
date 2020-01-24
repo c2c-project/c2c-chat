@@ -30,16 +30,15 @@ async function tfToxicity(question) {
         return { message: 'fail' };
     }
     if (returnValue !== {}) {
-        console.log(returnValue);
         if (returnValue.toxicity) {
             for (let i = 0; i < Object.keys(returnValue).length-1; i+=1){
                 if (Object.values(returnValue)[i] || Object.values(returnValue)[i] === null) {
                     reason.push(Object.keys(returnValue)[i]);
                 }
             }
-            return [returnValue.toxicity, reason];
+            return [true, reason];
         }
-        return [returnValue.toxicity];
+        return [false];
     }
     return { message: 'fail' };
 }
