@@ -60,7 +60,7 @@ const privilegedActions = (action, userDoc) => {
             return questionId => {
                 if (Accounts.isAllowed(roles, { requiredAny })) {
                     return removeQuestion({
-                        messageId,
+                        questionId,
                         reason: 'Removed by moderator'
                     });
                 }

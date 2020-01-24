@@ -46,8 +46,7 @@ const findMessages = ({ sessionId }) =>
             .toArray()
     );
 
-//193
-
+// 193
 const findMessage = ({ messageId }) =>
     mongo.then(db =>
         db
@@ -58,7 +57,7 @@ const findMessage = ({ messageId }) =>
     );
 
 
-const updateMessageToxicity = ({ messageId, result, reason}) =>
+const updateMessageToxicity = ({ messageId, result, reason}) =>{
     mongo.then(db => {
         db.collection('messages').updateOne(
             { _id: messageId },
@@ -66,6 +65,7 @@ const updateMessageToxicity = ({ messageId, result, reason}) =>
         );
         // close();
     });
+}
 
 /**
  * Actions that a non-owner may take and the permissions required to do so
