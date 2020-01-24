@@ -1,5 +1,6 @@
 import { ObjectID } from 'mongodb';
 import { mongo } from '..';
+import Accounts from '../../lib/accounts';
 
 const findById = id =>
     mongo.then(db =>
@@ -18,11 +19,11 @@ const findBySession = ({ sessionId }) =>
             .toArray()
     );
 
-const createQuestion = ({ question, sessionId, username, userId }) =>
+const createQuestion = ({ question, sessionId, username, userId, toxicity, reason }) =>
     mongo.then(db =>
         db
             .collection('questions')
-            .insertOne({ question, sessionId, username, userId })
+            .insertOne({ question, sessionId, username, userId, toxicity, reason  })
     );
 //193
 
@@ -37,6 +38,15 @@ const removeQuestion = ({ questionId, reason }) =>
             )
         // close();
     );
+const updateQuestionToxicity = ({ questionId, result, reason}) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: questionId },
+            { $set: { 'toxicity': result, 'reason': reason}}
+        );
+        // close();
+    });
+
 // TODO: 193
 /**
  * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
@@ -61,7 +71,7 @@ const privilegedActions = (action, userDoc) => {
         case 'AUTO_REMOVE_QUESTION': {
             return questionId => {
                 const question = findById({questionId})
-                if(question.toxic){
+                if(question.toxicity){
                     return removeQuestion({
                         questionId,
                         reason: 'Auto removed'
@@ -80,5 +90,6 @@ export default {
     createQuestion,
     findBySession,
     removeQuestion,
+    updateQuestionToxicity,
     privilegedActions
 };

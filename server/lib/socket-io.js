@@ -25,34 +25,48 @@ export default (function socketioInterface() {
                         async (err, decodedJwt) => {
                             if (!err) {
                                 const { username, _id } = decodedJwt;
-                                try{
-                                    await Chat.createMessage({
-                                        message: message.toString(),
-                                        username: username.toString(),
-                                        userId: _id.toString(),
-                                        session: roomId.toString()
-                                    }).then(r => {
-                                        const messageDoc = r.ops[0];
-                                        io.of('/chat')
-                                            .to(roomId)
-                                            .emit('message', messageDoc);
-                                        /*
-                                        // TODO: 193
-                                        try{
-                                            if(messageDoc){
-                                                const result = await Toxicity.tf_toxicity(messageDoc.message);
+                                const toxicity = false;
+                                let reason = [];
+                                Chat.createMessage({
+                                    message,
+                                    username,
+                                    userId: _id,
+                                    session: roomId,
+                                    toxicity,
+                                    reason
+                                }).then( async r => {
+                                    const messageDoc = r.ops[0];
+                                    const messageId = messageDoc._id;
+                                    io.of('/chat')
+                                        .to(roomId)
+                                        .emit('message', messageDoc);
+                                    // TODO: 193
+                                    try{
+                                        if(messageDoc){
+                                            const tfResult = await Toxicity.tfToxicity(messageDoc.message);
+                                            const result =  await tfResult[0];
+                                            if (result !== toxicity) {
+                                                try{
+                                                    if(result) {
+                                                        reason =  await tfResult[1];
+                                                        await Chat.updateMessageToxicity({messageId, result, reason})
+                                                    } else {
+                                                        await Chat.updateMessageToxicity({messageId, result})
+                                                    }
+                                                }catch(e){
+                                                    console.log(e)
+                                                }
                                             }
-                                        }catch(Exception){
-                                            console.log(Exception)
                                         }
-                                        */
-                                        /**
-                                         * @messageDoc is the message json
-                                         * Ideally, you'd just take the messageDoc
-                                         * and feed that into the text toxicity
-                                         */
-                                    });
-                                }catch(Exception){console.log(Exception)}
+                                    }catch(Exception){
+                                        console.log(Exception)
+                                    }
+                                    /**
+                                     * @messageDoc is the message json
+                                     * Ideally, you'd just take the messageDoc
+                                     * and feed that into the text toxicity
+                                     */
+                                });
                             }
                         }
                     );

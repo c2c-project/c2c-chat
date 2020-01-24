@@ -3,14 +3,16 @@ import { mongo } from '..';
 import Accounts from '../../lib/accounts';
 
 /* DB LEVEL CRUD */
-const createMessage = ({ message, userId, username, session }) =>
+const createMessage = ({ message, userId, username, session, toxicity, reason }) =>
     mongo.then(
         db =>
             db.collection('messages').insertOne({
                 message,
                 userId,
                 username,
-                sessionId: session
+                sessionId: session,
+                toxicity,
+                reason
             })
         // close();
     );
@@ -56,6 +58,14 @@ const findMessage = ({ messageId }) =>
     );
 
 
+const updateMessageToxicity = ({ messageId, result, reason}) =>
+    mongo.then(db => {
+        db.collection('messages').updateOne(
+            { _id: messageId },
+            { $set: { 'toxicity': result, 'reason': reason}}
+        );
+        // close();
+    });
 
 /**
  * Actions that a non-owner may take and the permissions required to do so
@@ -86,7 +96,7 @@ const privilegedActions = (action, userDoc) => {
         case 'AUTO_REMOVE_MESSAGE': {
             return messageId => {
                 const message = findMessage({messageId})
-                if(message.toxic){
+                if(message.toxicity){
                     return removeMessage({
                         messageId,
                         reason: 'Auto removed'
@@ -106,5 +116,6 @@ export default {
     updateMessage,
     findMessages,
     findMessage,// 193
+    updateMessageToxicity,
     privilegedActions
 };
