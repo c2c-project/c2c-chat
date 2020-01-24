@@ -22,34 +22,37 @@ export default (function socketioInterface() {
                     JWT.verify(
                         jwt,
                         process.env.JWT_SECRET,
-                        (err, decodedJwt) => {
+                        async (err, decodedJwt) => {
                             if (!err) {
                                 const { username, _id } = decodedJwt;
-                                Chat.createMessage({
-                                    message,
-                                    username,
-                                    userId: _id,
-                                    session: roomId
-                                }).then(async r => {
-                                    const messageDoc = r.ops[0];
-                                    io.of('/chat')
-                                        .to(roomId)
-                                        .emit('message', messageDoc);
-                                    // TODO: 193
-                                    try{
-                                        if(messageDoc){
-                                            const result = await Toxicity.tf_toxicity(messageDoc.message);
+                                try{
+                                    await Chat.createMessage({
+                                        message: message.toString(),
+                                        username: username.toString(),
+                                        userId: _id.toString(),
+                                        session: roomId.toString()
+                                    }).then(r => {
+                                        const messageDoc = r.ops[0];
+                                        io.of('/chat')
+                                            .to(roomId)
+                                            .emit('message', messageDoc);
+                                        /*
+                                        // TODO: 193
+                                        try{
+                                            if(messageDoc){
+                                                const result = await Toxicity.tf_toxicity(messageDoc.message);
+                                            }
+                                        }catch(Exception){
+                                            console.log(Exception)
                                         }
-                                    }catch(Exception){
-                                        console.log(Exception)
-                                    }
-                                    
-                                    /**
-                                     * @messageDoc is the message json
-                                     * Ideally, you'd just take the messageDoc
-                                     * and feed that into the text toxicity
-                                     */
-                                });
+                                        */
+                                        /**
+                                         * @messageDoc is the message json
+                                         * Ideally, you'd just take the messageDoc
+                                         * and feed that into the text toxicity
+                                         */
+                                    });
+                                }catch(Exception){console.log(Exception)}
                             }
                         }
                     );

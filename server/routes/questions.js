@@ -17,7 +17,8 @@ router.post(
             question: form.question,
             sessionId,
             username: user.username,
-            userId: user._id
+            userId: user._id,
+            toxicity: false,
         })
             .then(r => {
                 const questionDoc = r.ops[0];
@@ -27,6 +28,7 @@ router.post(
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
+                
                 // TODO: 193
                 /**
                  * @questionDoc is the question json
