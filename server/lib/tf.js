@@ -12,24 +12,34 @@
  */
 
 import * as toxicity from '@tensorflow-models/toxicity';
-                                                                                                     
-const threshold = 0.8
-async function tf_toxicity(question){
-    const return_value = {};
-    try{
+
+const threshold = 0.8;
+async function tfToxicity(question) {
+    const returnValue = {};
+    const reason = [];
+    try {
         await toxicity.load(threshold).then(async model => {
             await model.classify(question).then(async predictions => {
-                await predictions.forEach(prediction=>{
-                    return_value[prediction.label] = prediction.results[0].match
-                })
-                return return_value;
-            })
-        })
-    }catch(exception){
+                await predictions.forEach(prediction => {
+                    returnValue[prediction.label] = prediction.results[0].match;
+                });
+                return returnValue;
+            });
+        });
+    } catch (exception) {
         return { message: 'fail' };
     }
-    if(return_value !== {}){
-        return return_value
+    if (returnValue !== {}) {
+        if (returnValue.toxicity) {
+            for (let i = 0; i < Object.keys(returnValue).length-1; i+=1){
+                if (Object.values(returnValue)[i]) {
+                    reason.push(Object.keys(returnValue)[i]);
+                }
+            }
+            return [returnValue.toxicity, reason];
+        }
+        return [returnValue.toxicity];
     }
+    return { message: 'fail' };
 }
-export default {tf_toxicity};
+export default { tfToxicity };

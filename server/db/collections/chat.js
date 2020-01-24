@@ -3,14 +3,16 @@ import { mongo } from '..';
 import Accounts from '../../lib/accounts';
 
 /* DB LEVEL CRUD */
-const createMessage = ({ message, userId, username, session }) =>
+const createMessage = ({ message, userId, username, session, toxicity, reason }) =>
     mongo.then(
         db =>
             db.collection('messages').insertOne({
                 message,
                 userId,
                 username,
-                sessionId: session
+                sessionId: session,
+                toxicity,
+                reason
             })
         // close();
     );
@@ -43,6 +45,15 @@ const findMessages = ({ sessionId }) =>
             .find({ sessionId })
             .toArray()
     );
+
+const updateMessageToxicity = ({ messageId, result, reason}) =>
+    mongo.then(db => {
+        db.collection('messages').updateOne(
+            { _id: messageId },
+            { $set: { 'toxicity': result, 'reason': reason}}
+        );
+        // close();
+    });
 
 /**
  * Actions that a non-owner may take and the permissions required to do so
@@ -80,5 +91,6 @@ export default {
     removeMessage,
     updateMessage,
     findMessages,
+    updateMessageToxicity,
     privilegedActions
 };
