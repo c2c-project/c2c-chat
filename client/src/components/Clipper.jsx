@@ -1,11 +1,13 @@
 import React, { useState, useRef , useEffect } from 'react';
 import ReactPlayer from 'react-player';
+import ClipDialog from './ClipDialog';
 // import Grid from './ClipGrid';
 import TimeLine from './TimeLine';
 
 
 function Clipper() {
     const player = useRef();
+    const quickScroll = React.useRef(null);
     const [playVideo, setPlayVideo]  = useState(true);
     const [clipState, setClipState] = useState([
         {
@@ -26,6 +28,9 @@ function Clipper() {
         end: Number.MAX_SAFE_INTEGER,
     });
     useEffect(() => {
+        quickScroll.current.scrollIntoView({
+            behavior: 'smooth'
+        });
         player.current.seekTo(timeFrame.start, 'seconds');
         setPlayVideo(true);
         console.log(`You just changed the time frame to: ${timeFrame.start} and ${timeFrame.end}`);
@@ -50,7 +55,6 @@ function Clipper() {
 
    
     const addToClips = () => {
-
         const newClip = {
             text: 'new Question',
             start: timeStamp,
@@ -76,6 +80,7 @@ function Clipper() {
 
     return (
         <div>
+            <div ref={quickScroll} />
             <ReactPlayer
                 ref={player}
                 url='https://www.youtube.com/watch?v=qJf8N46OEMk'
@@ -90,6 +95,7 @@ function Clipper() {
             <button type='button' onClick={addToClips}>
                 Clip
             </button>
+            <ClipDialog />
             {/* <button type='button' onClick={handleClipEvent}>
                 10 secs
             </button> */}
