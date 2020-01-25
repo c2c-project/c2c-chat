@@ -3,6 +3,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import CurrentQuestionComponent from './CurrentQuestion';
 import Clipper from './Clipper';
+import Stats from './Stats';
 
 export default { title: 'components' };
 
@@ -49,3 +50,8 @@ export const Clips = () => {
     );
 };
 
+export const Statistics = () => {
+    return(
+        <Stats />
+    )
+}
