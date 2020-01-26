@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,18 +8,48 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import RangeSlider from './RangeSlider';
+ 
 
 
-export default function FormDialog() {
+export default function ClipDialog({timeStamp, question, addClip}) {
+    
     const [open, setOpen] = React.useState(false);
-
+    const [clipTime, setClipTime] = React.useState({
+        start: 1,
+        end: 30,
+    });
+    const [newQuestion, setQuestion] = React.useState(question);
+    
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
+        // create new clip
+        
+        const newClip = {
+            text: 'newQuestion',
+            start: clipTime.start,
+            end: clipTime.end,
+            category: {
+                tag: 'medium',
+                color: '#018f69',
+            },
+            link: {
+                text: 'Click Here',
+            }
+        };
+
+        addClip(newClip);
         setOpen(false);
     };
+
+    function handleClipTime(x,y){
+        setClipTime({
+            start:x,
+            end: y,
+        });
+    } 
 
     return (
         <div>
@@ -29,8 +60,7 @@ export default function FormDialog() {
                 <DialogTitle id='form-dialog-title'>Subscribe</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+                        Current Question:
                     </DialogContentText>
                     <TextField
                         autoFocus
@@ -40,7 +70,7 @@ export default function FormDialog() {
                         type='email'
                         fullWidth
                     />
-                    <RangeSlider />
+                    <RangeSlider timeStamp={timeStamp} question={setQuestion} confirm={handleClipTime} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color='primary'>
@@ -54,3 +84,13 @@ export default function FormDialog() {
         </div>
     );
 }
+
+ClipDialog.defaultProps = {
+    timeStamp: 0,
+    question: 'New Question TADA'
+};
+
+ClipDialog.propTypes = {
+    timeStamp: PropTypes.number,
+    question: PropTypes.string,
+};

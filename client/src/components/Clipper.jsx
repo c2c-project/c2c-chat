@@ -54,19 +54,19 @@ function Clipper() {
     };
 
    
-    const addToClips = () => {
-        const newClip = {
-            text: 'new Question',
-            start: timeStamp,
-            end: 15,
-            category: {
-                tag: 'medium',
-                color: '#018f69',
-            },
-            link: {
-                text: 'Click Here',
-            }
-        };
+    const addToClips = (newClip) => {
+        // const newClip = {
+        //     text: 'new Question',
+        //     start: timeStamp,
+        //     end: 15,
+        //     category: {
+        //         tag: 'medium',
+        //         color: '#018f69',
+        //     },
+        //     link: {
+        //         text: 'Click Here',
+        //     }
+        // };
         setClipState([...clipState, newClip]);
     };
 
@@ -95,10 +95,8 @@ function Clipper() {
             <button type='button' onClick={addToClips}>
                 Clip
             </button>
-            <ClipDialog />
-            {/* <button type='button' onClick={handleClipEvent}>
-                10 secs
-            </button> */}
+            <ClipDialog timeStamp={timeStamp} question='New question' addClip={addToClips} />
+            
 
             {/* <Grid ref={grid} clips={clipState} clipEvent={handleClipEvent} playerTime={setPlayerTime} /> */}
             <TimeLine clips={clipState} playerTime={handleSetTimeFrame} />
