@@ -83,7 +83,7 @@ function Clipper() {
             <div ref={quickScroll} />
             <ReactPlayer
                 ref={player}
-                url='https://www.youtube.com/watch?v=qJf8N46OEMk'
+                url='https://www.youtube.com/watch?v=k52HWEr8Rv0'
                 playing={playVideo}
                 width='100%'
                 // heigh=''
@@ -95,7 +95,7 @@ function Clipper() {
             <button type='button' onClick={addToClips}>
                 Clip
             </button>
-            <ClipDialog timeStamp={timeStamp} question='New question' addClip={addToClips} />
+            <ClipDialog timeStamp={timeStamp} addClip={addToClips} />
             
 
             {/* <Grid ref={grid} clips={clipState} clipEvent={handleClipEvent} playerTime={setPlayerTime} /> */}

@@ -18,8 +18,12 @@ export default function ClipDialog({timeStamp, question, addClip}) {
         start: 1,
         end: 30,
     });
-    const [newQuestion, setQuestion] = React.useState(question);
-    
+    const [newQuestion, setQuestion] = React.useState('New Question');
+    const handleNewQuestion = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setQuestion(event.target.value);
+    };
+
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -28,7 +32,7 @@ export default function ClipDialog({timeStamp, question, addClip}) {
         // create new clip
         
         const newClip = {
-            text: 'newQuestion',
+            text: newQuestion,
             start: clipTime.start,
             end: clipTime.end,
             category: {
@@ -54,7 +58,7 @@ export default function ClipDialog({timeStamp, question, addClip}) {
     return (
         <div>
             <Button variant='outlined' color='primary' onClick={handleClickOpen}>
-        Open form dialog
+        Clip v.2
             </Button>
             <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
                 <DialogTitle id='form-dialog-title'>Subscribe</DialogTitle>
@@ -66,11 +70,12 @@ export default function ClipDialog({timeStamp, question, addClip}) {
                         autoFocus
                         margin='dense'
                         id='name'
-                        label='Email Address'
+                        label='edit question here'
                         type='email'
+                        onChange={handleNewQuestion}
                         fullWidth
                     />
-                    <RangeSlider timeStamp={timeStamp} question={setQuestion} confirm={handleClipTime} />
+                    <RangeSlider timeStamp={timeStamp} confirm={handleClipTime} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color='primary'>
