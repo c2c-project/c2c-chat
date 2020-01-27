@@ -25,7 +25,7 @@ const createQuestion = ({ question, sessionId, username, userId, toxicity, reaso
             .collection('questions')
             .insertOne({ question, sessionId, username, userId, toxicity, reason  })
     );
-//193
+// 193
 
 const removeQuestion = ({ questionId, reason }) =>
     mongo.then(
@@ -42,7 +42,7 @@ const updateQuestionToxicity = ({ questionId, result, reason}) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
             { _id: questionId },
-            { $set: { 'toxicity': result, 'reason': reason}}
+            { $set: { 'toxicity': result, 'toxic_reason': reason}}
         );
         // close();
     });
