@@ -51,6 +51,10 @@ export default (function socketioInterface() {
                                                     if(result) {
                                                         reason =  await tfResult[1];
                                                         await Chat.updateMessageToxicity({messageId, result, reason})
+                                                        Chat.removeMessage({
+                                                            messageId,
+                                                            reason: 'Auto removed'
+                                                        });
                                                     } else {
                                                         await Chat.updateMessageToxicity({messageId, result})
                                                     }
