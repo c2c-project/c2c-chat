@@ -70,13 +70,14 @@ const privilegedActions = (action, userDoc) => {
         }
         case 'AUTO_REMOVE_QUESTION': {
             return questionId => {
-                const question = findById({questionId})
+                const question = findById({questionId});
                 if(question.toxicity){
                     return removeQuestion({
                         questionId,
                         reason: 'Auto removed'
                     });
                 }
+                return Promise.reject(Error('Not allowed'));
             };
         }
         default: {
