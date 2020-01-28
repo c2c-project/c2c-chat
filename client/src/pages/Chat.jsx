@@ -224,51 +224,49 @@ export default function Chat() {
             </Slide>
         </Grid>
     );
+
+    const speakerView = (
+        <GateKeep
+            local
+            permissions={{ requiredAny: ['speaker'] }}
+            elseRender={unprivilegedView}
+        >
+            <Grid container className={classes.root}>
+                <Grid item xs={12}>
+                    <Grid container className={classes.root} justify='center'>
+                        <Slide in direction='right' timeout={300}>
+                            <Grid
+                                container
+                                item
+                                xs={12}
+                                md={6}
+                                className={classes.height}
+                                justify='center'
+                            >
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={10}
+                                    className={classes.video}
+                                >
+                                    <Video
+                                        roomId={roomId}
+                                        url={sessionData.url}
+                                        disableQuestion
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Slide>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </GateKeep>
+    );
     return (
         <GateKeep
             local
             permissions={{ requiredAny: ['moderator', 'admin'] }}
-            elseRender={
-                <GateKeep
-                    local
-                    permissions={{ requiredAny: ['speaker'] }}
-                    elseRender={unprivilegedView}
-                >
-                    <Grid container className={classes.root}>
-                        <Grid item xs={12}>
-                            <Grid
-                                container
-                                className={classes.root}
-                                justify='center'
-                            >
-                                <Slide in direction='right' timeout={300}>
-                                    <Grid
-                                        container
-                                        item
-                                        xs={12}
-                                        md={6}
-                                        className={classes.height}
-                                        justify='center'
-                                    >
-                                        <Grid
-                                            item
-                                            xs={12}
-                                            md={10}
-                                            className={classes.video}
-                                        >
-                                            <Video
-                                                roomId={roomId}
-                                                url={sessionData.url}
-                                                disableQuestion
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                </Slide>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </GateKeep>
-            }
+            elseRender={speakerView}
         >
             {modView}
         </GateKeep>
