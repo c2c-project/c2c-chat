@@ -46,7 +46,7 @@ function Clipper() {
         }
     },[timeStamp]);
 
-
+    //function is passed to the React-Player
     const handleTimeStamp = ({ played, loaded, playedSeconds, loadedSeconds}) => {
         // console.log(played);
         document.getElementById('header').innerHTML = playedSeconds;
@@ -55,18 +55,7 @@ function Clipper() {
 
    
     const addToClips = (newClip) => {
-        // const newClip = {
-        //     text: 'new Question',
-        //     start: timeStamp,
-        //     end: 15,
-        //     category: {
-        //         tag: 'medium',
-        //         color: '#018f69',
-        //     },
-        //     link: {
-        //         text: 'Click Here',
-        //     }
-        // };
+        
         setClipState([...clipState, newClip]);
     };
 
@@ -91,16 +80,11 @@ function Clipper() {
                 onProgress={handleTimeStamp}
             />
             <h1 id='header'>Hello World</h1>
-
-            <button type='button' onClick={addToClips}>
-                Clip
-            </button>
-            <ClipDialog timeStamp={timeStamp} addClip={addToClips} />
+            <ClipDialog timeStamp={timeStamp} addClip={addToClips} editMode={false} />
             
 
             {/* <Grid ref={grid} clips={clipState} clipEvent={handleClipEvent} playerTime={setPlayerTime} /> */}
-            <TimeLine clips={clipState} playerTime={handleSetTimeFrame} />
-
+            <TimeLine playerRef={player} clips={clipState} playerTime={handleSetTimeFrame} />
         </div>
     );
 }

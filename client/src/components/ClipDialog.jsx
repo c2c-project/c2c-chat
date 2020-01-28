@@ -11,7 +11,7 @@ import RangeSlider from './RangeSlider';
  
 
 
-export default function ClipDialog({timeStamp, question, addClip}) {
+export default function ClipDialog({timeStamp, question, addClip, editMode}) {
     
     const [open, setOpen] = React.useState(false);
     const [clipTime, setClipTime] = React.useState({
@@ -30,21 +30,6 @@ export default function ClipDialog({timeStamp, question, addClip}) {
 
     const handleClose = () => {
         // create new clip
-        
-        const newClip = {
-            text: newQuestion,
-            start: clipTime.start,
-            end: clipTime.end,
-            category: {
-                tag: 'medium',
-                color: '#018f69',
-            },
-            link: {
-                text: 'Click Here',
-            }
-        };
-
-        addClip(newClip);
         setOpen(false);
     };
 
@@ -53,7 +38,34 @@ export default function ClipDialog({timeStamp, question, addClip}) {
             start:x,
             end: y,
         });
-    } 
+    }
+
+    //add or edit clip
+    
+    const confirmAction = () => {
+        if(editMode){
+            handleClose();
+        }
+        else{
+            const newClip = {
+                text: newQuestion,
+                start: clipTime.start,
+                end: clipTime.end,
+                category: {
+                    tag: 'medium',
+                    color: '#018f69',
+                },
+                link: {
+                    text: 'Click Here',
+                }
+            };
+            addClip(newClip);
+        }
+
+        handleClose();
+    }
+
+
 
     return (
         <div>
@@ -81,8 +93,8 @@ export default function ClipDialog({timeStamp, question, addClip}) {
                     <Button onClick={handleClose} color='primary'>
             Cancel
                     </Button>
-                    <Button onClick={handleClose} color='primary'>
-            Subscribe
+                    <Button onClick={confirmAction} color='primary'>
+            Confirm
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 
 
-export default function TimeLineItem({data, playerTime}) {
+export default function TimeLineItem({data, currentClip, playerTime}) {
  
 
     return(
@@ -20,7 +20,8 @@ export default function TimeLineItem({data, playerTime}) {
                 {/* <Button onClick={clipEvent}> Click Here</Button> */}
                 <Button onClick={() => {
                     playerTime(data.start, data.end);
-                    // clipEvent();
+                    // set current clip
+                    currentClip(data);
                 }}
                 >
                 Click Here
@@ -31,4 +32,4 @@ export default function TimeLineItem({data, playerTime}) {
         // <h1>Hello World</h1>
     );
 }
-    
+     
