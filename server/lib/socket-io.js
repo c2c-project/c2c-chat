@@ -2,6 +2,7 @@ import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
 import Chat from '../db/collections/chat';
 import Toxicity from './tf';
+
 // NOTE: it's probably better to use a session rather than jwt's for a chat
 // but not expecting high enough volume for it to  matter right now
 export default (function socketioInterface() {
@@ -50,7 +51,10 @@ export default (function socketioInterface() {
                                                     if(result) {
                                                         reason =  await tfResult[1];
                                                         await Chat.updateMessageToxicity({messageId, result, reason})
-                                                        
+                                                        Chat.removeMessage({
+                                                            messageId,
+                                                            reason: 'Auto removed'
+                                                        });
                                                     } else {
                                                         await Chat.updateMessageToxicity({messageId, result})
                                                     }
