@@ -95,13 +95,10 @@ const privilegedActions = (action, userDoc) => {
         
         case 'AUTO_REMOVE_MESSAGE': {
             return messageId => {
-                const message = findMessage({messageId})
-                if(message.toxicity){
-                    return removeMessage({
-                        messageId,
-                        reason: 'Auto removed'
-                    });
-                }
+                return removeMessage({
+                    messageId,
+                    reason: 'Auto removed'
+                });
             };
         }
         default: {

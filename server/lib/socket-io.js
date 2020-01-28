@@ -51,10 +51,14 @@ export default (function socketioInterface() {
                                                     if(result) {
                                                         toxicityReason =  await tfResult[1];
                                                         await Chat.updateMessageToxicity({messageId, result, toxicityReason})
-                                                        Chat.removeMessage({
-                                                            messageId,
-                                                            reason: 'Auto removed'
-                                                        });
+                                                        const removeMessage = Chat.privilegedActions('AUTO_REMOVE_MESSAGE', '');
+                                                        removeMessage(messageId)
+                                                            .then(() => {
+                                                                io
+                                                                    .of('/chat')
+                                                                    .to(roomId)
+                                                                    .emit('moderate', messageId);
+                                                            });
                                                     } else {
                                                         await Chat.updateMessageToxicity({messageId, result})
                                                     }
