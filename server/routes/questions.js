@@ -14,7 +14,7 @@ router.post(
         const { user } = req;
         const { form, sessionId } = req.body;
         const toxicity = false;
-        let reason = [];
+        let toxicityReason = [];
         // anyone can ask a question as long as they're logged in, so no need for additional checks atm
         Questions.createQuestion({
             question: form.question,
@@ -22,7 +22,7 @@ router.post(
             username: user.username,
             userId: user._id,
             toxicity,
-            reason
+            toxicityReason
         })
             .then( async r => {
                 const questionDoc = r.ops[0];
@@ -40,8 +40,8 @@ router.post(
                         if (result !== toxicity) {
                             try{
                                 if(result) {
-                                    reason =  await tfResult[1];
-                                    await Questions.updateQuestionToxicity({questionId, result, reason})
+                                    toxicityReason =  await tfResult[1];
+                                    await Questions.updateQuestionToxicity({questionId, result, toxicityReason})
                                 } else {
                                     await Questions.updateQuestionToxicity({questionId, result})
                                 }

@@ -27,14 +27,14 @@ export default (function socketioInterface() {
                             if (!err) {
                                 const { username, _id } = decodedJwt;
                                 const toxicity = false;
-                                let reason = [];
+                                let toxicityReason = [];
                                 Chat.createMessage({
                                     message,
                                     username,
                                     userId: _id,
                                     session: roomId,
                                     toxicity,
-                                    reason
+                                    toxicityReason
                                 }).then( async r => {
                                     const messageDoc = r.ops[0];
                                     const messageId = messageDoc._id;
@@ -49,8 +49,8 @@ export default (function socketioInterface() {
                                             if (result !== toxicity) {
                                                 try{
                                                     if(result) {
-                                                        reason =  await tfResult[1];
-                                                        await Chat.updateMessageToxicity({messageId, result, reason})
+                                                        toxicityReason =  await tfResult[1];
+                                                        await Chat.updateMessageToxicity({messageId, result, toxicityReason})
                                                         Chat.removeMessage({
                                                             messageId,
                                                             reason: 'Auto removed'

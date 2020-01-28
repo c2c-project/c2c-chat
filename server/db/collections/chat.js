@@ -3,7 +3,7 @@ import { mongo } from '..';
 import Accounts from '../../lib/accounts';
 
 /* DB LEVEL CRUD */
-const createMessage = ({ message, userId, username, session, toxicity, reason }) =>
+const createMessage = ({ message, userId, username, session, toxicity, toxicityReason }) =>
     mongo.then(
         db =>
             db.collection('messages').insertOne({
@@ -12,7 +12,7 @@ const createMessage = ({ message, userId, username, session, toxicity, reason })
                 username,
                 sessionId: session,
                 toxicity,
-                reason
+                toxicityReason
             })
         // close();
     );
@@ -57,11 +57,11 @@ const findMessage = ({ messageId }) =>
     );
 
 
-const updateMessageToxicity = ({ messageId, result, reason}) =>{
+const updateMessageToxicity = ({ messageId, result, toxicityReason}) =>{
     mongo.then(db => {
         db.collection('messages').updateOne(
             { _id: messageId },
-            { $set: { 'toxicity': result, 'reason': reason}}
+            { $set: { 'toxicity': result, 'toxicityReason': toxicityReason}}
         );
         // close();
     });

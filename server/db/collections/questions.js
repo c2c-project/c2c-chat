@@ -19,11 +19,11 @@ const findBySession = ({ sessionId }) =>
             .toArray()
     );
 
-const createQuestion = ({ question, sessionId, username, userId, toxicity, reason }) =>
+const createQuestion = ({ question, sessionId, username, userId, toxicity, toxicityReason }) =>
     mongo.then(db =>
         db
             .collection('questions')
-            .insertOne({ question, sessionId, username, userId, toxicity, reason  })
+            .insertOne({ question, sessionId, username, userId, toxicity, toxicityReason  })
     );
 // 193
 
@@ -38,11 +38,11 @@ const removeQuestion = ({ questionId, reason }) =>
             )
         // close();
     );
-const updateQuestionToxicity = ({ questionId, result, reason}) =>
+const updateQuestionToxicity = ({ questionId, result, toxicityReason}) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
             { _id: questionId },
-            { $set: { 'toxicity': result, 'toxic_reason': reason}}
+            { $set: { 'toxicity': result, 'toxicityReason': toxicityReason}}
         );
         // close();
     });
