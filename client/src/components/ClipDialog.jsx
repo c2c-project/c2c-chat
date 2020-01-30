@@ -8,15 +8,18 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import RangeSlider from './RangeSlider';
+import Fab from './Fab';
+import { useEffect } from 'react';
+
  
 
 
-export default function ClipDialog({timeStamp, question, addClip, editMode}) {
+export default function ClipDialog({timeStamp, addClip, currentClip, setCurrentClip, editClips, editMode, editModeOff}) {
     
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(editMode);
     const [clipTime, setClipTime] = React.useState({
-        start: 1,
-        end: 30,
+        start: currentClip.start,
+        end: currentClip.end,
     });
     const [newQuestion, setQuestion] = React.useState('New Question');
     const handleNewQuestion = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +33,12 @@ export default function ClipDialog({timeStamp, question, addClip, editMode}) {
 
     const handleClose = () => {
         // create new clip
+        editModeOff();
         setOpen(false);
+    };
+
+    const handleAddingClip = () => {
+        handleClickOpen();
     };
 
     function handleClipTime(x,y){
@@ -41,12 +49,7 @@ export default function ClipDialog({timeStamp, question, addClip, editMode}) {
     }
 
     //add or edit clip
-    
     const confirmAction = () => {
-        if(editMode){
-            handleClose();
-        }
-        else{
             const newClip = {
                 text: newQuestion,
                 start: clipTime.start,
@@ -59,6 +62,12 @@ export default function ClipDialog({timeStamp, question, addClip, editMode}) {
                     text: 'Click Here',
                 }
             };
+        if(editMode){
+            //modify currentClip
+            console.log(`editing the clip: ${currentClip.text}`);
+            editClips(clipTime);
+        }
+        else{
             addClip(newClip);
         }
 
@@ -69,10 +78,20 @@ export default function ClipDialog({timeStamp, question, addClip, editMode}) {
 
     return (
         <div>
-            <Button variant='outlined' color='primary' onClick={handleClickOpen}>
+            {/* <Button variant='outlined' color='primary' onClick={handleClickOpen}>
         Clip v.2
-            </Button>
-            <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
+            </Button> */}
+            <Fab  onClick={() =>{
+                //create new initial clip. 
+                setClipTime({
+                    start: timeStamp,
+                    end: timeStamp + 30,
+                })
+                handleClickOpen();
+
+                
+            }}/>
+            <Dialog open={open || editMode} onClose={handleClose} aria-labelledby='form-dialog-title'>
                 <DialogTitle id='form-dialog-title'>Subscribe</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -87,14 +106,14 @@ export default function ClipDialog({timeStamp, question, addClip, editMode}) {
                         onChange={handleNewQuestion}
                         fullWidth
                     />
-                    <RangeSlider timeStamp={timeStamp} confirm={handleClipTime} />
+                    <RangeSlider timeStamp={clipTime} confirm={handleClipTime} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color='primary'>
-            Cancel
+                        Cancel
                     </Button>
                     <Button onClick={confirmAction} color='primary'>
-            Confirm
+                        Confirm
                     </Button>
                 </DialogActions>
             </Dialog>

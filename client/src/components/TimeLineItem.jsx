@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 
 
-export default function TimeLineItem({data, currentClip, playerTime}) {
+export default function TimeLineItem({data, currentClip, playerTime, editModeOn}) {
  
 
     return(
@@ -25,6 +25,15 @@ export default function TimeLineItem({data, currentClip, playerTime}) {
                 }}
                 >
                 Click Here
+                </Button>
+                <Button
+                    onClick={() => {
+                        editModeOn();
+                        currentClip(data);
+                    }} 
+                    className='timeline-item-edit'
+                >
+                    Edit
                 </Button>
                 <span className='circle' />
             </div>

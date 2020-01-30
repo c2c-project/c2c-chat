@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
-import { useEffect } from 'react';
+
 
 const useStyles = makeStyles({
     root: {
@@ -18,10 +18,11 @@ function valuetext(value) {
     return `${minutes}:${sec}`;
 }
 
-export default function RangeSlider({timeStamp, question, confirm}) {
+export default function RangeSlider({timeStamp, confirm}) {
     const classes = useStyles();
-    const curr = parseInt(timeStamp);
-    const [value, setValue] = React.useState([curr, curr + 30]) ;
+    const initStart = parseInt(timeStamp.start);
+    const initEnd = parseInt(timeStamp.end);
+    const [value, setValue] = React.useState([initStart, initEnd]) ;
     useEffect(() => {
         confirm(value[0],value[1]);
     },[value]);
@@ -36,7 +37,7 @@ export default function RangeSlider({timeStamp, question, confirm}) {
             </Typography>
             <Slider
                 min={0}
-                max={curr + 60}
+                max={initEnd + 60}
                 value={value}
                 onChange={handleChange}
                 valueLabelDisplay='auto'

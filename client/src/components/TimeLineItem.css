@@ -81,7 +81,7 @@ h1 {
 }
 
 .timeline-item-content:hover {
-    transform: scale(1.02);
+    transform: scale(1.01);
     z-index: 1;
 }
 

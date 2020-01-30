@@ -1,6 +1,5 @@
 import React, { useState, useRef , useEffect } from 'react';
 import ReactPlayer from 'react-player';
-import ClipDialog from './ClipDialog';
 // import Grid from './ClipGrid';
 import TimeLine from './TimeLine';
 
@@ -9,20 +8,7 @@ function Clipper() {
     const player = useRef();
     const quickScroll = React.useRef(null);
     const [playVideo, setPlayVideo]  = useState(true);
-    const [clipState, setClipState] = useState([
-        {
-            text: 'Practice Clip',
-            start: '0',
-            end: '20',
-            category: {
-                tag: 'medium',
-                color: '#018f69',
-            },
-            link: {
-                text: 'Click Here',
-            }
-        },
-    ]);
+    
     const [timeFrame, setTimeFrame] = useState({
         start: 0,
         end: Number.MAX_SAFE_INTEGER,
@@ -52,13 +38,6 @@ function Clipper() {
         document.getElementById('header').innerHTML = playedSeconds;
         setTimeStamp(playedSeconds);
     };
-
-   
-    const addToClips = (newClip) => {
-        
-        setClipState([...clipState, newClip]);
-    };
-
     const handleSetTimeFrame = (beginClip, endClip) => {
         // unessessary for a re-render to seek this time.
         setTimeFrame({
@@ -77,14 +56,14 @@ function Clipper() {
                 width='100%'
                 // heigh=''
                 playsinline
-                onProgress={handleTimeStamp}
-            />
-            <h1 id='header'>Hello World</h1>
-            <ClipDialog timeStamp={timeStamp} addClip={addToClips} editMode={false} />
+                onProgress={handleTimeStamp} />
             
-
-            {/* <Grid ref={grid} clips={clipState} clipEvent={handleClipEvent} playerTime={setPlayerTime} /> */}
-            <TimeLine playerRef={player} clips={clipState} playerTime={handleSetTimeFrame} />
+            <h1 id='header'>Hello World</h1>
+            
+            <TimeLine 
+                playerRef={player}
+                timeStamp={timeStamp}
+                playerTime={handleSetTimeFrame} />
         </div>
     );
 }
