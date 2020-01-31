@@ -3,16 +3,14 @@ import { mongo } from '..';
 import Accounts from '../../lib/accounts';
 
 /* DB LEVEL CRUD */
-const createMessage = ({ message, userId, username, session, toxicity, toxicityReason }) =>
+const createMessage = ({ message, userId, username, session }) =>
     mongo.then(
         db =>
             db.collection('messages').insertOne({
                 message,
                 userId,
                 username,
-                sessionId: session,
-                toxicity,
-                toxicityReason
+                sessionId: session
             })
         // close();
     );
@@ -46,27 +44,6 @@ const findMessages = ({ sessionId }) =>
             .toArray()
     );
 
-// 193
-const findMessage = ({ messageId }) =>
-    mongo.then(db =>
-        db
-            .collection('messages')
-            .find({ messageId })
-            .toArray()
-            .then(x => x[0])
-    );
-
-
-const updateMessageToxicity = ({ messageId, result, toxicityReason}) =>{
-    mongo.then(db => {
-        db.collection('messages').updateOne(
-            { _id: messageId },
-            { $set: { 'toxicity': result, 'toxicityReason': toxicityReason}}
-        );
-        // close();
-    });
-}
-
 /**
  * Actions that a non-owner may take and the permissions required to do so
  */
@@ -92,15 +69,6 @@ const privilegedActions = (action, userDoc) => {
                 return Promise.reject(Error('Not allowed'));
             };
         }
-        
-        case 'AUTO_REMOVE_MESSAGE': {
-            return messageId => {
-                return removeMessage({
-                    messageId,
-                    reason: 'Auto removed'
-                });
-            };
-        }
         default: {
             throw new TypeError('Invalid action');
         }
@@ -112,7 +80,5 @@ export default {
     removeMessage,
     updateMessage,
     findMessages,
-    findMessage,// 193
-    updateMessageToxicity,
     privilegedActions
 };
