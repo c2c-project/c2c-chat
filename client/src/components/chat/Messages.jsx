@@ -42,10 +42,21 @@ function Messages({ messages, variant }) {
     const [targetMsg, setTargetMsg] = React.useState(null);
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
     const scrollToBottom = () => {
-        lastMessageRef.current.scrollIntoView({
-            behavior: 'smooth'
-        });
+        let isMounted = true;
+        const scroll = () =>
+            isMounted &&
+            lastMessageRef.current.scrollIntoView({
+                behavior: 'smooth'
+            });
+        if (isMounted) {
+            // TODO: make this less trash
+            setTimeout(scroll, 350);
+        }
+        return () => {
+            isMounted = false;
+        };
     };
+    
     React.useEffect(() => {
         let isMounted = true;
         fetch('/api/users/authenticate', {
@@ -66,6 +77,7 @@ function Messages({ messages, variant }) {
             isMounted = false;
         };
     }, [jwt]);
+
     React.useEffect(scrollToBottom, [messages]);
 
     return (

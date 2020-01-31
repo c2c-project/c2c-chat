@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Grow from '@material-ui/core/Grow';
 import useSnack from '../hooks/useSnack';
+import banner from '../assets/spp-banner.png';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,6 +18,10 @@ const useStyles = makeStyles(theme => ({
     paper: {
         marginTop: '-64px', // slight offset to make the component feel more vertically centered
         padding: theme.spacing(2)
+    },
+    img: {
+        width: '100%',
+        height: 'auto'
     }
 }));
 
@@ -71,6 +76,11 @@ export default function Loginpage() {
                     justify='center'
                 >
                     <Paper className={classes.paper}>
+                        <img
+                            className={classes.img}
+                            src={banner}
+                            alt='spp-banner'
+                        />
                         <form onSubmit={handleSubmit}>
                             <Grid
                                 container
@@ -102,6 +112,7 @@ export default function Loginpage() {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Button
+                                        color='primary'
                                         fullWidth
                                         type='submit'
                                         variant='contained'
