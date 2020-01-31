@@ -28,8 +28,9 @@ export default function TimeLineItem({data, currentClip, playerTime, editModeOn}
                 </Button>
                 <Button
                     onClick={() => {
-                        editModeOn();
                         currentClip(data);
+                        editModeOn();
+                        
                     }} 
                     className='timeline-item-edit'
                 >

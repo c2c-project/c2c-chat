@@ -25,7 +25,7 @@ export default function TimeLine({timeStamp, playerTime}) {
 
     const [currClip, setCurrClip] = React.useState(clips[0]);
     useEffect(() => {
-        console.log(`Current item: ${currClip.text}`);
+        console.log(`Current    item: ${currClip.text}`);
     },[currClip]);
     const [editMode, setEditMode] = useState(false);
     useEffect(() => {
@@ -49,6 +49,7 @@ export default function TimeLine({timeStamp, playerTime}) {
             if(clip.text === currClip.text){
                 clip.start = x.start;
                 clip.end = x.end;
+                clip.text = x.question;
             }
             return clip;
         });
@@ -62,7 +63,7 @@ export default function TimeLine({timeStamp, playerTime}) {
             <ClipDialog
                 timeStamp={timeStamp}
                 addClip={addToClips}
-                currentClip={currClip}
+                currentClip={{...currClip}}
                 editClips={editClips}
                 editMode={editMode}
                 editModeOff={editModeOff}

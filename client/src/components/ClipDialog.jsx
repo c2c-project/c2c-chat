@@ -14,13 +14,14 @@ import { useEffect } from 'react';
  
 
 
-export default function ClipDialog({timeStamp, addClip, currentClip, setCurrentClip, editClips, editMode, editModeOff}) {
+export default function ClipDialog({timeStamp, addClip, currentClip, editClips, editMode, editModeOff}) {
     
     const [open, setOpen] = React.useState(editMode);
     const [clipTime, setClipTime] = React.useState({
         start: currentClip.start,
         end: currentClip.end,
     });
+
     const [newQuestion, setQuestion] = React.useState('New Question');
     const handleNewQuestion = (event: React.ChangeEvent<HTMLInputElement>) => {
         setQuestion(event.target.value);
@@ -45,6 +46,7 @@ export default function ClipDialog({timeStamp, addClip, currentClip, setCurrentC
         setClipTime({
             start:x,
             end: y,
+            question: newQuestion,
         });
     }
 
@@ -65,6 +67,7 @@ export default function ClipDialog({timeStamp, addClip, currentClip, setCurrentC
         if(editMode){
             //modify currentClip
             console.log(`editing the clip: ${currentClip.text}`);
+            setClipTime({...clipTime, question: newQuestion});
             editClips(clipTime);
         }
         else{
