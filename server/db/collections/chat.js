@@ -46,16 +46,6 @@ const findMessages = ({ sessionId }) =>
             .toArray()
     );
 
-// 193
-const findMessage = ({ messageId }) =>
-    mongo.then(db =>
-        db
-            .collection('messages')
-            .find({ messageId })
-            .toArray()
-            .then(x => x[0])
-    );
-
 
 const updateMessageToxicity = ({ messageId, result, toxicityReason}) =>{
     mongo.then(db => {
@@ -112,7 +102,6 @@ export default {
     removeMessage,
     updateMessage,
     findMessages,
-    findMessage,// 193
     updateMessageToxicity,
     privilegedActions
 };

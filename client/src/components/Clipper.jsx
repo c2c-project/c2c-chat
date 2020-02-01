@@ -1,67 +1,78 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef , useEffect } from 'react';
 import ReactPlayer from 'react-player';
 // import Grid from './ClipGrid';
 import TimeLine from './TimeLine';
 
+
 function Clipper() {
-    const [timeStamp, setTimeStamp] = useState(false);
     const player = useRef();
-    const  [playVideo, setPlayVideo]  = useState(true);
+    const [playVideo, setPlayVideo]  = useState(true);
     const [clipState, setClipState] = useState([
         {
-            text: 'First Blog Post',
-            date: 'March 3 2017',
+            text: 'Practice Clip',
+            start: '0',
+            end: '20',
             category: {
                 tag: 'medium',
                 color: '#018f69',
             },
             link: {
-                url: 'https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                 text: 'Click Here',
             }
         },
     ]);
+    const [timeFrame, setTimeFrame] = useState({
+        start: 0,
+        end: Number.MAX_SAFE_INTEGER,
+    });
+    useEffect(() => {
+        player.current.seekTo(timeFrame.start, 'seconds');
+        setPlayVideo(true);
+        console.log(`You just changed the time frame to: ${timeFrame.start} and ${timeFrame.end}`);
+        
 
-    const handleTimeStamp = ({
-        // eslint-disable-next-line no-unused-vars
-        played,
-        // eslint-disable-next-line no-unused-vars
-        loaded,
-        playedSeconds,
-        // eslint-disable-next-line no-unused-vars
-        loadedSeconds
-    }) => {
+    },[timeFrame]);
+
+    const [timeStamp, setTimeStamp] = useState(false);
+    useEffect(() => {
+        if(timeStamp != null && timeStamp >= timeFrame.end){
+            player.current.seekTo(timeFrame.start, 'seconds');
+            setPlayVideo(true);
+        }
+    },[timeStamp]);
+
+
+    const handleTimeStamp = ({ played, loaded, playedSeconds, loadedSeconds}) => {
         // console.log(played);
         document.getElementById('header').innerHTML = playedSeconds;
         setTimeStamp(playedSeconds);
     };
 
+   
     const addToClips = () => {
 
         const newClip = {
             text: 'new Question',
-            date: timeStamp,
+            start: timeStamp,
+            end: 15,
             category: {
                 tag: 'medium',
                 color: '#018f69',
             },
             link: {
-                url: 'https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                 text: 'Click Here',
             }
         };
         setClipState([...clipState, newClip]);
     };
 
-
-    const handleSetPlayerTime = (x) => {
+    const handleSetTimeFrame = (beginClip, endClip) => {
         // unessessary for a re-render to seek this time.
-        // setPlayerTime(x);
-        // console.log(currPlayerTime);
-        player.current.seekTo(x, 'seconds');
-        setPlayVideo(true);  
+        setTimeFrame({
+            start: beginClip,
+            end: endClip,
+        });
     };
-
 
     return (
         <div>
@@ -84,7 +95,7 @@ function Clipper() {
             </button> */}
 
             {/* <Grid ref={grid} clips={clipState} clipEvent={handleClipEvent} playerTime={setPlayerTime} /> */}
-            <TimeLine clips={clipState} playerTime={handleSetPlayerTime} />
+            <TimeLine clips={clipState} playerTime={handleSetTimeFrame} />
 
         </div>
     );

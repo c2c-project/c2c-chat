@@ -12,14 +12,14 @@ export default function TimeLineItem({data, playerTime}) {
                 <span className='tag' style={{background: data.category.color}}>
                     {data.category.tag}
                 </span>
-                <time>{data.date}</time>
+                <time>{data.start}</time>
                 <p>{data.text}</p>
                 {/* <a href={data.link.url}>
                     {data.link.text}
                 </a> */}
                 {/* <Button onClick={clipEvent}> Click Here</Button> */}
                 <Button onClick={() => {
-                    playerTime(data.date);
+                    playerTime(data.start, data.end);
                     // clipEvent();
                 }}
                 >
