@@ -30,7 +30,8 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "storybook": "start-storybook --port 3003"
+        "storybook": "start-storybook --port 3003",
+        "postbuild": "mkdir ../server/dist/client && mv build ../server/dist/client"
     },
     "browserslist": {
         "production": [

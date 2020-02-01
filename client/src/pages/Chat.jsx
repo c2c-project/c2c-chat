@@ -16,7 +16,7 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
-import Speaker from '../components/Speaker';
+// import Speaker from '../components/Speaker';
 // import ModDashboard from '../components/ModDashboard';
 
 const useVideoStyles = makeStyles(theme => ({
@@ -41,7 +41,7 @@ const useVideoStyles = makeStyles(theme => ({
 }));
 
 // eslint-disable-next-line
-const Video = ({ roomId, url }) => {
+const Video = ({ roomId, url, disableQuestion }) => {
     const classes = useVideoStyles();
     const [isOpen, setOpen] = React.useState(false);
     return (
@@ -56,16 +56,18 @@ const Video = ({ roomId, url }) => {
                     </Grid>
                 </Hidden>
                 <Grid item xs={12}>
-                    <div className={classes.btn}>
-                        <Button
-                            onClick={() => setOpen(true)}
-                            fullWidth
-                            variant='contained'
-                            color='primary'
-                        >
-                            Ask a Question
-                        </Button>
-                    </div>
+                    {!disableQuestion && (
+                        <div className={classes.btn}>
+                            <Button
+                                onClick={() => setOpen(true)}
+                                fullWidth
+                                variant='contained'
+                                color='primary'
+                            >
+                                Ask a Question
+                            </Button>
+                        </div>
+                    )}
                     <Dialog open={isOpen} onClose={() => setOpen(false)}>
                         <Container
                             maxWidth='md'
@@ -222,23 +224,49 @@ export default function Chat() {
             </Slide>
         </Grid>
     );
+
+    const speakerView = (
+        <GateKeep
+            local
+            permissions={{ requiredAny: ['speaker'] }}
+            elseRender={unprivilegedView}
+        >
+            <Grid container className={classes.root}>
+                <Grid item xs={12}>
+                    <Grid container className={classes.root} justify='center'>
+                        <Slide in direction='right' timeout={300}>
+                            <Grid
+                                container
+                                item
+                                xs={12}
+                                md={6}
+                                className={classes.height}
+                                justify='center'
+                            >
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={10}
+                                    className={classes.video}
+                                >
+                                    <Video
+                                        roomId={roomId}
+                                        url={sessionData.url}
+                                        disableQuestion
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Slide>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </GateKeep>
+    );
     return (
         <GateKeep
             local
             permissions={{ requiredAny: ['moderator', 'admin'] }}
-            elseRender={
-                <GateKeep
-                    local
-                    permissions={{ requiredAny: ['speaker'] }}
-                    elseRender={unprivilegedView}
-                >
-                    <Grid container className={classes.root}>
-                        <Grid item xs={12}>
-                            <Speaker />
-                        </Grid>
-                    </Grid>
-                </GateKeep>
-            }
+            elseRender={speakerView}
         >
             {modView}
         </GateKeep>

@@ -17,6 +17,7 @@ import DateTimePicker from '../components/DateTimePicker';
 import PageContainer from '../layout/PageContainer';
 import GateKeep from '../components/GateKeep';
 import useSnack from '../hooks/useSnack';
+import useJwt from '../hooks/useJwt';
 
 function SessionForm({ type, onSubmit: cb, editTarget }) {
     const [state, setState] = React.useState({
@@ -26,9 +27,14 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
         description: '',
         url: ''
     });
+    const [jwt] = useJwt();
     React.useEffect(() => {
         if (type === 'update') {
-            fetch(`/api/sessions/find/${editTarget}`).then(res =>
+            fetch(`/api/sessions/find/${editTarget}`, {
+                headers: {
+                    Authorization: `bearer ${jwt}`
+                }
+            }).then(res =>
                 res.json().then(r => {
                     setState({
                         speaker: r.speaker,
@@ -51,6 +57,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                     ? JSON.stringify({ form: state })
                     : JSON.stringify({ form: state, sessionId: editTarget }),
             headers: {
+                Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'
             }
         }).then(() => {
@@ -171,8 +178,13 @@ export default function Sessions() {
     const [force, refetch] = React.useReducer(x => x + 1, 0);
     const [anchorEl, setAnchor] = React.useState(null);
     const [target, setTarget] = React.useState(null);
+    const [jwt] = useJwt();
     React.useEffect(() => {
-        fetch('/api/sessions/find').then(res => {
+        fetch('/api/sessions/find', {
+            headers: {
+                Authorization: `bearer ${jwt}`
+            }
+        }).then(res => {
             res.json().then(r => setData(r));
         });
     }, [force]);
@@ -203,6 +215,7 @@ export default function Sessions() {
             method: 'POST',
             body: JSON.stringify({ sessionId: target }),
             headers: {
+                Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'
             }
         })
