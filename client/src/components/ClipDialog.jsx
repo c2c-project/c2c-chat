@@ -9,24 +9,40 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import RangeSlider from './RangeSlider';
 import Fab from './Fab';
-import { useEffect } from 'react';
+import FullScreenDialog from './Dialoag';
 
- 
+export default function ClipDialog({
+    timeStamp,
+    addClip,
+    currentClip,
+    editClips,
+    editMode,
+    editModeOff
+}) {
+    const initForm = {
+        start: 0,
+        end: 0,
+        question: ''
+    };
 
-
-export default function ClipDialog({timeStamp, addClip, currentClip, editClips, editMode, editModeOff}) {
-    
     const [open, setOpen] = React.useState(editMode);
+    const [form, setForm] = React.useState(
+        currentClip ? {
+            start: currentClip.start,
+            end: currentClip.end,
+            question: currentClip.text,
+        } : initForm
+    );
+
     const [clipTime, setClipTime] = React.useState({
         start: currentClip.start,
-        end: currentClip.end,
+        end: currentClip.end
     });
 
     const [newQuestion, setQuestion] = React.useState('New Question');
-    const handleNewQuestion = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleNewQuestion = event => {
         setQuestion(event.target.value);
     };
-
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -42,84 +58,120 @@ export default function ClipDialog({timeStamp, addClip, currentClip, editClips, 
         handleClickOpen();
     };
 
-    function handleClipTime(x,y){
-        setClipTime({
-            start:x,
-            end: y,
-            question: newQuestion,
-        });
+    function handleClipTime(x, y) {
+        // setClipTime({
+        //     start: x,
+        //     end: y,
+        //     question: newQuestion
+        // });
+        setForm({ ...form, start: x, end: y });
     }
 
-    //add or edit clip
-    const confirmAction = () => {
+    // e is pre-defined event object to stop form from refreshing.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        if (editMode) {
+            editClips(form);
+        } else {
             const newClip = {
-                text: newQuestion,
-                start: clipTime.start,
-                end: clipTime.end,
+                text: form.question,
+                start: form.start,
+                end: form.end,
                 category: {
                     tag: 'medium',
-                    color: '#018f69',
+                    color: '#018f69'
                 },
                 link: {
-                    text: 'Click Here',
+                    text: 'Click Here'
                 }
             };
-        if(editMode){
-            //modify currentClip
-            console.log(`editing the clip: ${currentClip.text}`);
-            setClipTime({...clipTime, question: newQuestion});
-            editClips(clipTime);
-        }
-        else{
             addClip(newClip);
         }
 
         handleClose();
-    }
+    };
 
+    // add or edit clip
+    const confirmAction = () => {
+        const newClip = {
+            text: newQuestion,
+            start: clipTime.start,
+            end: clipTime.end,
+            category: {
+                tag: 'medium',
+                color: '#018f69'
+            },
+            link: {
+                text: 'Click Here'
+            }
+        };
+        if (editMode) {
+            // modify currentClip
+            console.log(`editing the clip: ${currentClip.text}`);
+            setClipTime({ ...clipTime, question: newQuestion });
+            editClips(clipTime);
+        } else {
+            addClip(newClip);
+        }
 
+        handleClose();
+    };
 
     return (
         <div>
             {/* <Button variant='outlined' color='primary' onClick={handleClickOpen}>
         Clip v.2
             </Button> */}
-            <Fab  onClick={() =>{
-                //create new initial clip. 
-                setClipTime({
-                    start: timeStamp,
-                    end: timeStamp + 30,
-                })
-                handleClickOpen();
+            <Fab
+                onClick={() => {
+                    // create new initial clip.
+                    setClipTime({
+                        start: timeStamp,
+                        end: timeStamp + 30
+                    });
+                    handleClickOpen();
+                }}
+            />
+            <FullScreenDialog
+                open={open || editMode}
+                onClose={handleClose}
+                aria-labelledby='form-dialog-title'
+            >
+                <form onSubmit={handleSubmit}>
+                    <DialogTitle id='form-dialog-title'>Subscribe</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>Current Question:</DialogContentText>
 
-                
-            }}/>
-            <Dialog open={open || editMode} onClose={handleClose} aria-labelledby='form-dialog-title'>
-                <DialogTitle id='form-dialog-title'>Subscribe</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Current Question:
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin='dense'
-                        id='name'
-                        label='edit question here'
-                        type='email'
-                        onChange={handleNewQuestion}
-                        fullWidth
-                    />
-                    <RangeSlider timeStamp={clipTime} confirm={handleClipTime} />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color='primary'>
-                        Cancel
-                    </Button>
-                    <Button onClick={confirmAction} color='primary'>
-                        Confirm
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                        <TextField
+                            autoFocus
+                            margin='dense'
+                            id='name'
+                            label='edit question here'
+                            type='text'
+                            onChange={event => {
+                                const question = event.target.value;
+                                setForm({ ...form, question });
+                            }}
+                            fullWidth
+                        />
+                        <RangeSlider
+                            timeStamp={clipTime}
+                            confirm={handleClipTime}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} color='primary'>
+                            Cancel
+                        </Button>
+                        {/* no need for a onClick, a button inside a form tag will execute its onSubmit */}
+                        <Button type='submit' color='primary'>
+                            Confirm
+                        </Button>
+                    </DialogActions>
+                </form>
+            </FullScreenDialog>
         </div>
     );
 }
@@ -131,5 +183,5 @@ ClipDialog.defaultProps = {
 
 ClipDialog.propTypes = {
     timeStamp: PropTypes.number,
-    question: PropTypes.string,
+    question: PropTypes.string
 };

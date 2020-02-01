@@ -51,7 +51,7 @@ function Clipper() {
             <div ref={quickScroll} />
             <ReactPlayer
                 ref={player}
-                url='https://www.youtube.com/watch?v=k52HWEr8Rv0'
+                url='https://www.youtube.com/watch?v=yzC4hFK5P3g'
                 playing={playVideo}
                 width='100%'
                 // heigh=''
