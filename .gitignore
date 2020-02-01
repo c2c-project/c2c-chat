@@ -25,3 +25,5 @@ yarn-error.log*
 # environment files
 **/.env
 **/creds/**
+dist
+build
