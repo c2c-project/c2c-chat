@@ -12,10 +12,13 @@
  */
 
 import * as toxicity from '@tensorflow-models/toxicity';
+import Chat from '../db/collections/chat';
+import Questions from '../db/collections/questions';
 
 const threshold = 0.9;
-async function tfToxicity(question) {
+async function checkTfToxicity(question) {
     const returnValue = {};
+    let result = false;
     const reason = [];
     try {
         await toxicity.load(threshold).then(async model => {
@@ -27,7 +30,7 @@ async function tfToxicity(question) {
             });
         });
     } catch (exception) {
-        return { message: 'fail' };
+        console.log({ message: 'check tf toxicity fail please checkout the tf connection' }) ;
     }
     if (returnValue !== {}) {
         if (returnValue.toxicity) {
@@ -36,10 +39,45 @@ async function tfToxicity(question) {
                     reason.push(Object.keys(returnValue)[i]);
                 }
             }
-            return [true, reason];
+            result = true;
         }
-        return [false];
     }
-    return { message: 'fail' };
+    return {toxicity: result, reason: reason};
 }
-export default { tfToxicity };
+async function AutoRemoveMessage(toxicity, reason, messageId, io, roomId) {
+    await Chat.updateMessageToxicity({messageId, result: toxicity, toxicityReason: reason})
+    const removeMessage = Chat.privilegedActions('AUTO_REMOVE_MESSAGE', '');
+    removeMessage(messageId)
+        .then(() => {
+            io
+                .of('/chat')
+                .to(roomId)
+                .emit('moderate', messageId);
+        });
+}
+async function tfToxicityQuestion(questionDoc){
+    try{
+        if(questionDoc){
+            const tfToxicityResult = await checkTfToxicity(questionDoc.question);
+            await Questions.updateQuestionToxicity({questionId: questionDoc._id, result: tfToxicityResult.toxicity, toxicityReason: tfToxicityResult.reason})
+        }
+    }catch(Exception){
+        console.log(Exception)
+    }
+}
+
+async function tfToxicityMessage(messageDoc, io, roomId) {
+    try{
+        const messageId = messageDoc._id;
+        if(messageDoc){
+            const tfToxicityResult = await checkTfToxicity(messageDoc.message);
+            await AutoRemoveMessage(tfToxicityResult.toxicity, tfToxicityResult.reason, messageId, io, roomId);
+        }
+    }catch(Exception){
+        console.log(Exception)
+    }
+}
+export default { 
+    tfToxicityMessage,
+    tfToxicityQuestion
+};

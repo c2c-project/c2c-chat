@@ -8,7 +8,7 @@ const router = express.Router();
 // NOTE: remove passport auth if we don't want to require the user to be logged in
 router.get(
     '/find',
-    passport.authenticate('jwt', { session: false }),
+    //passport.authenticate('jwt', { session: false }),
     (req, res) => {
         Sessions.findAllSessions().then(r => res.json(r));
     }
