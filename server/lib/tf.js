@@ -13,33 +13,27 @@
 
 import * as toxicity from '@tensorflow-models/toxicity';
 
-const threshold = 0.9;
+const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
 async function tfToxicity(question) {
-    const returnValue = {};
-    const reason = [];
-    try {
-        await toxicity.load(threshold).then(async model => {
-            await model.classify(question).then(async predictions => {
-                await predictions.forEach(prediction => {
-                    returnValue[prediction.label] = prediction.results[0].match;
-                });
-                return returnValue;
+    const toxicityResult = {};
+    const toxicityReason = [];
+    await toxicity.load(threshold).then(async model => {
+        await model.classify(question).then(async predictions => {
+            await predictions.forEach(prediction => {
+                // Remodel the value structure to a list of key-value pairs.
+                toxicityResult[prediction.label] = prediction.results[0].match; 
             });
         });
-    } catch (exception) {
-        return { message: 'fail' };
-    }
-    if (returnValue !== {}) {
-        if (returnValue.toxicity) {
-            for (let i = 0; i < Object.keys(returnValue).length-1; i+=1){
-                if (Object.values(returnValue)[i] || Object.values(returnValue)[i] === null) {
-                    reason.push(Object.keys(returnValue)[i]);
-                }
+    });
+    if (toxicityResult.toxicity) {
+        for (let i = 0; i < Object.keys(toxicityResult).length-1; i+=1){
+            // if value of toxicityResult is true or null, we add its key to the toxicityReason.
+            if (!Object.values(toxicityResult)[i]) {
+                toxicityReason.push(Object.keys(toxicityResult)[i]);
             }
-            return [true, reason];
         }
-        return [false];
+        return [true, toxicityReason];
     }
-    return { message: 'fail' };
+    return [false];
 }
 export default { tfToxicity };
