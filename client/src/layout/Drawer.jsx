@@ -60,9 +60,11 @@ const parseTitle = title =>
 
 const config = [
     { label: 'Sessions', to: '/app/sessions/list' },
+    { label: 'Session Summary', to: '/app/sessions/summary'},
     // { label: 'Calendar', to: '/calendar' },
     // { label: 'Chat', to: '/app/chat/0' },
     { label: 'Logout', to: '/logout' }
+    
 ];
 
 export const TabContext = React.createContext();
