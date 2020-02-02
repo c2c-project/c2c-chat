@@ -20,7 +20,7 @@ const findByUsername = ({ username }) =>
     mongo.then(db =>
         db
             .collection('users')
-            .find({ email: username })
+            .find({ username })
             .toArray()
             .then(r => r[0])
     );
@@ -34,10 +34,19 @@ const findByUserId = _id =>
             .then(r => r[0])
     );
 
+const find = (...args) =>
+    mongo.then(db =>
+        db
+            .collection('users')
+            .find(...args)
+            .toArray()
+    );
+
 export default {
     addUser,
     updateUser,
     removeUser,
     findByUsername,
-    findByUserId
+    findByUserId,
+    find
 };

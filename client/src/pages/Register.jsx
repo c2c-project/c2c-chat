@@ -40,7 +40,23 @@ export default function RegisterPage() {
 
     const handleSubmit = e => {
         e.preventDefault();
-        snack('TODO: submit', 'info');
+        fetch('/api/users/register', {
+            method: 'POST',
+            body: JSON.stringify({ form }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            if (res.status === 200) {
+                history.push('/login');
+                snack('You may now login', 'success');
+            } else if (res.status === 500) {
+                snack(`Error: ${res.statusText}`, 'error');
+            } else {
+                snack('Something went wrong, please try again.', 'info');
+            }
+            console.log(res);
+        });
     };
 
     return (

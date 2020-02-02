@@ -1,7 +1,10 @@
 import bcrypt from 'bcrypt';
 import Users from '../db/collections/users';
+import { ClientError } from './errors';
 
 const SALT_ROUNDS = 10;
+
+const doesUserExist = ({ username, email }) => Users.find;
 
 /**
  * Realistically, only one of the required's fields within the requirements object will be used at any given time
@@ -42,24 +45,34 @@ const verifyPassword = (textPw, hash, cb) => {
     bcrypt.compare(textPw, hash, cb);
 };
 
-const register = (username, password, additionalFields = {}) =>
-    Users.findByUsername({ username }).then(doc => {
-        if (!doc) {
-            return bcrypt
-                .hash(password, SALT_ROUNDS)
-                .then(hash =>
-                    Users.addUser({
-                        username,
-                        password: hash,
-                        ...additionalFields
-                    }).catch(err => console.log(err))
-                )
-                .catch(err => console.log(err));
-        }
-        console.log('non-unique username');
-        console.log('TODO: send this back to client');
-        return 'error';
-    });
+// always returns a promise
+const register = (username, password, confirmPass, additionalFields = {}) => {
+    const { email } = additionalFields;
+    // if the user registered with an email & username, then find by username or email
+    // because both should be unique, otherwise just find by username
+    const query = email ? { $or: [{ email }, { username }] } : { username };
+    if (password === confirmPass) {
+        return Users.find(query).then(doc => {
+            if (!doc) {
+                return bcrypt
+                    .hash(password, SALT_ROUNDS)
+                    .then(hash =>
+                        Users.addUser({
+                            username,
+                            password: hash,
+                            ...additionalFields
+                        }).catch(err => console.log(err))
+                    )
+                    .catch(err => console.log(err));
+            }
+            return Promise.reject(
+                new ClientError('Username or E-mail already exists')
+            );
+        });
+    }
+
+    return Promise.reject(new ClientError('Passwords do not match'));
+};
 
 const registerTemporary = (username, additionalFields = {}) =>
     Users.findByUsername({ username }).then(doc => {
@@ -70,7 +83,7 @@ const registerTemporary = (username, additionalFields = {}) =>
                 temporary: true
             }).catch(err => console.log(err));
         }
-        return 'error';
+        return Promise.reject(new ClientError('Username already exists'));
     });
 
 /**
