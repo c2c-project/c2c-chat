@@ -10,22 +10,6 @@ import message from './assets/message.png';
 import time from './assets/time.png';
 import './Stats.css';
 
-const data = 
-[
-   {
-     'id': 'Questions Asked',
-     'label': 'Questions Asked',
-     'value': 85,
-     'color': 'hsl(201, 70%, 50%)'
-   },
-   {
-     'id': 'Unasked Questions',
-     'label': 'Unasked Questions',
-     'value': 263,
-     'color': 'hsl(195, 70%, 50%)'
-   }
-];
-
 const barData =
 [
    {
@@ -76,8 +60,25 @@ const useStyles = makeStyles(theme => ({
    }
  }));
 
-function Stats() {
+function Stats({sent, asked, unanswered, duration}) {
    const classes = useStyles();
+
+   const data = 
+   [
+      {
+      'id': 'Questions Asked',
+      'label': 'Questions Asked',
+      'value': asked,
+      'color': 'hsl(201, 70%, 50%)'
+      },
+      {
+      'id': 'Unasked Questions',
+      'label': 'Unasked Questions',
+      'value': unanswered,
+      'color': 'hsl(195, 70%, 50%)'
+      }
+   ];
+
     return (
       <div>
          <Grid 
@@ -95,7 +96,7 @@ function Stats() {
                      </Grid>
                      <Grid>
                         <Typography className={classes.headerFont} >Duration</Typography>
-                        <Typography className={classes.contentFont} >52:43</Typography>
+                        <Typography className={classes.contentFont} >{duration}</Typography>
                      </Grid>
                   </Grid>
                </Paper>
@@ -111,7 +112,7 @@ function Stats() {
                      </Grid>
                      <Grid>
                         <Typography className={classes.headerFont}>Messages</Typography>
-                        <Typography className={classes.contentFont}>62</Typography>
+                        <Typography className={classes.contentFont}>{sent}</Typography>
                      </Grid>
                   </Grid>
                </Paper>
@@ -127,7 +128,7 @@ function Stats() {
                      </Grid>
                      <Grid>
                         <Typography className={classes.headerFont}>Questions</Typography>
-                        <Typography className={classes.contentFont}>5</Typography>
+                        <Typography className={classes.contentFont}>{asked}</Typography>
                      </Grid>
                   </Grid>
                </Paper>

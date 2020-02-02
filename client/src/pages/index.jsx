@@ -3,6 +3,7 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 import Sessions from './Sessions';
 import Chat from './Chat';
 import SessionSummary from './SessionSummary';
+import SessionData from './SessionData';
 import Logout from './Logout';
 import Login from './Login';
 import Layout from '../layout';
@@ -23,6 +24,9 @@ export default function Routes() {
                         </Route>
                         <Route path='/app/sessions/summary'>
                             <SessionSummary />
+                        </Route>
+                        <Route path='/app/sessions/:sessionId/session-summary' component={SessionData}>
+
                         </Route>
                     </Layout>
                 </LoggedIn>

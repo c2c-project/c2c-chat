@@ -95,7 +95,23 @@ router.post(
     }
 );
 
-
+router.get(
+    '/session-summary',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        Sessions.findAllFinishedSessions().then(r => res.json(r));
+    }
+);
+router.get(
+    '/session-summary/:sessionId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { sessionId } = req.params;
+        Sessions.findFinishedSessionById(sessionId).then(r => {
+            res.json(r);
+        });
+    }
+);
 
 // TODO: joseph
 /**

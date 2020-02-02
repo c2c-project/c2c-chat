@@ -90,6 +90,44 @@ const sessions = [
     }
 ];
 
+// This is just a list of finished sessions if we're considering that sessions
+// that are on going.
+const finishedSessionIds = [new ObjectID(), new ObjectID()];
+const finishedSessions = [
+    {
+        _id: finishedSessionIds[0],
+        speaker: 'Bobby',
+        moderator: 'Eddie',
+        attendees: {
+            unique: 20,
+            peak: 10
+            // TODO: what other attendance data would we want?
+        },
+        duration: '56:23',
+        messages: {
+            sent: 20,
+            asked: 10,
+            unanswered: 5
+        }
+    },
+    {
+        _id: finishedSessionIds[1],
+        speaker: 'Carl',
+        moderator: 'Neal',
+        attendees: {
+            unique: 10,
+            peak: 5
+            // TODO: what other attendance data would we want?
+        },
+        duration: '12:34',
+        messages: {
+            sent: 30,
+            asked: 5,
+            unanswered: 1
+        }
+    }
+];
+
 const messages = [
     {
         _id: new ObjectID(),
@@ -107,6 +145,17 @@ function seedSessions() {
     console.log('sessions');
     return mongo.then(db =>
         db.collection('sessions').insertMany(sessions, (err, r) => {
+            assert.equal(null, err);
+            assert.equal(2, r.insertedCount);
+            // close();
+        })
+    );
+}
+
+function seedFinishedSessions() {
+    console.log('finishedSessions');
+    return mongo.then(db =>
+        db.collection('finishedSessions').insertMany(finishedSessions, (err, r) => {
             assert.equal(null, err);
             assert.equal(2, r.insertedCount);
             // close();
@@ -133,7 +182,7 @@ function seedUsers() {
     return Promise.all(promises);
 }
 
-Promise.all([seedUsers(), seedSessions(), seedMessages()]).then(() => {
+Promise.all([seedUsers(), seedSessions(), seedMessages(), seedFinishedSessions()]).then(() => {
     console.log('finished seeding, closing...');
     close();
 });
