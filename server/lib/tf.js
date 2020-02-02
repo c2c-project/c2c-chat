@@ -15,37 +15,41 @@ import * as toxicity from '@tensorflow-models/toxicity';
 import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';
 
-const threshold = 0.9;
+
+const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
 async function checkTfToxicity(question) {
-    const returnValue = {};
+    const toxicityResult = {};
+    const toxicityReason = [];
     let result = false;
-    const reason = [];
     try {
         await toxicity.load(threshold).then(async model => {
             await model.classify(question).then(async predictions => {
                 await predictions.forEach(prediction => {
-                    returnValue[prediction.label] = prediction.results[0].match;
+                    // Remodel the value structure to a list of key-value pairs.
+                    toxicityResult[prediction.label] = prediction.results[0].match;
                 });
-                return returnValue;
+                return toxicityResult;
             });
         });
     } catch (exception) {
         console.log({ message: 'check tf toxicity fail please checkout the tf connection' }) ;
     }
-    if (returnValue !== {}) {
-        if (returnValue.toxicity) {
-            for (let i = 0; i < Object.keys(returnValue).length-1; i+=1){
-                if (Object.values(returnValue)[i] || Object.values(returnValue)[i] === null) {
-                    reason.push(Object.keys(returnValue)[i]);
+    if (toxicityResult !== {}) {
+        if (toxicityResult.toxicity) {
+            for (let i = 0; i < Object.keys(toxicityResult).length-1; i+=1){
+                // if value of toxicityResult is true or null, we add its key to the toxicityReason.
+                if (!Object.values(toxicityResult)[i]) {
+                    toxicityReason.push(Object.keys(toxicityResult)[i]);
                 }
             }
             result = true;
         }
     }
-    return {toxicity: result, reason: reason};
+    return {toxicity: result, reason: toxicityReason};
 }
-async function AutoRemoveMessage(toxicity, reason, messageId, io, roomId) {
-    await Chat.updateMessageToxicity({messageId, result: toxicity, toxicityReason: reason})
+
+async function AutoRemoveMessage(result, reason, messageId, io, roomId) {
+    await Chat.updateMessageToxicity({messageId, result, toxicityReason: reason})
     const removeMessage = Chat.privilegedActions('AUTO_REMOVE_MESSAGE', '');
     removeMessage(messageId)
         .then(() => {
@@ -55,6 +59,7 @@ async function AutoRemoveMessage(toxicity, reason, messageId, io, roomId) {
                 .emit('moderate', messageId);
         });
 }
+
 async function tfToxicityQuestion(questionDoc){
     try{
         if(questionDoc){
@@ -77,6 +82,7 @@ async function tfToxicityMessage(messageDoc, io, roomId) {
         console.log(Exception)
     }
 }
+
 export default { 
     tfToxicityMessage,
     tfToxicityQuestion
