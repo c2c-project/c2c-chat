@@ -1,6 +1,5 @@
 import { ObjectID } from 'mongodb';
 import { mongo } from '..';
-import Accounts from '../../lib/accounts';
 
 const findById = id =>
     mongo.then(db =>
@@ -51,46 +50,11 @@ const updateQuestionToxicity = ({ questionId, result, toxicityReason}) =>
 /**
  * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
  */
-const privilegedActions = (action, userDoc) => {
-
-    const { roles } = userDoc;
-    switch (action) {
-        case 'REMOVE_QUESTION': {
-            const requiredAny = ['admin', 'moderator'];
-            return questionId => {
-                if (Accounts.isAllowed(roles, { requiredAny })) {
-                    return removeQuestion({
-                        questionId,
-                        reason: 'Removed by moderator'
-                    });
-                }
-                console.log('TODO:  not allowed but trying to moderate');
-                return Promise.reject(Error('Not allowed'));
-            };
-        }
-        case 'AUTO_REMOVE_QUESTION': {
-            return questionId => {
-                const question = findById({questionId});
-                if(question.toxicity){
-                    return removeQuestion({
-                        questionId,
-                        reason: 'Auto removed'
-                    });
-                }
-                return Promise.reject(Error('Not allowed'));
-            };
-        }
-        default: {
-            throw new TypeError('Invalid action');
-        }
-    }
-};
 
 export default {
     findById,
     createQuestion,
     findBySession,
     removeQuestion,
-    updateQuestionToxicity,
-    privilegedActions
+    updateQuestionToxicity
 };
