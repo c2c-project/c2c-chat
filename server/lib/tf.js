@@ -29,22 +29,19 @@ async function checkTfToxicity(question) {
                     // Remodel the value structure to a list of key-value pairs.
                     toxicityResult[prediction.label] = prediction.results[0].match;
                 });
-                return toxicityResult;
             });
         });
     } catch (exception) {
         console.log({ message: 'check tf toxicity fail please checkout the tf connection' }) ;
     }
-    if (toxicityResult !== {}) {
-        if (toxicityResult.toxicity) {
-            for (let i = 0; i < Object.keys(toxicityResult).length-1; i+=1){
-                // if value of toxicityResult is true or null, we add its key to the toxicityReason.
-                if (!Object.values(toxicityResult)[i]) {
-                    toxicityReason.push(Object.keys(toxicityResult)[i]);
-                }
+    if (toxicityResult.toxicity) {
+        for (let i = 0; i < Object.keys(toxicityResult).length-1; i+=1){
+            // if value of toxicityResult is true or null, we add its key to the toxicityReason.
+            if (!Object.values(toxicityResult)[i]) {
+                toxicityReason.push(Object.keys(toxicityResult)[i]);
             }
-            result = true;
         }
+        result = true;
     }
     return {toxicity: result, reason: toxicityReason};
 }
@@ -68,7 +65,7 @@ async function tfToxicityQuestion(questionDoc){
             await Questions.updateQuestionToxicity({questionId: questionDoc._id, result: tfToxicityResult.toxicity, toxicityReason: tfToxicityResult.reason})
         }
     }catch(Exception){
-        console.log(Exception)
+        console.log(Exception);
     }
 }
 
@@ -77,10 +74,12 @@ async function tfToxicityMessage(messageDoc, io, roomId) {
         const messageId = messageDoc._id;
         if(messageDoc){
             const tfToxicityResult = await checkTfToxicity(messageDoc.message);
-            await AutoRemoveMessage(tfToxicityResult.toxicity, tfToxicityResult.reason, messageId, io, roomId);
+            if(tfToxicityResult.toxicity){
+                await AutoRemoveMessage(tfToxicityResult.toxicity, tfToxicityResult.reason, messageId, io, roomId);
+            }
         }
     }catch(Exception){
-        console.log(Exception)
+        console.log(Exception);
     }
 }
 
