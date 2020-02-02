@@ -119,6 +119,11 @@ export default function Loginpage() {
                             </Grid>
                             <Grid container item xs={12} justify='flex-end'>
                                 <Button
+                                    onClick={() => history.push('/register')}
+                                >
+                                    Register
+                                </Button>
+                                <Button
                                     onClick={() =>
                                         history.push('/forgot-password')
                                     }
