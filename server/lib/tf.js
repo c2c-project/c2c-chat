@@ -16,7 +16,6 @@ import * as toxicity from '@tensorflow-models/toxicity';
 import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';
 
-
 const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
 async function checkTfToxicity(question) {
     const toxicityResult = {};
@@ -27,15 +26,18 @@ async function checkTfToxicity(question) {
             await model.classify(question).then(async predictions => {
                 await predictions.forEach(prediction => {
                     // Remodel the value structure to a list of key-value pairs.
-                    toxicityResult[prediction.label] = prediction.results[0].match;
+                    toxicityResult[prediction.label] =
+                        prediction.results[0].match;
                 });
             });
         });
     } catch (exception) {
-        console.log({ message: 'check tf toxicity fail please checkout the tf connection' }) ;
+        console.log({
+            message: 'check tf toxicity fail please checkout the tf connection'
+        });
     }
     if (toxicityResult.toxicity) {
-        for (let i = 0; i < Object.keys(toxicityResult).length-1; i+=1){
+        for (let i = 0; i < Object.keys(toxicityResult).length - 1; i += 1) {
             // if value of toxicityResult is true or null, we add its key to the toxicityReason.
             if (!Object.values(toxicityResult)[i]) {
                 toxicityReason.push(Object.keys(toxicityResult)[i]);
@@ -43,47 +45,61 @@ async function checkTfToxicity(question) {
         }
         result = true;
     }
-    return {toxicity: result, reason: toxicityReason};
+    return { toxicity: result, reason: toxicityReason };
 }
 
 async function AutoRemoveMessage(result, reason, messageId, io, roomId) {
-    await Chat.updateMessageToxicity({messageId, result, toxicityReason: reason})
+    await Chat.updateMessageToxicity({
+        messageId,
+        result,
+        toxicityReason: reason
+    });
     const removeMessage = Chat.privilegedActions('AUTO_REMOVE_MESSAGE', '');
-    removeMessage(messageId)
-        .then(() => {
-            io
-                .of('/chat')
-                .to(roomId)
-                .emit('moderate', messageId);
-        });
+    removeMessage(messageId).then(() => {
+        io.of('/chat')
+            .to(roomId)
+            .emit('moderate', messageId);
+    });
 }
 
-async function tfToxicityQuestion(questionDoc){
-    try{
-        if(questionDoc){
-            const tfToxicityResult = await checkTfToxicity(questionDoc.question);
-            await Questions.updateQuestionToxicity({questionId: questionDoc._id, result: tfToxicityResult.toxicity, toxicityReason: tfToxicityResult.reason})
+async function tfToxicityQuestion(questionDoc) {
+    try {
+        if (questionDoc) {
+            const tfToxicityResult = await checkTfToxicity(
+                questionDoc.question
+            );
+            await Questions.updateQuestionToxicity({
+                questionId: questionDoc._id,
+                result: tfToxicityResult.toxicity,
+                toxicityReason: tfToxicityResult.reason
+            });
         }
-    }catch(Exception){
+    } catch (Exception) {
         console.log(Exception);
     }
 }
 
 async function tfToxicityMessage(messageDoc, io, roomId) {
-    try{
+    try {
         const messageId = messageDoc._id;
-        if(messageDoc){
+        if (messageDoc) {
             const tfToxicityResult = await checkTfToxicity(messageDoc.message);
-            if(tfToxicityResult.toxicity){
-                await AutoRemoveMessage(tfToxicityResult.toxicity, tfToxicityResult.reason, messageId, io, roomId);
+            if (tfToxicityResult.toxicity) {
+                await AutoRemoveMessage(
+                    tfToxicityResult.toxicity,
+                    tfToxicityResult.reason,
+                    messageId,
+                    io,
+                    roomId
+                );
             }
         }
-    }catch(Exception){
+    } catch (Exception) {
         console.log(Exception);
     }
 }
 
-export default { 
+export default {
     tfToxicityMessage,
     tfToxicityQuestion
 };

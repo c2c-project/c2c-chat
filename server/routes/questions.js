@@ -22,7 +22,7 @@ router.post(
             toxicity: false,
             toxicityReason: []
         })
-            .then( r => {
+            .then(r => {
                 const questionDoc = r.ops[0];
                 ioInterface
                     .io()
@@ -30,7 +30,7 @@ router.post(
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
-                Toxicity.tfToxicityQuestion(questionDoc)
+                Toxicity.tfToxicityQuestion(questionDoc);
                 // TODO: 193
                 /**
                  * @questionDoc is the question json
