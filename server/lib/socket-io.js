@@ -1,7 +1,6 @@
 import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
 import Chat from '../db/collections/chat';
-import Toxicity from './tf';
 import tf from './tf';
 
 // NOTE: it's probably better to use a session rather than jwt's for a chat
@@ -40,7 +39,7 @@ export default (function socketioInterface() {
                                         .to(roomId)
                                         .emit('message', messageDoc);
                                     // TODO: 193
-                                    await tf.tfToxicity(messageDoc, io, roomId);
+                                    await tf.tfToxicityMessage(messageDoc, io, roomId);
                                     /**
                                      * @messageDoc is the message json
                                      * Ideally, you'd just take the messageDoc
