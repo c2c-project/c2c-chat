@@ -11,6 +11,7 @@
  *
  */
 
+import '@tensorflow/tfjs-node';
 import * as toxicity from '@tensorflow-models/toxicity';
 import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';

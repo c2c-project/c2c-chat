@@ -33,13 +33,13 @@ export default (function socketioInterface() {
                                     session: roomId,
                                     toxicity: false,
                                     toxicityReason : [],
-                                }).then( async r => {
+                                }).then( r => {
                                     const messageDoc = r.ops[0];
                                     io.of('/chat')
                                         .to(roomId)
                                         .emit('message', messageDoc);
                                     // TODO: 193
-                                    await tf.tfToxicityMessage(messageDoc, io, roomId);
+                                    tf.tfToxicityMessage(messageDoc, io, roomId);
                                     /**
                                      * @messageDoc is the message json
                                      * Ideally, you'd just take the messageDoc
