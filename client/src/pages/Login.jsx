@@ -16,7 +16,8 @@ const useStyles = makeStyles(theme => ({
         height: '100%'
     },
     paper: {
-        marginTop: '-64px', // slight offset to make the component feel more vertically centered
+        // not necessary anymore?
+        // marginTop: '64-px', // slight offset to make the component feel more vertically centered
         padding: theme.spacing(2)
     },
     img: {
@@ -81,47 +82,73 @@ export default function Loginpage() {
                             src={banner}
                             alt='spp-banner'
                         />
-                        <form onSubmit={handleSubmit}>
-                            <Grid
-                                container
-                                spacing={2}
-                                className={classes.root}
-                                alignContent='center'
-                            >
-                                <Grid item xs={12}>
-                                    <TextField
-                                        fullWidth
-                                        variant='outlined'
-                                        type='email'
-                                        value={form.email}
-                                        onChange={e => handleChange(e, 'email')}
-                                        label='Email'
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        fullWidth
-                                        variant='outlined'
-                                        type='password'
-                                        value={form.password}
-                                        onChange={e =>
-                                            handleChange(e, 'password')
-                                        }
-                                        label='Password'
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Button
-                                        color='primary'
-                                        fullWidth
-                                        type='submit'
-                                        variant='contained'
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <form onSubmit={handleSubmit}>
+                                    <Grid
+                                        container
+                                        spacing={2}
+                                        className={classes.root}
+                                        alignContent='center'
                                     >
-                                        Login
-                                    </Button>
-                                </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                fullWidth
+                                                variant='outlined'
+                                                type='email'
+                                                value={form.email}
+                                                onChange={e =>
+                                                    handleChange(e, 'email')
+                                                }
+                                                label='Email'
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                fullWidth
+                                                variant='outlined'
+                                                type='password'
+                                                value={form.password}
+                                                onChange={e =>
+                                                    handleChange(e, 'password')
+                                                }
+                                                label='Password'
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Button
+                                                fullWidth
+                                                type='submit'
+                                                variant='contained'
+                                            >
+                                                Login
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                </form>
                             </Grid>
-                        </form>
+                            <Grid container item xs={12} justify='flex-end'>
+                                <Button
+                                    onClick={() => history.push('/register')}
+                                >
+                                    Register
+                                </Button>
+                                <Button
+                                    onClick={() =>
+                                        history.push('/forgot-password')
+                                    }
+                                >
+                                    Forgot Password?
+                                </Button>
+                                <Button
+                                    onClick={() =>
+                                        history.push('/login-temporary')
+                                    }
+                                >
+                                    Temporarily Login
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </Paper>
                 </Grid>
             </Grow>
