@@ -150,7 +150,7 @@ export default function ClipDialog({
                             fullWidth
                         />
                         <RangeSlider
-                            timeStamp={initForm}
+                            timeStamp={editMode? currentClip : initForm}
                             confirm={handleClipTime}
                         />
                     </DialogContent>
