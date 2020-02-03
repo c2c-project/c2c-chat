@@ -4,8 +4,6 @@ import { ClientError } from './errors';
 
 const SALT_ROUNDS = 10;
 
-const doesUserExist = ({ username, email }) => Users.find;
-
 /**
  * Realistically, only one of the required's fields within the requirements object will be used at any given time
  * @arg userRoles -- the array of string codes corresponding to the user's assigned roles

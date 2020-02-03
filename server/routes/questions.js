@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
 import Accounts from '../lib/accounts';
-import ioInterface from '../lib/socket-io';
+import io from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -21,9 +21,7 @@ router.post(
         })
             .then(r => {
                 const questionDoc = r.ops[0];
-                ioInterface
-                    .io()
-                    .of('/questions')
+                io.of('/questions')
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
