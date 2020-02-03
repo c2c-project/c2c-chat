@@ -13,7 +13,7 @@ export default function TimeLineItem({ data, onClickPlay, onClickEdit }) {
                     {data.category.tag}
                 </span>
                 <time>{data.start}</time>
-                <p>{data.text}</p>
+                <p>{data.question}</p>
                 {/* <a href={data.link.url}>
                     {data.link.text}
                 </a> */}

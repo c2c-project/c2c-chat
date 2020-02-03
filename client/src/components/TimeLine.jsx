@@ -5,9 +5,20 @@ import ClipDialog from './ClipDialog';
 import './TimeLineItem.css';
 
 export default function TimeLine({ timeStamp, playerTime }) {
+    
+    const [currClip, setCurrClip] = React.useState(null);
+    useEffect(() => {
+        if (currClip === null) {
+            console.log('Current item is null');
+        }else{
+            console.log(`Current item: ${currClip.question}`);
+        }
+    }, [currClip]);
+
     const [clips, setClipState] = useState([
         {
-            text: 'Practice Clip',
+            id: 0,
+            question: 'Practice Clip',
             start: '0',
             end: '20',
             category: {
@@ -19,17 +30,16 @@ export default function TimeLine({ timeStamp, playerTime }) {
             }
         }
     ]);
+    useEffect(()=> {
+        setCurrClip(null);
+    },[clips]);
 
     // const [newQuestion, setQuestion] = React.useState('New Question');
 
     const addToClips = newClip => {
-        setClipState([...clips, newClip]);
+        setClipState([...clips, { ...newClip, id: clips.length }]);
     };
 
-    const [currClip, setCurrClip] = React.useState(clips[0]);
-    useEffect(() => {
-        console.log(`Current item: ${currClip.text}`);
-    }, [currClip]);
     const [editMode, setEditMode] = useState(false);
     useEffect(() => {
         console.log(`edit Mode On: ${editMode}`);
@@ -38,16 +48,29 @@ export default function TimeLine({ timeStamp, playerTime }) {
     function editClips(x) {
         console.log(`new time ${x.start} and ${x.end}`);
 
-        clips.map(clip => {
-            if (clip.text === currClip.text) {
-                clip.start = x.start;
-                clip.end = x.end;
-                clip.text = x.question;
-            }
-            return clip;
-        });
+        const index = clips.findIndex(clip => clip.id === currClip.id);
+        console.log(`Current index: ${index}`);
+
+        const newClips = [...clips];
+        newClips[index] = {
+            ...newClips[index],
+            start: x.start,
+            end: x.end,
+            question: x.question
+        };
+        setClipState(newClips);
+
+        // clips.map(clip => {
+        //     if (clip.text === currClip.text) {
+        //         clip.start = x.start;
+        //         clip.end = x.end;
+        //         clip.text = x.question;
+        //     }
+        //     return clip;
+        // });
         // need reset currClip to null for ClipDialog
-        // setCurrClip(null);
+        // reset currClip back to Null.
+        //      setCurrClip(null);
     }
 
     return (
@@ -61,6 +84,7 @@ export default function TimeLine({ timeStamp, playerTime }) {
                 editMode={editMode}
                 editModeOff={() => {
                     setEditMode(false);
+                    setCurrClip(null);
                 }}
             />
             <div className='timeline-container'>

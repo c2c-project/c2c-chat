@@ -20,17 +20,17 @@ export default function ClipDialog({
     editModeOff
 }) {
     const initForm = {
-        start: 0,
-        end: 0,
+        start: timeStamp,
+        end: timeStamp + 30,
         question: ''
     };
 
     const [open, setOpen] = React.useState(editMode);
     const [form, setForm] = React.useState(
-        currentClip ? {
+        editMode ? {
             start: currentClip.start,
             end: currentClip.end,
-            question: currentClip.text,
+            question: currentClip.question,
         } : initForm
     );
 
@@ -39,10 +39,10 @@ export default function ClipDialog({
         end: currentClip.end
     });
 
-    const [newQuestion, setQuestion] = React.useState('New Question');
-    const handleNewQuestion = event => {
-        setQuestion(event.target.value);
-    };
+    // const [newQuestion, setQuestion] = React.useState('New Question');
+    // const handleNewQuestion = event => {
+    //     setQuestion(event.target.value);
+    // };
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -54,16 +54,9 @@ export default function ClipDialog({
         setOpen(false);
     };
 
-    const handleAddingClip = () => {
-        handleClickOpen();
-    };
 
     function handleClipTime(x, y) {
-        // setClipTime({
-        //     start: x,
-        //     end: y,
-        //     question: newQuestion
-        // });
+
         setForm({ ...form, start: x, end: y });
     }
 
@@ -76,7 +69,7 @@ export default function ClipDialog({
             editClips(form);
         } else {
             const newClip = {
-                text: form.question,
+                question: form.question,
                 start: form.start,
                 end: form.end,
                 category: {
@@ -94,30 +87,30 @@ export default function ClipDialog({
     };
 
     // add or edit clip
-    const confirmAction = () => {
-        const newClip = {
-            text: newQuestion,
-            start: clipTime.start,
-            end: clipTime.end,
-            category: {
-                tag: 'medium',
-                color: '#018f69'
-            },
-            link: {
-                text: 'Click Here'
-            }
-        };
-        if (editMode) {
-            // modify currentClip
-            console.log(`editing the clip: ${currentClip.text}`);
-            setClipTime({ ...clipTime, question: newQuestion });
-            editClips(clipTime);
-        } else {
-            addClip(newClip);
-        }
+    // const confirmAction = () => {
+    //     const newClip = {
+    //         text: newQuestion,
+    //         start: clipTime.start,
+    //         end: clipTime.end,
+    //         category: {
+    //             tag: 'medium',
+    //             color: '#018f69'
+    //         },
+    //         link: {
+    //             text: 'Click Here'
+    //         }
+    //     };
+    //     if (editMode) {
+    //         // modify currentClip
+    //         console.log(`editing the clip: ${currentClip.text}`);
+    //         setClipTime({ ...clipTime, question: newQuestion });
+    //         editClips(clipTime);
+    //     } else {
+    //         addClip(newClip);
+    //     }
 
-        handleClose();
-    };
+    //     handleClose();
+    // };
 
     return (
         <div>
@@ -143,13 +136,13 @@ export default function ClipDialog({
                     <DialogTitle id='form-dialog-title'>Subscribe</DialogTitle>
                     <DialogContent>
                         <DialogContentText>Current Question:</DialogContentText>
-
                         <TextField
                             autoFocus
                             margin='dense'
                             id='name'
                             label='edit question here'
                             type='text'
+                            defaultValue={currentClip.question}
                             onChange={event => {
                                 const question = event.target.value;
                                 setForm({ ...form, question });
@@ -157,7 +150,7 @@ export default function ClipDialog({
                             fullWidth
                         />
                         <RangeSlider
-                            timeStamp={clipTime}
+                            timeStamp={initForm}
                             confirm={handleClipTime}
                         />
                     </DialogContent>
