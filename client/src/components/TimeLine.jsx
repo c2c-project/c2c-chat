@@ -8,11 +8,11 @@ export default function TimeLine({ timeStamp, playerTime }) {
     
     const [currClip, setCurrClip] = React.useState(null);
     useEffect(() => {
-        if (currClip === null) {
-            console.log('Current item is null');
-        }else{
-            console.log(`Current item: ${currClip.question}`);
-        }
+        // if (currClip === null) {
+        //     console.log('Current item is null');
+        // }else{
+        //     console.log(`Current item: ${currClip.question}`);
+        // }
     }, [currClip]);
 
     const [clips, setClipState] = useState([
@@ -42,7 +42,7 @@ export default function TimeLine({ timeStamp, playerTime }) {
 
     const [editMode, setEditMode] = useState(false);
     useEffect(() => {
-        console.log(`edit Mode On: ${editMode}`);
+        // console.log(`edit Mode On: ${editMode}`);
     }, [editMode]);
 
     function editClips(x) {
@@ -60,17 +60,6 @@ export default function TimeLine({ timeStamp, playerTime }) {
         };
         setClipState(newClips);
 
-        // clips.map(clip => {
-        //     if (clip.text === currClip.text) {
-        //         clip.start = x.start;
-        //         clip.end = x.end;
-        //         clip.text = x.question;
-        //     }
-        //     return clip;
-        // });
-        // need reset currClip to null for ClipDialog
-        // reset currClip back to Null.
-        //      setCurrClip(null);
     }
 
     return (

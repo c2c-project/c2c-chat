@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
+// import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -27,22 +27,14 @@ export default function ClipDialog({
 
     const [open, setOpen] = React.useState(editMode);
     const [form, setForm] = React.useState(
-        editMode ? {
-            start: currentClip.start,
-            end: currentClip.end,
-            question: currentClip.question,
-        } : initForm
+        editMode
+            ? {
+                start: currentClip.start,
+                end: currentClip.end,
+                question: currentClip.question,
+            }
+            : initForm
     );
-
-    const [clipTime, setClipTime] = React.useState({
-        start: currentClip.start,
-        end: currentClip.end
-    });
-
-    // const [newQuestion, setQuestion] = React.useState('New Question');
-    // const handleNewQuestion = event => {
-    //     setQuestion(event.target.value);
-    // };
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -54,10 +46,9 @@ export default function ClipDialog({
         setOpen(false);
     };
 
-
+    // case: editing the timeframe without the question. 
     function handleClipTime(x, y) {
-
-        setForm({ ...form, start: x, end: y });
+        setForm({ ...form, start: x, end: y, question: currentClip.question });
     }
 
     // e is pre-defined event object to stop form from refreshing.
@@ -86,44 +77,11 @@ export default function ClipDialog({
         handleClose();
     };
 
-    // add or edit clip
-    // const confirmAction = () => {
-    //     const newClip = {
-    //         text: newQuestion,
-    //         start: clipTime.start,
-    //         end: clipTime.end,
-    //         category: {
-    //             tag: 'medium',
-    //             color: '#018f69'
-    //         },
-    //         link: {
-    //             text: 'Click Here'
-    //         }
-    //     };
-    //     if (editMode) {
-    //         // modify currentClip
-    //         console.log(`editing the clip: ${currentClip.text}`);
-    //         setClipTime({ ...clipTime, question: newQuestion });
-    //         editClips(clipTime);
-    //     } else {
-    //         addClip(newClip);
-    //     }
-
-    //     handleClose();
-    // };
-
     return (
         <div>
-            {/* <Button variant='outlined' color='primary' onClick={handleClickOpen}>
-        Clip v.2
-            </Button> */}
             <Fab
                 onClick={() => {
                     // create new initial clip.
-                    setClipTime({
-                        start: timeStamp,
-                        end: timeStamp + 30
-                    });
                     handleClickOpen();
                 }}
             />
@@ -142,7 +100,7 @@ export default function ClipDialog({
                             id='name'
                             label='edit question here'
                             type='text'
-                            defaultValue={currentClip.question}
+                            defaultValue={editMode ? currentClip.question : initForm.question}
                             onChange={event => {
                                 const question = event.target.value;
                                 setForm({ ...form, question });
@@ -150,7 +108,7 @@ export default function ClipDialog({
                             fullWidth
                         />
                         <RangeSlider
-                            timeStamp={editMode? currentClip : initForm}
+                            timeStamp={editMode ? currentClip : initForm}
                             confirm={handleClipTime}
                         />
                     </DialogContent>

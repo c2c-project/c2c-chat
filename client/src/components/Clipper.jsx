@@ -1,17 +1,16 @@
-import React, { useState, useRef , useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactPlayer from 'react-player';
 // import Grid from './ClipGrid';
 import TimeLine from './TimeLine';
 
-
 function Clipper() {
     const player = useRef();
     const quickScroll = React.useRef(null);
-    const [playVideo, setPlayVideo]  = useState(true);
-    
+    const [playVideo, setPlayVideo] = useState(true);
+
     const [timeFrame, setTimeFrame] = useState({
         start: 0,
-        end: Number.MAX_SAFE_INTEGER,
+        end: Number.MAX_SAFE_INTEGER
     });
     useEffect(() => {
         quickScroll.current.scrollIntoView({
@@ -19,21 +18,26 @@ function Clipper() {
         });
         player.current.seekTo(timeFrame.start, 'seconds');
         setPlayVideo(true);
-        console.log(`You just changed the time frame to: ${timeFrame.start} and ${timeFrame.end}`);
-        
-
-    },[timeFrame]);
+        console.log(
+            `You just changed the time frame to: ${timeFrame.start} and ${timeFrame.end}`
+        );
+    }, [timeFrame]);
 
     const [timeStamp, setTimeStamp] = useState(false);
     useEffect(() => {
-        if(timeStamp != null && timeStamp >= timeFrame.end){
+        if (timeStamp != null && timeStamp >= timeFrame.end) {
             player.current.seekTo(timeFrame.start, 'seconds');
             setPlayVideo(true);
         }
-    },[timeStamp]);
+    }, [timeStamp]);
 
-    //function is passed to the React-Player
-    const handleTimeStamp = ({ played, loaded, playedSeconds, loadedSeconds}) => {
+    // function is passed to the React-Player
+    const handleTimeStamp = ({
+        played,
+        loaded,
+        playedSeconds,
+        loadedSeconds
+    }) => {
         // console.log(played);
         document.getElementById('header').innerHTML = playedSeconds;
         setTimeStamp(playedSeconds);
@@ -42,7 +46,7 @@ function Clipper() {
         // unessessary for a re-render to seek this time.
         setTimeFrame({
             start: beginClip,
-            end: endClip,
+            end: endClip
         });
     };
 
@@ -51,19 +55,21 @@ function Clipper() {
             <div ref={quickScroll} />
             <ReactPlayer
                 ref={player}
-                url='https://www.youtube.com/watch?v=yzC4hFK5P3g'
+                url='https://www.youtube.com/watch?v=LXb3EKWsInQ'
                 playing={playVideo}
                 width='100%'
                 // heigh=''
                 playsinline
-                onProgress={handleTimeStamp} />
-            
+                onProgress={handleTimeStamp}
+            />
+
             <h1 id='header'>Hello World</h1>
-            
-            <TimeLine 
+
+            <TimeLine
                 playerRef={player}
                 timeStamp={timeStamp}
-                playerTime={handleSetTimeFrame} />
+                playerTime={handleSetTimeFrame}
+            />
         </div>
     );
 }
