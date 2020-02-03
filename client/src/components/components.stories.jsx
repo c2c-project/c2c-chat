@@ -49,9 +49,3 @@ export const Clips = () => {
     );
 };
 
-export const Editor = () => {
-    return(
-        <Clipper /> 
-    );
-};
-
