@@ -32,23 +32,6 @@ const addSession = ({ speaker, moderator, description, date, url }) =>
             .insertOne({ speaker, moderator, description, date, url })
     );
 
-const findAllFinishedSessions = () =>
-    mongo.then(db =>
-        db
-            .collection('finishedSessions')
-            .find()
-            .toArray()
-    );
-
-const findFinishedSessionById = id =>
-    mongo.then(db =>
-        db
-            .collection('essions')
-            .find({ _id: new ObjectID(id) })
-            .toArray()
-            .then(x => x[0])
-    );
-
 const removeSession = ({ sessionId }) =>
     mongo.then(db =>
         db.collection('sessions').remove({ _id: new ObjectID(sessionId) })
