@@ -39,7 +39,7 @@ const findAllFinishedSessions = () =>
             .find()
             .toArray()
     );
-    
+
 const findFinishedSessionById = id =>
     mongo.then(db =>
         db
@@ -97,8 +97,6 @@ const privilegedActions = (action, userDoc) => {
 export default {
     findAllSessions,
     findSessionById,
-    findAllFinishedSessions,
-    findFinishedSessionById,
     addSession,
     removeSession,
     updateSession,

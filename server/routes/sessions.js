@@ -99,7 +99,7 @@ router.get(
     '/session-summary',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
-        Sessions.findAllFinishedSessions().then(r => res.json(r));
+        Sessions.findAllSessions().then(r => res.json(r));
     }
 );
 router.get(
@@ -107,7 +107,7 @@ router.get(
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         const { sessionId } = req.params;
-        Sessions.findFinishedSessionById(sessionId).then(r => {
+        Sessions.findSessionById(sessionId).then(r => {
             res.json(r);
         });
     }
