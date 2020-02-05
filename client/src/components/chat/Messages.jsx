@@ -43,13 +43,10 @@ function Messages({ messages, variant }) {
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
     const firstRender = React.useRef(true);
     const scrollToBottom = () => {
-        const scroll = () => {
-            lastMessageRef.current.scrollIntoView({
-                behavior: firstRender.current ? 'smooth' : 'auto'
-            });
-            firstRender.current = !messages.length;
-        };
-        scroll();
+        lastMessageRef.current.scrollIntoView({
+            behavior: firstRender.current ? 'smooth' : 'auto'
+        });
+        firstRender.current = !messages.length;
     };
 
     React.useEffect(() => {
