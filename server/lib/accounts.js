@@ -3,6 +3,16 @@ import Users from '../db/collections/users';
 import { ClientError } from './errors';
 
 const SALT_ROUNDS = 10;
+const BASE_USER = {
+    roles: ['user']
+};
+
+// TODO: use this when I allow promotion
+// const makeModerator = user => ({
+//     ...user,
+//     roles: [...user.roles, 'moderator']
+// });
+// const makeAdmin = user => ({ ...user, roles: [...user.roles, 'admin'] });
 
 /**
  * Realistically, only one of the required's fields within the requirements object will be used at any given time
@@ -50,19 +60,22 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
     // because both should be unique, otherwise just find by username
     const query = email ? { $or: [{ email }, { username }] } : { username };
     if (password === confirmPass) {
-        return Users.find(query).then(doc => {
-            if (!doc) {
+        return Users.find(query).then(docArray => {
+            if (!docArray[0]) {
                 return bcrypt
                     .hash(password, SALT_ROUNDS)
                     .then(hash =>
                         Users.addUser({
                             username,
                             password: hash,
+                            // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
+                            ...BASE_USER,
                             ...additionalFields
                         }).catch(err => console.log(err))
                     )
                     .catch(err => console.log(err));
             }
+            console.log(docArray);
             return Promise.reject(
                 new ClientError('Username or E-mail already exists')
             );

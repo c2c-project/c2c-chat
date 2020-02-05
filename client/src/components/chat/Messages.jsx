@@ -41,22 +41,17 @@ function Messages({ messages, variant }) {
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
+    const firstRender = React.useRef(true);
     const scrollToBottom = () => {
-        let isMounted = true;
-        const scroll = () =>
-            isMounted &&
+        const scroll = () => {
             lastMessageRef.current.scrollIntoView({
-                behavior: 'smooth'
+                behavior: firstRender.current ? 'smooth' : 'auto'
             });
-        if (isMounted) {
-            // TODO: make this less trash
-            setTimeout(scroll, 350);
-        }
-        return () => {
-            isMounted = false;
+            firstRender.current = !messages.length;
         };
+        scroll();
     };
-    
+
     React.useEffect(() => {
         let isMounted = true;
         fetch('/api/users/authenticate', {

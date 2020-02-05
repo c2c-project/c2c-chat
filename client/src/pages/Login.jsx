@@ -30,7 +30,7 @@ export default function Loginpage() {
     const classes = useStyles();
     const history = useHistory();
     const [form, setForm] = React.useState({
-        email: '',
+        username: '',
         password: ''
     });
     const [snack] = useSnack();
@@ -49,7 +49,7 @@ export default function Loginpage() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username: form.email,
+                username: form.username,
                 password: form.password
             })
         })
@@ -95,12 +95,12 @@ export default function Loginpage() {
                                             <TextField
                                                 fullWidth
                                                 variant='outlined'
-                                                type='email'
-                                                value={form.email}
+                                                type='text'
+                                                value={form.username}
                                                 onChange={e =>
-                                                    handleChange(e, 'email')
+                                                    handleChange(e, 'username')
                                                 }
-                                                label='Email'
+                                                label='Username'
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -127,19 +127,24 @@ export default function Loginpage() {
                                     </Grid>
                                 </form>
                             </Grid>
-                            <Grid container item xs={12} justify='flex-end'>
+                            <Grid
+                                container
+                                item
+                                xs={12}
+                                justify='space-between'
+                            >
                                 <Button
                                     onClick={() => history.push('/register')}
                                 >
                                     Register
                                 </Button>
-                                <Button
+                                {/* <Button
                                     onClick={() =>
                                         history.push('/forgot-password')
                                     }
                                 >
                                     Forgot Password?
-                                </Button>
+                                </Button> */}
                                 <Button
                                     onClick={() =>
                                         history.push('/login-temporary')

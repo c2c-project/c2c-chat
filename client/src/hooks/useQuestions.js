@@ -9,7 +9,6 @@ function connect(roomId = 'chat') {
 
 function useQuestions(roomId = 'session') {
     const session = JSON.parse(localStorage.getItem('session'));
-    console.log(session);
     const initialQuestion =
         session && session.questionHistory
             ? session.questionHistory[session.questionHistory.length - 1]
