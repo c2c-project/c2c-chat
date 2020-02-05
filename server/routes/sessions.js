@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Sessions from '../db/collections/sessions';
-import ioInterface from '../lib/socket-io';
+import { setCurrentQuestion } from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -85,11 +85,7 @@ router.post(
         const { question } = req.body;
         const setQuestion = Sessions.privilegedActions('SET_QUESTION', user);
         setQuestion(sessionId, question).then(() => {
-            ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('set-question', question);
+            setCurrentQuestion(sessionId, question);
             res.send({ success: true });
         });
     }
