@@ -145,41 +145,36 @@ export default function Chat() {
                             className={classes.root}
                             justify='flex-end'
                         >
-                            <Slide in direction='right' timeout={300}>
-                                <Grid
-                                    container
-                                    item
-                                    xs={12}
-                                    md={6}
-                                    className={classes.height}
-                                    justify='center'
-                                >
-                                    <Grid
-                                        item
-                                        xs={12}
-                                        md={10}
-                                        className={classes.video}
-                                    >
-                                        <Video
-                                            roomId={roomId}
-                                            url={sessionData.url}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Slide>
-                            <Slide in direction='left' timeout={300}>
+                            {/* <Slide in direction='right' timeout={300}> */}
+                            <Grid
+                                container
+                                item
+                                xs={12}
+                                md={6}
+                                className={classes.height}
+                                justify='center'
+                            >
                                 <Grid
                                     item
                                     xs={12}
-                                    md={6}
-                                    className={classes.chat}
+                                    md={10}
+                                    className={classes.video}
                                 >
-                                    <ChatWindow
+                                    <Video
                                         roomId={roomId}
-                                        title='Discussion'
+                                        url={sessionData.url}
                                     />
                                 </Grid>
-                            </Slide>
+                            </Grid>
+                            {/* </Slide> */}
+                            {/* <Slide in direction='left' timeout={300}> */}
+                            <Grid item xs={12} md={6} className={classes.chat}>
+                                <ChatWindow
+                                    roomId={roomId}
+                                    title='Discussion'
+                                />
+                            </Grid>
+                            {/* </Slide> */}
                         </Grid>
                     )
                 },

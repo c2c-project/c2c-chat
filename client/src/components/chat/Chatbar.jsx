@@ -12,8 +12,6 @@ function Chatbar({ onMessageSend }) {
             return;
         }
         event.preventDefault();
-        // TODO: send this over the wire
-        // console.log('Msg: ', msg);
         onMessageSend(msg);
         setMsg('');
     };
