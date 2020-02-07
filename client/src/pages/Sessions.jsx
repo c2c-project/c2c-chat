@@ -241,51 +241,53 @@ export default function Sessions() {
     // TODO: add ics download option w/ icon, probably inside the session component
     return (
         <PageContainer>
-            <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
-                <Container maxWidth='lg' className={classes.dialogForm}>
-                    <SessionForm
-                        type={formType}
-                        onSubmit={() => {
-                            setFormOpen(false);
-                            refetch();
-                            snack(
-                                formType === 'update'
-                                    ? 'Successfully updated the session!'
-                                    : 'Successfully created a new session!',
-                                'success'
-                            );
-                        }}
-                        editTarget={target}
-                    />
-                </Container>
-            </Dialog>
-            <SessionList
-                sessions={data}
-                onClickOptions={handleSessionOptionsClick}
-                onClickGoToSession={goToSession}
-            />
-            <GateKeep
-                local
-                permissions={{ requiredAny: ['moderator', 'admin'] }}
-            >
-                <Fab
-                    onClick={() => {
-                        setFormOpen(true);
-                        setFormType('create');
-                    }}
+            <Container maxWidth='lg'>
+                <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
+                    <Container maxWidth='lg' className={classes.dialogForm}>
+                        <SessionForm
+                            type={formType}
+                            onSubmit={() => {
+                                setFormOpen(false);
+                                refetch();
+                                snack(
+                                    formType === 'update'
+                                        ? 'Successfully updated the session!'
+                                        : 'Successfully created a new session!',
+                                    'success'
+                                );
+                            }}
+                            editTarget={target}
+                        />
+                    </Container>
+                </Dialog>
+                <SessionList
+                    sessions={data}
+                    onClickOptions={handleSessionOptionsClick}
+                    onClickGoToSession={goToSession}
                 />
-            </GateKeep>
-            <Menu
-                id='session-options'
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleSessionOptionsClose}
-            >
-                <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
-            </Menu>
+                <GateKeep
+                    local
+                    permissions={{ requiredAny: ['moderator', 'admin'] }}
+                >
+                    <Fab
+                        onClick={() => {
+                            setFormOpen(true);
+                            setFormType('create');
+                        }}
+                    />
+                </GateKeep>
+                <Menu
+                    id='session-options'
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleSessionOptionsClose}
+                >
+                    <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                    {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
+                </Menu>
+            </Container>
         </PageContainer>
     );
 }

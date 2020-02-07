@@ -97,9 +97,7 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.down('sm')]: {
             maxHeight: '30vh'
         },
-        [theme.breakpoints.up('md')]: {
-            padding: `${theme.spacing(7)}px 0 ${theme.spacing(7)}px 0`
-        },
+        alignSelf: 'center',
         [theme.breakpoints.down('md')]: {
             maxWidth: '100vw'
         }
@@ -199,14 +197,7 @@ export default function Chat() {
     const unprivilegedView = (
         <Grid container className={classes.root} justify='flex-end'>
             <Slide in direction='right' timeout={300}>
-                <Grid
-                    container
-                    item
-                    xs={12}
-                    md={6}
-                    className={classes.height}
-                    justify='center'
-                >
+                <Grid container item xs={12} md={6} justify='center'>
                     <Grid item xs={12} md={10} className={classes.video}>
                         <Video roomId={roomId} url={sessionData.url} />
                     </Grid>
