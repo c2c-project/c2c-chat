@@ -15,6 +15,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CurrentQuestion({ roomId }) {
     const classes = useStyles();
+    // eslint-disable-next-line
     const [questions, sendQuestion, currentQuestion] = useQuestions(roomId);
     return (
         <div className={classes.root}>

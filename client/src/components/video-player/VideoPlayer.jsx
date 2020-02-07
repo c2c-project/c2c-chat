@@ -10,6 +10,7 @@ function VideoPlayer({ url }) {
             playing={false}
             width='100%'
             playsinline
+            controls
         />
     );
 }

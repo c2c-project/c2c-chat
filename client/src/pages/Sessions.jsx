@@ -47,7 +47,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                 })
             );
         }
-    }, [type, editTarget]);
+    }, [type, editTarget, jwt]);
     const onSubmit = e => {
         e.preventDefault();
         fetch(`/api/sessions/${type}`, {
@@ -187,7 +187,7 @@ export default function Sessions() {
         }).then(res => {
             res.json().then(r => setData(r));
         });
-    }, [force]);
+    }, [force, jwt]);
 
     // this is the card vert menu in the card actions
     const handleSessionOptionsClick = (e, sessionId) => {
@@ -231,10 +231,10 @@ export default function Sessions() {
 
     const goToSession = sessionId => {
         // TODO: change this when I change how I get the session data
-        localStorage.setItem(
-            'session',
-            JSON.stringify(data.find(session => sessionId === session._id))
-        );
+        // localStorage.setItem(
+        //     'session',
+        //     JSON.stringify(data.find(session => sessionId === session._id))
+        // );
         history.push(`/app/sessions/${sessionId}/live`);
     };
     // TODO: generate menu options based on user role

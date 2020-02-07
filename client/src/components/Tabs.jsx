@@ -44,6 +44,7 @@ export default function ModSession({ pages }) {
             </Tabs>
         );
         return () => setTabs(null);
+        // eslint-disable-next-line
     }, [dir, currTab, pages]);
     return (
         <Grid container direction='column' className={classes.root}>
