@@ -67,6 +67,8 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
     };
     const handleChange = (e, key) => {
         const { value } = e.target;
+        console.log(e.target);
+        console.log(value);
         setState(prev => ({ ...prev, [key]: value }));
     };
     return (
@@ -123,7 +125,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                                 variant='outlined'
                                 value={state.date}
                                 onChange={value =>
-                                    handleChange({ target: value }, 'date')
+                                    handleChange({ target: { value } }, 'date')
                                 }
                             />
                         </Grid>
