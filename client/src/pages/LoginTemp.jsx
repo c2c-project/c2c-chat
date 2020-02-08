@@ -53,7 +53,7 @@ export default function Loginpage() {
                         history.push('/app/sessions/list');
                     });
                 } else {
-                    snack('Failed login, please try again!', 'error');
+                    snack(`Error: ${res.statusText}`, 'error');
                 }
             })
             .catch(console.err);
@@ -82,6 +82,7 @@ export default function Loginpage() {
                                         fullWidth
                                         variant='outlined'
                                         type='username'
+                                        required
                                         value={form.username}
                                         onChange={e =>
                                             handleChange(e, 'username')

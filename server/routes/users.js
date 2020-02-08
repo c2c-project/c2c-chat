@@ -14,7 +14,7 @@ router.post('/register', (req, res) => {
             res.status(200).send();
         })
         .catch(e => {
-            // not really sure if this is best practice 
+            // not really sure if this is best practice
             if (e instanceof ClientError) {
                 res.statusMessage = e.message;
             }
@@ -45,11 +45,18 @@ router.post(
 // NOTE: unprotected route here
 router.post('/login-temporary', (req, res) => {
     const { username } = req.body;
-    Accounts.registerTemporary(username, { roles: ['user'] }).then(userDoc => {
-        jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
-            res.status(200).send({ jwt: token });
+    Accounts.registerTemporary(username, { roles: ['user'] })
+        .then(userDoc => {
+            jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
+                res.status(200).send({ jwt: token });
+            });
+        })
+        .catch(e => {
+            if (e instanceof ClientError) {
+                res.statusMessage = e.message;
+            }
+            res.status(500).send();
         });
-    });
 });
 
 router.post(
