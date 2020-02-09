@@ -18,7 +18,8 @@ import Questions from '../db/collections/questions';
 
 const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
 
-const toxicity_load = toxicity.load(threshold);
+const toxicity_load = toxicity.load(threshold);// load toxicity before hand
+console.log("toxicity load success")
 
 async function checkTfToxicity(question) {
     const toxicityResult = {};
