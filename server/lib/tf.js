@@ -17,12 +17,16 @@ import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';
 
 const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
+
+const toxicity_load = toxicity.load(threshold);// load toxicity before hand
+console.log("toxicity load success")
+
 async function checkTfToxicity(question) {
     const toxicityResult = {};
     const toxicityReason = [];
     let result = false;
     try {
-        await toxicity.load(threshold).then(async model => {
+        await toxicity_load.then(async model => {
             await model.classify(question).then(async predictions => {
                 await predictions.forEach(prediction => {
                     // Remodel the value structure to a list of key-value pairs.
