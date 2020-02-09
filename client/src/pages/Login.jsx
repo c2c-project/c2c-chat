@@ -93,6 +93,7 @@ export default function Loginpage() {
                                     >
                                         <Grid item xs={12}>
                                             <TextField
+                                                required
                                                 fullWidth
                                                 variant='outlined'
                                                 type='text'
@@ -105,6 +106,7 @@ export default function Loginpage() {
                                         </Grid>
                                         <Grid item xs={12}>
                                             <TextField
+                                                required
                                                 fullWidth
                                                 variant='outlined'
                                                 type='password'
@@ -120,6 +122,7 @@ export default function Loginpage() {
                                                 fullWidth
                                                 type='submit'
                                                 variant='contained'
+                                                color='primary'
                                             >
                                                 Login
                                             </Button>
