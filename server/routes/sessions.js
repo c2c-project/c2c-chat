@@ -24,7 +24,6 @@ router.get(
         Sessions.findSessionById(sessionId).then(r => {
             res.json(r);
         });
-        Questions.countQuestionsBySession(sessionId);
     }
 );
 
