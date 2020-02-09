@@ -18,11 +18,36 @@ const findBySession = ({ sessionId }) =>
             .toArray()
     );
 
-const createQuestion = ({ question, sessionId, username, userId }) =>
+const createQuestion = ({
+    question,
+    sessionId,
+    username,
+    userId,
+    toxicity,
+    toxicityReason
+}) =>
     mongo.then(db =>
-        db
-            .collection('questions')
-            .insertOne({ question, sessionId, username, userId })
+        db.collection('questions').insertOne({
+            question,
+            sessionId,
+            username,
+            userId,
+            toxicity,
+            toxicityReason
+        })
+    );
+// 193
+
+const removeQuestion = ({ questionId, reason }) =>
+    mongo.then(
+        db =>
+            db.collection('questions').updateOne(
+                {
+                    _id: new ObjectID(questionId)
+                },
+                { $set: { moderated: true, reason } }
+            )
+        // close();
     );
 /*   
 // Attempt to get aggregate to work...
@@ -51,6 +76,16 @@ const countQuestionsBySession = sessionId =>
             })
     );
 
+const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: questionId },
+            { $set: { toxicity: result, toxicityReason } }
+        );
+        // close();
+    });
+
+
 // TODO create an aggregate
 // TODO: 193
 /**
@@ -61,5 +96,7 @@ export default {
     findById,
     createQuestion,
     findBySession,
-    countQuestionsBySession
+    countQuestionsBySession,
+    removeQuestion,
+    updateQuestionToxicity
 };

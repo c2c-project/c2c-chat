@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useParams, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+// import circle from '../assets/spp-circle.png';
+import banner from '../assets/spp-banner.png';
 
 const drawerWidth = 240;
 
@@ -50,7 +52,22 @@ const useStyles = makeStyles(theme => ({
         // [theme.breakpoints.down('xs')]: {
         paddingTop: tabState ? '112px' : '64px'
         // }
-    })
+    }),
+    banner: {
+        padding: `${theme.spacing(2)}px ${theme.spacing(1)}px ${theme.spacing(
+            2
+        )}px ${theme.spacing(1)}px`
+    },
+    logo: {
+        bottom: '0',
+        position: 'absolute',
+        // left: '50px', // offset to center it
+        width: '100%'
+    },
+    img: {
+        width: '100%',
+        height: 'auto'
+    }
 }));
 
 const parseTitle = title =>
@@ -84,8 +101,15 @@ function ResponsiveDrawer({ children }) {
     };
 
     const drawer = (
-        <div>
-            <div className={classes.toolbar} />
+        <div style={{ height: '100%' }}>
+            <div className={classes.banner}>
+                <img
+                    className={classes.img}
+                    src={banner}
+                    alt='spp-logo-circle'
+                />
+            </div>
+            {/* <div className={classes.toolbar} /> */}
             <Divider />
             <List>
                 {config.map(({ label, to }) => (
@@ -101,6 +125,17 @@ function ResponsiveDrawer({ children }) {
                 ))}
             </List>
             <Divider />
+            {/* <div className={classes.logo}>
+                <Grid container justify='center'>
+                    <Grid item xs={6}>
+                        <img
+                            className={classes.img}
+                            src={circle}
+                            alt='spp-logo-circle'
+                        />
+                    </Grid>
+                </Grid>
+            </div> */}
         </div>
     );
 

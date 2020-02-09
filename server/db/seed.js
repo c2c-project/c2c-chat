@@ -141,7 +141,9 @@ function seedMessages() {
 function seedUsers() {
     console.log('users');
     const promises = users.map(({ username, password, ...rest }) =>
-        Accounts.register(username, password, rest)
+        Accounts.register(username, password, password, rest).catch(e =>
+            console.log(e)
+        )
     );
     return Promise.all(promises);
 }

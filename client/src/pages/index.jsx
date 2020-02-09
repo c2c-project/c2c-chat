@@ -9,6 +9,7 @@ import Login from './Login';
 import Layout from '../layout';
 import LoggedIn from '../components/LoggedIn';
 import LoginTemp from './LoginTemp';
+import Register from './Register';
 
 export default function Routes() {
     return (
@@ -33,6 +34,9 @@ export default function Routes() {
             </Route>
             <Route exact path='/login'>
                 <Login />
+            </Route>
+            <Route exact path='/register'>
+                <Register />
             </Route>
             <Route exact path='/login-temporary'>
                 <LoginTemp />

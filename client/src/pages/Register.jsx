@@ -15,16 +15,20 @@ const useStyles = makeStyles(theme => ({
         height: '100%'
     },
     paper: {
-        marginTop: '-64px', // slight offset to make the component feel more vertically centered
+        // not necessary anymore?
+        // marginTop: '64-px', // slight offset to make the component feel more vertically centered
         padding: theme.spacing(2)
     }
 }));
 
-export default function Loginpage() {
+export default function RegisterPage() {
     const classes = useStyles();
     const history = useHistory();
     const [form, setForm] = React.useState({
-        username: ''
+        username: '',
+        email: '',
+        password: '',
+        confirmPass: ''
     });
     const [snack] = useSnack();
 
@@ -36,36 +40,28 @@ export default function Loginpage() {
 
     const handleSubmit = e => {
         e.preventDefault();
-        fetch('/api/users/login-temporary', {
+        fetch('/api/users/register', {
             method: 'POST',
+            body: JSON.stringify({ form }),
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: form.username
-            })
-        })
-            .then(res => {
-                if (res.status === 200) {
-                    res.json().then(({ jwt }) => {
-                        window.localStorage.setItem('jwt', jwt);
-                        history.push('/app/sessions/list');
-                    });
-                } else {
-                    snack(`Error: ${res.statusText}`, 'error');
-                }
-            })
-            .catch(err => {
-                snack(
-                    'Something went wrong -- please refresh and try again.',
-                    'error'
-                );
-                console.err(err);
-            });
+            }
+        }).then(res => {
+            if (res.status === 200) {
+                history.push('/login');
+                snack('You may now login', 'success');
+            } else if (res.status === 500) {
+                snack(`Error: ${res.statusText}`, 'error');
+            } else {
+                snack('Something went wrong, please try again.', 'info');
+            }
+            console.log(res);
+        });
     };
+
     return (
         <Container maxWidth='md' className={classes.root}>
-            <Grow in timeout={300}>
+            <Grow timeout={300} in>
                 <Grid
                     container
                     direction='column'
@@ -74,6 +70,8 @@ export default function Loginpage() {
                     justify='center'
                 >
                     <Paper className={classes.paper}>
+                        {/* <Grid container spacing={4}>
+                            <Grid item xs={12}> */}
                         <form onSubmit={handleSubmit}>
                             <Grid
                                 container
@@ -85,8 +83,7 @@ export default function Loginpage() {
                                     <TextField
                                         fullWidth
                                         variant='outlined'
-                                        type='username'
-                                        required
+                                        type='text'
                                         value={form.username}
                                         onChange={e =>
                                             handleChange(e, 'username')
@@ -95,17 +92,52 @@ export default function Loginpage() {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        variant='outlined'
+                                        type='email'
+                                        value={form.email}
+                                        onChange={e => handleChange(e, 'email')}
+                                        label='Email'
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        variant='outlined'
+                                        type='password'
+                                        value={form.password}
+                                        onChange={e =>
+                                            handleChange(e, 'password')
+                                        }
+                                        label='Password'
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        variant='outlined'
+                                        type='password'
+                                        value={form.confirmPass}
+                                        onChange={e =>
+                                            handleChange(e, 'confirmPass')
+                                        }
+                                        label='Confirm Password'
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
                                     <Button
                                         fullWidth
                                         type='submit'
                                         variant='contained'
-                                        color='primary'
                                     >
-                                        Login
+                                        Register
                                     </Button>
                                 </Grid>
                             </Grid>
                         </form>
+                        {/* </Grid>
+                        </Grid> */}
                     </Paper>
                 </Grid>
             </Grow>
