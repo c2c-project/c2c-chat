@@ -42,7 +42,6 @@ function useQuestions(roomId = 'session') {
         question.on('disconnect', () => console.log('disconnected'));
         question.on('error', err => console.log(err));
         question.on('set-question', q => {
-            console.log('set question');
             setCurrent(q);
         });
         // question.on('moderate', messageId => {
