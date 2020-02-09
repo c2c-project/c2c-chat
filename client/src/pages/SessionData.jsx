@@ -1,41 +1,33 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Stats from '../components/Stats';
+import { useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-class SessionData extends React.Component {
-   constructor(props) {
-      super(props);
-      this.state = {
-        sent: null,
-        asked: null,
-        unanswered: null,
-        duration: null,
-      };
-    }
-    
-    state = {
-       sent: this.props.location.state.sent,
-       asked: this.props.location.state.asked,
-       unanswered: this.props.location.state.unanswered,
-       duration: this.props.location.state.duration
-    }
-    
-   render() {
-      return(
-         <Grid 
+export default function SessionData() {
+   const location = useLocation();
+
+   return (
+      <Grid
          container
          justify-center>
-            <Stats
-            sent={this.props.location.state.sent}
-            asked={this.props.location.state.asked}
-            unanswered={this.props.location.state.unanswered}
-            duration={this.props.location.state.duration}
-            />
-         </Grid>
-      );
-   }
-
-
+         <Stats
+            sessionId={location.state.sessionId}
+            sent={location.state.sent}
+            asked={location.state.asked}
+            unanswered={location.state.unanswered}
+            duration={location.state.duration}
+            speaker={location.state.speaker}
+         />
+      </Grid>
+   )
 }
 
-export default SessionData;
+SessionData.propTypes = {
+   sessionId: PropTypes.string.isRequired,
+   sent: PropTypes.string.isRequired,
+   asked: PropTypes.string.isRequired,
+   unanswered: PropTypes.string.isRequired,
+   duration: PropTypes.string.isRequired,
+   speaker: PropTypes.string.isRequired
+};

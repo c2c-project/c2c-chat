@@ -44,15 +44,13 @@ const findMessages = ({ sessionId }) =>
             .toArray()
     );
 
-
-// TODO: joseph
-/**
- * make a new function called countMessagesBySession where you use mongodb's count https://mongodb.github.io/node-mongodb-native/3.5/api/Collection.html#countDocuments
- * look at other functions to get an idea of how to query the collection
- * 
- * Note for David: I will get to this soon.
- */
-
+const countMessagesBySession = ({ sessionId }) =>
+    mongo.then(db =>
+        db
+            .collection('sessions')
+            .find({ $and:[{sessionId},{messages},{sent}] })
+            .count()
+    );
 
 /**
  * Actions that a non-owner may take and the permissions required to do so
@@ -90,5 +88,6 @@ export default {
     removeMessage,
     updateMessage,
     findMessages,
-    privilegedActions
+    privilegedActions,
+    countMessagesBySession
 };

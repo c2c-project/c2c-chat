@@ -37,4 +37,6 @@ router.post(
     }
 );
 
+// Will get to this get request once chat is implemented
+
 module.exports = router;

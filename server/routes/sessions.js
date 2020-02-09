@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Sessions from '../db/collections/sessions';
+import Questions from '../db/collections/questions';
 import ioInterface from '../lib/socket-io';
 
 const router = express.Router();
@@ -23,6 +24,16 @@ router.get(
         Sessions.findSessionById(sessionId).then(r => {
             res.json(r);
         });
+        Questions.countQuestionsBySession(sessionId);
+    }
+);
+
+router.get(
+    '/findSummary/:sessionId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { sessionId } = req.params;
+        Questions.countQuestionsBySession(sessionId);
     }
 );
 
@@ -99,19 +110,17 @@ router.get(
     '/session-summary',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
-        Sessions.findAllSessions().then(r => res.json(r));
+        Sessions.findAllSessions().then(r => { res.json(r) });
+
     }
 );
-router.get(
-    '/session-summary/:sessionId',
-    passport.authenticate('jwt', { session: false }),
-    (req, res) => {
-        const { sessionId } = req.params;
-        Sessions.findSessionById(sessionId).then(r => {
-            res.json(r);
-        });
-    }
-);
+
+
+// remove above
+// create a router.post that will post the new data of start
+
+
+
 
 // TODO: joseph
 /**

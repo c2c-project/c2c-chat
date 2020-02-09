@@ -69,7 +69,11 @@ const sessions = [
             peak: 10
             // TODO: what other attendance data would we want?
         },
-        duration: '12:34',
+        session: {
+            duration: '3:30',
+            start: '4:00',
+            end: '7:30'
+        },
         messages: {
             sent: 100,
             asked: 10,
@@ -85,7 +89,11 @@ const sessions = [
             peak: 5
             // TODO: what other attendance data would we want?
         },
-        duration: '56:23',
+        session: {
+            duration: '2:00',
+            start: '2:00',
+            end: '4:00'
+        },
         messages: {
             sent: 50,
             asked: 5,
