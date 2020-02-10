@@ -76,9 +76,7 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
                     .catch(err => console.log(err));
             }
             console.log(docArray);
-            return Promise.reject(
-                new ClientError('Username or E-mail already exists')
-            );
+            throw new ClientError('Username or E-mail already exists');
         });
     }
 
@@ -94,7 +92,7 @@ const registerTemporary = (username, additionalFields = {}) =>
                 temporary: true
             }).catch(err => console.log(err));
         }
-        return Promise.reject(new ClientError('Username already exists'));
+        throw new ClientError('Username already exists');
     });
 
 /**

@@ -18,7 +18,7 @@ router.post('/register', (req, res) => {
             if (e instanceof ClientError) {
                 res.statusMessage = e.message;
             }
-            res.status(500).send();
+            res.status(400).send();
         });
 });
 
@@ -48,14 +48,19 @@ router.post('/login-temporary', (req, res) => {
     Accounts.registerTemporary(username, { roles: ['user'] })
         .then(userDoc => {
             jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
-                res.status(200).send({ jwt: token });
+                if (!err) {
+                    res.status(200).send({ jwt: token });
+                } else {
+                    console.log(err);
+                    res.status(400).send();
+                }
             });
         })
         .catch(e => {
             if (e instanceof ClientError) {
                 res.statusMessage = e.message;
             }
-            res.status(500).send();
+            res.status(400).send();
         });
 });
 
