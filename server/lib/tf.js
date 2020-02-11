@@ -24,7 +24,7 @@ async function checkTfToxicity(question) {
                 if (toxicityResult.toxicity) {
                     for (let i = 0; i < Object.keys(toxicityResult).length - 1; i += 1) {
                         // if value of toxicityResult is true or null, we add its key to the toxicityReason.
-                        if (!Object.values(toxicityResult)[i]) {
+                        if (!(Object.values(toxicityResult)[i] === false)) {
                             toxicityReason.push(Object.keys(toxicityResult)[i]);
                         }
                     }
