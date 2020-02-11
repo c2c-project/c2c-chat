@@ -1,40 +1,41 @@
-
 import '@tensorflow/tfjs-node';
 import * as toxicity from '@tensorflow-models/toxicity';
 import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';
 
 const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
-
 const toxicityLoad = toxicity.load(threshold);// load toxicity before hand
 
 async function checkTfToxicity(question) {
-
-    const promise = new Promise(function(resolve) {
+    return new Promise(function(resolve) {
         const toxicityResult = {};
         const toxicityReason = [];
         let result = false;
-        toxicityLoad.then(model => {
-            model.classify(question).then(predictions => {
-                predictions.forEach(prediction => {
-                    // Remodel the value structure to a list of key-value pairs.
-                    toxicityResult[prediction.label] =
-                        prediction.results[0].match;
-                });
-                if (toxicityResult.toxicity) {
-                    for (let i = 0; i < Object.keys(toxicityResult).length - 1; i += 1) {
-                        // if value of toxicityResult is true or null, we add its key to the toxicityReason.
-                        if (!(Object.values(toxicityResult)[i] === false)) {
-                            toxicityReason.push(Object.keys(toxicityResult)[i]);
+        toxicityLoad
+            .then(model => {
+                model.classify(question).then(predictions => {
+                    predictions.forEach(prediction => {
+                        // Remodel the value structure to a list of key-value pairs.
+                        toxicityResult[prediction.label] =
+                            prediction.results[0].match;
+                    });
+                    if (toxicityResult.toxicity) {
+                        for (let i = 0; i < Object.keys(toxicityResult).length - 1; i += 1) {
+                            // if value of toxicityResult is true or null, we add its key to the toxicityReason.
+                            if (!(Object.values(toxicityResult)[i] === false)) {
+                                toxicityReason.push(Object.keys(toxicityResult)[i]);
+                            }
                         }
+                        result = true;
                     }
-                    result = true;
-                }
-                resolve({ toxicity: result, reason: toxicityReason })
-            });
-        });
-    })
-    return promise;
+                    resolve({ toxicity: result, reason: toxicityReason })
+                });
+            })
+            .catch(function(exception) {
+                // eslint-disable-next-line no-console
+                console.error(`Tf-Toxicity classifier fail: ${  exception.message}`);
+            })
+    });
 }
 
 function AutoRemoveMessage(result, reason, messageId, io, roomId) {
@@ -60,8 +61,8 @@ async function tfToxicityQuestion(questionDoc) {
                 questionId: questionDoc._id,
                 result: tfToxicityResult.toxicity,
                 toxicityReason: tfToxicityResult.reason
-            })
-        })    
+            });
+        });
     }
 }
 
@@ -78,8 +79,7 @@ function tfToxicityMessage(messageDoc, io, roomId) {
                     roomId
                 );
             }
-        }
-        );
+        });
     }
 }
 
