@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import mailgun from 'mailgun-js';
 import Users from '../db/collections/users';
 
 const SALT_ROUNDS = 10;
@@ -41,6 +42,22 @@ const isAllowed = (
 const verifyPassword = (textPw, hash, cb) => {
     bcrypt.compare(textPw, hash, cb);
 };
+
+const sendEmailVerification = (email) => {
+    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
+    const url = `${process.env.ORIGIN}/verification/${email}`;
+    const data = {
+        from: 'c2c',
+        to: email,
+        subject: 'Email Verificaiton',
+        text: 'Please click the link to confirm your email',
+        html: `<a href="${url}">${url}`
+    };
+    mg.messages().send(data, function(error, body) {
+        console.error(error);
+        console.log(body);
+    });
+}
 
 const register = (username, password, additionalFields = {}) =>
     Users.findByUsername({ username }).then(doc => {
