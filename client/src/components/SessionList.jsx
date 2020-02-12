@@ -9,9 +9,10 @@ import CardContent from '@material-ui/core/CardContent';
 import Grow from '@material-ui/core/Grow';
 import Grid from '@material-ui/core/Grid';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import CardActions from '@material-ui/core/CardActions';
-import ArrowRightIcon from '@material-ui/icons/ArrowRightAltOutlined';
+// import ArrowRightIcon from '@material-ui/icons/ArrowRightAltOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import GateKeep from './GateKeep';
 
@@ -34,12 +35,20 @@ function SessionListItem({ headerProps, description, onClickGoToSession }) {
                 />
                 <CardContent>{description}</CardContent>
                 <CardActions>
-                    <IconButton
+                    <Button
+                        color='primary'
+                        // variant='outlined'
+                        className={classes.button}
+                        onClick={onClickGoToSession}
+                    >
+                        Go
+                    </Button>
+                    {/* <IconButton
                         className={classes.button}
                         onClick={onClickGoToSession}
                     >
                         <ArrowRightIcon />
-                    </IconButton>
+                    </IconButton> */}
                 </CardActions>
             </Card>
         </Grid>

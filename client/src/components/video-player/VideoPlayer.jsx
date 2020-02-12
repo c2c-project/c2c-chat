@@ -7,9 +7,10 @@ function VideoPlayer({ url }) {
     return (
         <ReactPlayer
             url={url}
-            playing={false}
+            playing={process.env.NODE_ENV === 'production'}
             width='100%'
             playsinline
+            controls
         />
     );
 }

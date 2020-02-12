@@ -2,10 +2,25 @@ import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import Accounts from '../lib/accounts';
+import { ClientError } from '../lib/errors';
 
 const router = express.Router();
 
-router.post('/register', function(req, res) {});
+router.post('/register', (req, res) => {
+    const { form } = req.body;
+    const { username, email, password, confirmPass } = form;
+    Accounts.register(username, password, confirmPass, { email })
+        .then(() => {
+            res.status(200).send();
+        })
+        .catch(e => {
+            // not really sure if this is best practice
+            if (e instanceof ClientError) {
+                res.statusMessage = e.message;
+            }
+            res.status(400).send();
+        });
+});
 
 router.post(
     '/login',
@@ -30,11 +45,23 @@ router.post(
 // NOTE: unprotected route here
 router.post('/login-temporary', (req, res) => {
     const { username } = req.body;
-    Accounts.registerTemporary(username, { roles: ['user'] }).then(userDoc => {
-        jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
-            res.status(200).send({ jwt: token });
+    Accounts.registerTemporary(username, { roles: ['user'] })
+        .then(userDoc => {
+            jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
+                if (!err) {
+                    res.status(200).send({ jwt: token });
+                } else {
+                    console.log(err);
+                    res.status(400).send();
+                }
+            });
+        })
+        .catch(e => {
+            if (e instanceof ClientError) {
+                res.statusMessage = e.message;
+            }
+            res.status(400).send();
         });
-    });
 });
 
 router.post(

@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
+import Loader from '../components/Loader';
 import ChatWindow from '../components/chat';
 import { QuestionWindow } from '../components/chat/ChatWindow';
 import VideoPlayer from '../components/video-player';
@@ -16,7 +17,8 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
-import Speaker from '../components/Speaker';
+import useJwt from '../hooks/useJwt';
+// import Speaker from '../components/Speaker';
 // import ModDashboard from '../components/ModDashboard';
 
 const useVideoStyles = makeStyles(theme => ({
@@ -41,7 +43,7 @@ const useVideoStyles = makeStyles(theme => ({
 }));
 
 // eslint-disable-next-line
-const Video = ({ roomId, url }) => {
+const Video = ({ roomId, url, disableQuestion }) => {
     const classes = useVideoStyles();
     const [isOpen, setOpen] = React.useState(false);
     return (
@@ -56,16 +58,18 @@ const Video = ({ roomId, url }) => {
                     </Grid>
                 </Hidden>
                 <Grid item xs={12}>
-                    <div className={classes.btn}>
-                        <Button
-                            onClick={() => setOpen(true)}
-                            fullWidth
-                            variant='contained'
-                            color='primary'
-                        >
-                            Ask a Question
-                        </Button>
-                    </div>
+                    {!disableQuestion && (
+                        <div className={classes.btn}>
+                            <Button
+                                onClick={() => setOpen(true)}
+                                fullWidth
+                                variant='contained'
+                                color='primary'
+                            >
+                                Ask a Question
+                            </Button>
+                        </div>
+                    )}
                     <Dialog open={isOpen} onClose={() => setOpen(false)}>
                         <Container
                             maxWidth='md'
@@ -95,9 +99,7 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.down('sm')]: {
             maxHeight: '30vh'
         },
-        [theme.breakpoints.up('md')]: {
-            padding: `${theme.spacing(7)}px 0 ${theme.spacing(7)}px 0`
-        },
+        alignSelf: 'center',
         [theme.breakpoints.down('md')]: {
             maxWidth: '100vw'
         }
@@ -131,8 +133,25 @@ const useStyles = makeStyles(theme => ({
 export default function Chat() {
     const classes = useStyles();
     const { roomId } = useParams();
-    const sessionData = JSON.parse(localStorage.getItem('session'));
-    const modView = (
+    const [sessionData, setSessionData] = React.useState(false);
+    const [jwt] = useJwt();
+    React.useEffect(() => {
+        fetch(`/api/sessions/find/${roomId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `bearer ${jwt}`
+            }
+        })
+            .then(res => {
+                res.json().then(sessionDoc => {
+                    setSessionData(sessionDoc);
+                });
+            })
+            .catch(e => console.log(e));
+    }, [jwt, roomId]);
+
+    // const sessionData = JSON.parse(localStorage.getItem('session'));
+    const modView = sessionData && (
         <Tabs
             pages={[
                 {
@@ -143,41 +162,36 @@ export default function Chat() {
                             className={classes.root}
                             justify='flex-end'
                         >
-                            <Slide in direction='right' timeout={300}>
-                                <Grid
-                                    container
-                                    item
-                                    xs={12}
-                                    md={6}
-                                    className={classes.height}
-                                    justify='center'
-                                >
-                                    <Grid
-                                        item
-                                        xs={12}
-                                        md={10}
-                                        className={classes.video}
-                                    >
-                                        <Video
-                                            roomId={roomId}
-                                            url={sessionData.url}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Slide>
-                            <Slide in direction='left' timeout={300}>
+                            {/* <Slide in direction='right' timeout={300}> */}
+                            <Grid
+                                container
+                                item
+                                xs={12}
+                                md={6}
+                                className={classes.height}
+                                justify='center'
+                            >
                                 <Grid
                                     item
                                     xs={12}
-                                    md={6}
-                                    className={classes.chat}
+                                    md={10}
+                                    className={classes.video}
                                 >
-                                    <ChatWindow
+                                    <Video
                                         roomId={roomId}
-                                        title='Discussion'
+                                        url={sessionData.url}
                                     />
                                 </Grid>
-                            </Slide>
+                            </Grid>
+                            {/* </Slide> */}
+                            {/* <Slide in direction='left' timeout={300}> */}
+                            <Grid item xs={12} md={6} className={classes.chat}>
+                                <ChatWindow
+                                    roomId={roomId}
+                                    title='Discussion'
+                                />
+                            </Grid>
+                            {/* </Slide> */}
                         </Grid>
                     )
                 },
@@ -199,17 +213,10 @@ export default function Chat() {
             ]}
         />
     );
-    const unprivilegedView = (
+    const unprivilegedView = sessionData && (
         <Grid container className={classes.root} justify='flex-end'>
             <Slide in direction='right' timeout={300}>
-                <Grid
-                    container
-                    item
-                    xs={12}
-                    md={6}
-                    className={classes.height}
-                    justify='center'
-                >
+                <Grid container item xs={12} md={6} justify='center'>
                     <Grid item xs={12} md={10} className={classes.video}>
                         <Video roomId={roomId} url={sessionData.url} />
                     </Grid>
@@ -222,25 +229,53 @@ export default function Chat() {
             </Slide>
         </Grid>
     );
-    return (
+
+    const speakerView = sessionData && (
+        <GateKeep
+            local
+            permissions={{ requiredAny: ['speaker'] }}
+            elseRender={unprivilegedView}
+        >
+            <Grid container className={classes.root}>
+                <Grid item xs={12}>
+                    <Grid container className={classes.root} justify='center'>
+                        <Slide in direction='right' timeout={300}>
+                            <Grid
+                                container
+                                item
+                                xs={12}
+                                md={6}
+                                className={classes.height}
+                                justify='center'
+                            >
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={10}
+                                    className={classes.video}
+                                >
+                                    <Video
+                                        roomId={roomId}
+                                        url={sessionData.url}
+                                        disableQuestion
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Slide>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </GateKeep>
+    );
+    return sessionData ? (
         <GateKeep
             local
             permissions={{ requiredAny: ['moderator', 'admin'] }}
-            elseRender={
-                <GateKeep
-                    local
-                    permissions={{ requiredAny: ['speaker'] }}
-                    elseRender={unprivilegedView}
-                >
-                    <Grid container className={classes.root}>
-                        <Grid item xs={12}>
-                            <Speaker />
-                        </Grid>
-                    </Grid>
-                </GateKeep>
-            }
+            elseRender={speakerView}
         >
             {modView}
         </GateKeep>
+    ) : (
+        <Loader />
     );
 }
