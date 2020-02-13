@@ -12,21 +12,30 @@ export default function MessageActions({ targetMsg, onClick }) {
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
-    const newMessage = {message: 'test message'};
+
+
+    // const newMessage = {message: 'test message'};
+
+
     const handleEdit = () => {
-        // Do research on how to use fetch to pass data as the body of the request
-        fetch(`/api/chat/update-message/${roomId}/${targetMsg._id}`, {
+        // Updates a message to  "test message". Data is passed in the body of the request
+        fetch('/api/chat/update-message/', {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(newMessage)// sending a test message in the body of the request
+            body: JSON.stringify(
+                {
+                    message : 'test message',
+                    messageID : targetMsg._id
+                }
+            )
         })
             .then(r => {
                 r.json().then(res => {
                     if (res.success){
-                        snack('message edited sucessfully', 'sucess');
+                        snack('Message edited sucessfully', 'sucess');
                     }
                     else {
                         snack('Something went wrong! Try again.', 'error');
@@ -40,6 +49,7 @@ export default function MessageActions({ targetMsg, onClick }) {
         // To do Handle Promise( then and catch )
         console.log('TODO: handlEdit');
     };
+
     const handleDelete = () => {
         fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
             method: 'POST',
