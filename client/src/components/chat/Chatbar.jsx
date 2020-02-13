@@ -12,8 +12,6 @@ function Chatbar({ onMessageSend }) {
             return;
         }
         event.preventDefault();
-        // TODO: send this over the wire
-        // console.log('Msg: ', msg);
         onMessageSend(msg);
         setMsg('');
     };
@@ -21,7 +19,7 @@ function Chatbar({ onMessageSend }) {
         <TextField
             value={msg}
             id='chatbar'
-            label='Message'
+            label='Discussion Comment'
             variant='outlined'
             onKeyDown={handleKeyPress}
             onChange={e => setMsg(e.target.value)}

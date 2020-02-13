@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Chat from '../db/collections/chat';
-import ioInterface from '../lib/socket-io';
+import { moderate } from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -23,11 +23,7 @@ router.post(
         const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
         removeMessage(messageId)    
             .then(() => {
-                ioInterface
-                    .io()
-                    .of('/chat')
-                    .to(roomId)
-                    .emit('moderate', messageId);
+                moderate(roomId, messageId);
                 res.send({ success: true });
             })
             .catch(err => {

@@ -77,4 +77,4 @@ server.on('listening', () => {
     debugServer(`Listening on ${bind}`);
 });
 
-socketio.init(server);
+socketio.attach(server);
