@@ -54,18 +54,23 @@ const verifyPassword = (textPw, hash, cb) => {
     bcrypt.compare(textPw, hash, cb);
 };
 
-const sendEmailVerification = (email) => {
+const sendEmailVerification = (email, id) => {
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
-    const url = `${process.env.ORIGIN}/verification/${email}`;
+    console.log(id);
+    const url = `${process.env.ORIGIN}/verification/${id}`;
     const data = {
-        from: 'c2c',
+        from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
         to: email,
         subject: 'Email Verificaiton',
         text: 'Please click the link to confirm your email',
-        html: `<a href="${url}">${url}`
+        html: `
+        <h3>Please click the lik to confirm your email</h3>
+        <a href="${url}">${url}</a>`
     };
-    mg.messages().send(data, function(error, body) {
-        console.error(error);
+    mg.messages().send(data, (error, body) => {
+        if(error) {
+            console.error(error);
+        }
         console.log(body);
     });
 }
@@ -140,5 +145,6 @@ export default {
     verifyPassword,
     isAllowed,
     filterSensitiveData,
-    isOwner
+    isOwner,
+    sendEmailVerification
 };
