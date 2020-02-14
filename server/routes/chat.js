@@ -43,12 +43,13 @@ router.post(
 // How to get information from the body of the request
 router.post(
     // To do: Do research about getting information from the request (from the body)
-    'update-message/',
+    '/update-message',
     passport.authenticate('jwt', {session: false}),
     (req, res) => {
-        const {message, messageId} = req.body;
+        // const messageId = '5e38a0e849ea30241411b015';
+        // const message = 'HELLO FROM API';
         // const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
-        Chat.updateMessage({messageId, message})
+        Chat.updateMessage({messageId: '5e38a0e849ea30241411b015', message: { message: 'HELLO FROM API'}})
             .then(() => {
                 res.send({success: true})
             })
