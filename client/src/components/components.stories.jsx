@@ -45,7 +45,7 @@ export const CurrentQuestion = () => {
 
 export const Clips = () => {
     return(
-        <Clipper /> 
+        <Clipper url='https://www.youtube.com/watch?v=LXb3EKWsInQ' /> 
     );
 };
 

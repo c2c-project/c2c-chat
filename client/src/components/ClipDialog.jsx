@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -8,47 +8,29 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import RangeSlider from './RangeSlider';
-import Fab from './Fab';
 import FullScreenDialog from './Dialoag';
 
+
 export default function ClipDialog({
-    timeStamp,
-    addClip,
     currentClip,
-    editClips,
-    editMode,
-    editModeOff
+    confirm,
+    openState,
+    modeOff
 }) {
-    const initForm = {
-        start: timeStamp,
-        end: timeStamp + 30,
-        question: ''
-    };
-
-    const [open, setOpen] = React.useState(editMode);
-    const [form, setForm] = React.useState(
-        editMode
-            ? {
-                start: currentClip.start,
-                end: currentClip.end,
-                question: currentClip.question,
-            }
-            : initForm
-    );
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    const [form, setForm] = React.useState(currentClip);
+    useEffect(() => {
+        console.log(`form: ${form.question} ${form.start} ${form.end}`);
+        // console.log(`currClip: ${currentClip.question} ${currentClip.start} ${currentClip.end}`);
+    }, [form]);
 
     const handleClose = () => {
         // create new clip
-        editModeOff();
-        setOpen(false);
+        modeOff();
     };
 
-    // case: editing the timeframe without the question. 
-    function handleClipTime(x, y) {
-        setForm({ ...form, start: x, end: y, question: currentClip.question });
+    // case: editing the timeframe without the question.
+    function handleClipTime(start, end) {
+        setForm({ ...form, start, end });
     }
 
     // e is pre-defined event object to stop form from refreshing.
@@ -56,40 +38,36 @@ export default function ClipDialog({
     const handleSubmit = e => {
         e.preventDefault();
 
-        if (editMode) {
-            editClips(form);
-        } else {
-            const newClip = {
-                question: form.question,
-                start: form.start,
-                end: form.end,
-                category: {
-                    tag: 'medium',
-                    color: '#018f69'
-                },
-                link: {
-                    text: 'Click Here'
-                }
-            };
-            addClip(newClip);
-        }
+        // if (editMode) {
+        //     editClips(form);
+        // } else {
+        // console.log(`Changed the question to ${form.question}`);
+        const newClip = {
+            question: form.question,
+            start: form.start,
+            end: form.end,
+            category: {
+                tag: 'medium',
+                color: '#018f69'
+            },
+            link: {
+                text: 'Click Here'
+            }
+        };
+        confirm(newClip);
+        // }
 
         handleClose();
     };
 
     return (
         <div>
-            <Fab
-                onClick={() => {
-                    // create new initial clip.
-                    handleClickOpen();
-                }}
-            />
             <FullScreenDialog
-                open={open || editMode}
+                open={false || openState}
                 onClose={handleClose}
                 aria-labelledby='form-dialog-title'
             >
+                {/* with a form tag you don't need to create onClick events for your buttons */}
                 <form onSubmit={handleSubmit}>
                     <DialogTitle id='form-dialog-title'>Subscribe</DialogTitle>
                     <DialogContent>
@@ -100,7 +78,7 @@ export default function ClipDialog({
                             id='name'
                             label='edit question here'
                             type='text'
-                            defaultValue={editMode ? currentClip.question : initForm.question}
+                            defaultValue={currentClip.question || ''}
                             onChange={event => {
                                 const question = event.target.value;
                                 setForm({ ...form, question });
@@ -108,7 +86,7 @@ export default function ClipDialog({
                             fullWidth
                         />
                         <RangeSlider
-                            timeStamp={editMode ? currentClip : initForm}
+                            timeStamp={currentClip}
                             confirm={handleClipTime}
                         />
                     </DialogContent>
@@ -127,12 +105,22 @@ export default function ClipDialog({
     );
 }
 
-ClipDialog.defaultProps = {
-    timeStamp: 0,
-    question: 'New Question TADA'
-};
+// ClipDialog.defaultProps = {
+//     currentClip: PropTypes.shape({
+//         question: '',
+//         start:2,
+//         end: 23,
+//     }),
+// };
 
-ClipDialog.propTypes = {
-    timeStamp: PropTypes.number,
-    question: PropTypes.string
-};
+// ClipDialog.propTypes = {
+//     currentClip: PropTypes.shape({
+//         question: PropTypes.string,
+//         start: PropTypes.number,
+//         end: PropTypes.number,
+//     }),
+//     confirm: PropTypes.func.isRequired,
+//     openState: PropTypes.bool.isRequired,
+//     modeOff: PropTypes.func.isRequired,
+
+// };

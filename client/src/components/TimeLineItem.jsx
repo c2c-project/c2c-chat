@@ -28,3 +28,17 @@ export default function TimeLineItem({ data, onClickPlay, onClickEdit }) {
         // <h1>Hello World</h1>
     );
 }
+
+
+// TimeLineItem.propTypes = {
+//     data: PropTypes.shape({
+//         category: PropTypes.shape({
+//             color: PropTypes.string,
+//             tag: PropTypes.string,
+//         }),
+//         start: PropTypes.number,
+//         question: PropTypes.string,
+//     }).isRequired,
+//     onClickPlay: PropTypes.func.isRequired,
+//     onClickEdit: PropTypes.func.isRequired,
+// }

@@ -1,38 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import TimeLineItem from './TimeLineItem';
 import ClipDialog from './ClipDialog';
+import Fab from './Fab';
 
 import './TimeLineItem.css';
 
 export default function TimeLine({ timeStamp, playerTime }) {
     
-    const [currClip, setCurrClip] = React.useState(null);
+    const [addMode, setAddMode] = useState(false);
     useEffect(() => {
-        // if (currClip === null) {
-        //     console.log('Current item is null');
-        // }else{
-        //     console.log(`Current item: ${currClip.question}`);
-        // }
+        console.log(`add Mode On: ${addMode}`);
+    }, [addMode]);
+
+    const [editMode, setEditMode] = useState(false);
+    useEffect(() => {
+        console.log(`edit Mode On: ${editMode}`);
+    }, [editMode]);
+
+    
+    const [currClip, setCurrClip] = React.useState({
+        question: '',
+        start: 0,
+        end:0,
+    });
+    useEffect(() => {
+        if (currClip === null) {
+            console.log('Current item is null');
+        } else if(currClip.question !== '' && currClip.start !== 0 && currClip.end !== 0) {
+            console.log(`Current item: ${currClip.question}`);
+        }
     }, [currClip]);
 
     const [clips, setClipState] = useState([
-        {
-            id: 0,
-            question: 'Practice Clip',
-            start: '0',
-            end: '20',
-            category: {
-                tag: 'medium',
-                color: '#018f69'
-            },
-            link: {
-                text: 'Click Here'
-            }
-        }
+        // {
+        //     id: 0,
+        //     question: 'Practice Clip',
+        //     start: '0',
+        //     end: '20',
+        //     category: {
+        //         tag: 'medium',
+        //         color: '#018f69'
+        //     },
+        //     link: {
+        //         text: 'Click Here'
+        //     }
+        // }
     ]);
-    useEffect(()=> {
-        setCurrClip(null);
-    },[clips]);
+    useEffect(() => {
+    }, [clips]);
 
     // const [newQuestion, setQuestion] = React.useState('New Question');
 
@@ -40,11 +55,7 @@ export default function TimeLine({ timeStamp, playerTime }) {
         setClipState([...clips, { ...newClip, id: clips.length }]);
     };
 
-    const [editMode, setEditMode] = useState(false);
-    useEffect(() => {
-        // console.log(`edit Mode On: ${editMode}`);
-    }, [editMode]);
-
+    
     function editClips(x) {
         console.log(`new time ${x.start} and ${x.end}`);
 
@@ -59,23 +70,42 @@ export default function TimeLine({ timeStamp, playerTime }) {
             question: x.question
         };
         setClipState(newClips);
-
+        setCurrClip(null);
     }
 
     return (
         <div>
             <h1>Another TimeLine here</h1>
-            <ClipDialog
-                timeStamp={timeStamp}
-                addClip={addToClips}
-                currentClip={{ ...currClip }}
-                editClips={editClips}
-                editMode={editMode}
-                editModeOff={() => {
+            <Fab
+                onClick={() => {
+                    // create new initial clip.
                     setEditMode(false);
-                    setCurrClip(null);
+                    setAddMode(true);
                 }}
             />
+
+            <ClipDialog 
+                currentClip={{...currClip}}
+                confirm={editClips}
+                openState={false || editMode}
+                modeOff={() =>{
+                    setEditMode(false);
+                }}    
+            />
+
+            <ClipDialog
+                currentClip={{
+                    question: '',
+                    start: timeStamp,
+                    end: timeStamp + 15
+                }}
+                confirm={addToClips}
+                openState={false || addMode}
+                modeOff={() => {
+                    setAddMode(false);
+                }}
+            />
+
             <div className='timeline-container'>
                 {clips.map((x, index) => (
                     <TimeLineItem
@@ -95,3 +125,12 @@ export default function TimeLine({ timeStamp, playerTime }) {
         </div>
     );
 }
+
+// TimeLine.defaultProps = {
+//     timeStamp: 0,
+// }
+
+// TimeLine.propTypes = {
+//     timeStamp: PropTypes.number,
+//     playerTime: PropTypes.func.isRequired,
+// }

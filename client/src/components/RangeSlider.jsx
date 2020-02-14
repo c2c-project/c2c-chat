@@ -1,16 +1,14 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 
-
 const useStyles = makeStyles({
     root: {
-        width: 300,
-    },
+        width: 300
+    }
 });
-
 
 function valuetext(value) {
     const minutes = parseInt(value / 60, 10);
@@ -18,14 +16,15 @@ function valuetext(value) {
     return `${minutes}:${sec}`;
 }
 
-export default function RangeSlider({timeStamp, confirm}) {
+export default function RangeSlider({ timeStamp, confirm }) {
     const classes = useStyles();
     const initStart = parseInt(timeStamp.start);
     const initEnd = parseInt(timeStamp.end);
-    const [value, setValue] = React.useState([initStart, initEnd]) ;
+    const [value, setValue] = React.useState([initStart, initEnd]);
     useEffect(() => {
-        confirm(value[0],value[1]);
-    },[value]);
+        confirm(value[0], value[1]);
+    }, [value]);
+    
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -48,14 +47,11 @@ export default function RangeSlider({timeStamp, confirm}) {
         </div>
     );
 }
+// RangeSlider.defaultProps = {
+//     timeStamp: 0,
+// };
 
-RangeSlider.defaultProps = {
-    timeStamp: 0,
-    question: 'New Question Here',
-};
-
-RangeSlider.propTypes = {
-    timeStamp: PropTypes.number,
-    question: PropTypes.string,
-    
-}
+// RangeSlider.propTypes = {
+//     timeStamp: PropTypes.number,
+//     confirm: PropTypes.func.isRequired,
+// }
