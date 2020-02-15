@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useParams, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import circle from '../assets/spp-circle.png';
+// import circle from '../assets/spp-circle.png';
 import banner from '../assets/spp-banner.png';
 
 const drawerWidth = 240;
@@ -61,7 +61,8 @@ const useStyles = makeStyles(theme => ({
     logo: {
         bottom: '0',
         position: 'absolute',
-        paddingLeft: '30px' // offset to center it 
+        // left: '50px', // offset to center it
+        width: '100%'
     },
     img: {
         width: '100%',
@@ -122,13 +123,17 @@ function ResponsiveDrawer({ children }) {
                 ))}
             </List>
             <Divider />
-            <div className={classes.logo}>
-                <img
-                    className={classes.img}
-                    src={circle}
-                    alt='spp-logo-circle'
-                />
-            </div>
+            {/* <div className={classes.logo}>
+                <Grid container justify='center'>
+                    <Grid item xs={6}>
+                        <img
+                            className={classes.img}
+                            src={circle}
+                            alt='spp-logo-circle'
+                        />
+                    </Grid>
+                </Grid>
+            </div> */}
         </div>
     );
 

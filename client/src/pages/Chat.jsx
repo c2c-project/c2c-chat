@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
+import Loader from '../components/Loader';
 import ChatWindow from '../components/chat';
 import { QuestionWindow } from '../components/chat/ChatWindow';
 import VideoPlayer from '../components/video-player';
@@ -16,6 +17,7 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
+import useJwt from '../hooks/useJwt';
 // import Speaker from '../components/Speaker';
 // import ModDashboard from '../components/ModDashboard';
 
@@ -97,9 +99,7 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.down('sm')]: {
             maxHeight: '30vh'
         },
-        [theme.breakpoints.up('md')]: {
-            padding: `${theme.spacing(7)}px 0 ${theme.spacing(7)}px 0`
-        },
+        alignSelf: 'center',
         [theme.breakpoints.down('md')]: {
             maxWidth: '100vw'
         }
@@ -133,8 +133,25 @@ const useStyles = makeStyles(theme => ({
 export default function Chat() {
     const classes = useStyles();
     const { roomId } = useParams();
-    const sessionData = JSON.parse(localStorage.getItem('session'));
-    const modView = (
+    const [sessionData, setSessionData] = React.useState(false);
+    const [jwt] = useJwt();
+    React.useEffect(() => {
+        fetch(`/api/sessions/find/${roomId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `bearer ${jwt}`
+            }
+        })
+            .then(res => {
+                res.json().then(sessionDoc => {
+                    setSessionData(sessionDoc);
+                });
+            })
+            .catch(e => console.log(e));
+    }, [jwt, roomId]);
+
+    // const sessionData = JSON.parse(localStorage.getItem('session'));
+    const modView = sessionData && (
         <Tabs
             pages={[
                 {
@@ -196,17 +213,10 @@ export default function Chat() {
             ]}
         />
     );
-    const unprivilegedView = (
+    const unprivilegedView = sessionData && (
         <Grid container className={classes.root} justify='flex-end'>
             <Slide in direction='right' timeout={300}>
-                <Grid
-                    container
-                    item
-                    xs={12}
-                    md={6}
-                    className={classes.height}
-                    justify='center'
-                >
+                <Grid container item xs={12} md={6} justify='center'>
                     <Grid item xs={12} md={10} className={classes.video}>
                         <Video roomId={roomId} url={sessionData.url} />
                     </Grid>
@@ -220,7 +230,7 @@ export default function Chat() {
         </Grid>
     );
 
-    const speakerView = (
+    const speakerView = sessionData && (
         <GateKeep
             local
             permissions={{ requiredAny: ['speaker'] }}
@@ -257,7 +267,7 @@ export default function Chat() {
             </Grid>
         </GateKeep>
     );
-    return (
+    return sessionData ? (
         <GateKeep
             local
             permissions={{ requiredAny: ['moderator', 'admin'] }}
@@ -265,5 +275,7 @@ export default function Chat() {
         >
             {modView}
         </GateKeep>
+    ) : (
+        <Loader />
     );
 }

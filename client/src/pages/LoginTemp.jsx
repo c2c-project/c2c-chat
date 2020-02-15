@@ -24,8 +24,7 @@ export default function Loginpage() {
     const classes = useStyles();
     const history = useHistory();
     const [form, setForm] = React.useState({
-        username: '',
-        password: ''
+        username: ''
     });
     const [snack] = useSnack();
 
@@ -53,12 +52,17 @@ export default function Loginpage() {
                         history.push('/app/sessions/list');
                     });
                 } else {
-                    snack('Failed login, please try again!', 'error');
+                    snack(`Error: ${res.statusText}`, 'error');
                 }
             })
-            .catch(console.err);
+            .catch(err => {
+                snack(
+                    'Something went wrong -- please refresh and try again.',
+                    'error'
+                );
+                console.err(err);
+            });
     };
-
     return (
         <Container maxWidth='md' className={classes.root}>
             <Grow in timeout={300}>
@@ -82,6 +86,7 @@ export default function Loginpage() {
                                         fullWidth
                                         variant='outlined'
                                         type='username'
+                                        required
                                         value={form.username}
                                         onChange={e =>
                                             handleChange(e, 'username')
@@ -94,6 +99,7 @@ export default function Loginpage() {
                                         fullWidth
                                         type='submit'
                                         variant='contained'
+                                        color='primary'
                                     >
                                         Login
                                     </Button>

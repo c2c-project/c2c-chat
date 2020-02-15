@@ -81,6 +81,7 @@ export default function RegisterPage() {
                             >
                                 <Grid item xs={12}>
                                     <TextField
+                                        required
                                         fullWidth
                                         variant='outlined'
                                         type='text'
@@ -93,6 +94,7 @@ export default function RegisterPage() {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
+                                        required
                                         fullWidth
                                         variant='outlined'
                                         type='email'
@@ -103,6 +105,7 @@ export default function RegisterPage() {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
+                                        required
                                         fullWidth
                                         variant='outlined'
                                         type='password'
@@ -115,6 +118,7 @@ export default function RegisterPage() {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
+                                        required
                                         fullWidth
                                         variant='outlined'
                                         type='password'
@@ -130,6 +134,7 @@ export default function RegisterPage() {
                                         fullWidth
                                         type='submit'
                                         variant='contained'
+                                        color='primary'
                                     >
                                         Register
                                     </Button>

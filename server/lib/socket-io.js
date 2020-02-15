@@ -1,6 +1,7 @@
 import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
 import Chat from '../db/collections/chat';
+import tf from './tf';
 
 /**
  * all socket io stuff happens here, note that the server is not attached until it is created in bin/www.js
@@ -49,6 +50,7 @@ io.of('/chat').on('connection', socket => {
                             io.of('/chat')
                                 .to(roomId)
                                 .emit('message', messageDoc);
+                            tf.tfToxicityMessage(messageDoc, io, roomId);
                         })
                         .catch(e => console.log(e));
                 }
