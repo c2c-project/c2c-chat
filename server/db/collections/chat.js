@@ -36,14 +36,17 @@ const removeMessage = ({ messageId, reason }) =>
         // close();
     );
 
-const updateMessage = ({ messageId, message }) =>
-    mongo.then(db => {
-        db.collection('messages').updateOne(
-            { _id: messageId },
-            { $set: message }
-        );
+const updateMessage = ({ messageId, newMessage }) =>
+    mongo.then(
+        db =>
+            db
+                .collection('messages')
+                .updateOne(
+                    { _id: new ObjectID(messageId) },
+                    { $set: { message: newMessage } }
+                )
         // close();
-    });
+    );
 
 const findMessages = ({ sessionId }) =>
     mongo.then(db =>

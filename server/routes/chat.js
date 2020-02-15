@@ -36,11 +36,8 @@ router.post(
 // Create a POST Request route to update a message
 // Figure out:
 //      what is ioInterface for?
-//      Do I need the user?
 //      Do I need roomId?
-// Reverse engineer the remove message route
 
-// How to get information from the body of the request
 router.post(
     // To do: Do research about getting information from the request (from the body)
     '/update-message',
@@ -49,8 +46,11 @@ router.post(
         // const messageId = '5e38a0e849ea30241411b015';
         // const message = 'HELLO FROM API';
         // const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
-        Chat.updateMessage({messageId: '5e38a0e849ea30241411b015', message: { message: 'HELLO FROM API'}})
-            .then(() => {
+
+        // PROBLEM: DATABASE NOT UPDATING THE MESSAGE WITH DUMMY DATA
+        Chat.updateMessage({messageId:  '5e4736cb6da33304d8d84975', newMessage: 'HELLO FROM API'})
+            .then((arg) => {
+                console.log(arg);
                 res.send({success: true})
             })
             .catch(err => {
