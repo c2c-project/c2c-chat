@@ -56,7 +56,6 @@ const verifyPassword = (textPw, hash, cb) => {
 
 const sendEmailVerification = (email, id) => {
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
-    console.log(id);
     const url = `${process.env.ORIGIN}/verification/${id}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
@@ -68,7 +67,7 @@ const sendEmailVerification = (email, id) => {
         <a href="${url}">${url}</a>`
     };
     mg.messages().send(data, (error, body) => {
-        if(error) {
+        if (error) {
             console.error(error);
         }
         console.log(body);
@@ -93,6 +92,9 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
                             // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
                             ...BASE_USER,
                             ...additionalFields
+                        }).then(userDoc => {
+                            const { _id } = userDoc;
+                            sendEmailVerification(email, _id);
                         }).catch(err => console.log(err))
                     )
                     .catch(err => console.log(err));

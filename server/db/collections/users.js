@@ -1,6 +1,5 @@
 import { ObjectID } from 'mongodb';
 import { mongo } from '..';
-import Accounts from '../../lib/accounts';
 
 /**
  * All functions within this module assume verification has been done before the call occurs
@@ -11,14 +10,7 @@ const addUser = userDoc =>
         // eslint-disable-next-line
         db
             .collection('users')
-            .insertOne(userDoc, (err) => {
-                if(err) {
-                    console.error(err);
-                }
-                const email = userDoc.email;
-                const docId = userDoc._id;
-                Accounts.sendEmailVerification(email, docId);
-            })
+            .insertOne(userDoc)
             .then(r => r.ops[0]/* Add in send Email here using docid */)
             .catch(e => console.log('TODO: addUser error checking', e))
     );
