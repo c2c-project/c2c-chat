@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import Accounts from '../lib/accounts';
-import { ClientError } from '../lib/errors';
+import { errorHandler } from '../lib/errors';
 
 const router = express.Router();
 
@@ -13,13 +13,7 @@ router.post('/register', (req, res) => {
         .then(() => {
             res.status(200).send();
         })
-        .catch(e => {
-            // not really sure if this is best practice
-            if (e instanceof ClientError) {
-                res.statusMessage = e.message;
-            }
-            res.status(500).send();
-        });
+        .catch(e => errorHandler(e, res));
 });
 
 router.post(
@@ -51,12 +45,7 @@ router.post('/login-temporary', (req, res) => {
                 res.status(200).send({ jwt: token });
             });
         })
-        .catch(e => {
-            if (e instanceof ClientError) {
-                res.statusMessage = e.message;
-            }
-            res.status(500).send();
-        });
+        .catch(e => errorHandler(e, res));
 });
 
 router.post(

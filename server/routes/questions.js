@@ -4,6 +4,7 @@ import Questions from '../db/collections/questions';
 import Accounts from '../lib/accounts';
 import Toxicity from '../lib/tf';
 import io from '../lib/socket-io';
+import { errorHandler } from '../lib/errors';
 
 const router = express.Router();
 
@@ -29,14 +30,8 @@ router.post(
                     .emit('question', questionDoc);
                 res.send({ success: true });
                 Toxicity.tfToxicityQuestion(questionDoc);
-                // TODO: 193
-                /**
-                 * @questionDoc is the question json
-                 * Ideally, you'd just take the questionDoc
-                 * and feed that into the text toxicity
-                 */
             })
-            .catch(console.error);
+            .catch(e => errorHandler(e, res));
     }
 );
 

@@ -53,38 +53,39 @@ const verifyPassword = (textPw, hash, cb) => {
     bcrypt.compare(textPw, hash, cb);
 };
 
-// always returns a promise
+/**
+ * always returns a promise -- expects to have .catch used on it
+ */
 const register = (username, password, confirmPass, additionalFields = {}) => {
     const { email } = additionalFields;
     // if the user registered with an email & username, then find by username or email
     // because both should be unique, otherwise just find by username
     const query = email ? { $or: [{ email }, { username }] } : { username };
     if (password === confirmPass) {
+        // returning a Promise here -- so register.then.catch will work
         return Users.find(query).then(docArray => {
             if (!docArray[0]) {
-                return bcrypt
-                    .hash(password, SALT_ROUNDS)
-                    .then(hash =>
-                        Users.addUser({
-                            username,
-                            password: hash,
-                            // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
-                            ...BASE_USER,
-                            ...additionalFields
-                        }).catch(err => console.log(err))
-                    )
-                    .catch(err => console.log(err));
+                return bcrypt.hash(password, SALT_ROUNDS).then(hash =>
+                    Users.addUser({
+                        username,
+                        password: hash,
+                        // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
+                        ...BASE_USER,
+                        ...additionalFields
+                    })
+                );
             }
-            console.log(docArray);
-            return Promise.reject(
-                new ClientError('Username or E-mail already exists')
-            );
+            // will bubble up to the .catch
+            throw new ClientError('Username or E-mail already exists');
         });
     }
-
+    // must return a Promise.reject here so the .catch works properly (just throwing won't get caught in a .catch)
     return Promise.reject(new ClientError('Passwords do not match'));
 };
 
+/**
+ * always returns a promise -- expects to have .catch used on it
+ */
 const registerTemporary = (username, additionalFields = {}) =>
     Users.findByUsername({ username }).then(doc => {
         if (!doc) {
@@ -92,9 +93,9 @@ const registerTemporary = (username, additionalFields = {}) =>
                 username,
                 ...additionalFields,
                 temporary: true
-            }).catch(err => console.log(err));
+            });
         }
-        return Promise.reject(new ClientError('Username already exists'));
+        throw new ClientError('Username already exists');
     });
 
 /**
