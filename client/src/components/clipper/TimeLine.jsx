@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactPlayer from 'react-player';
+import PropTypes from 'prop-types';
 import TimeLineItem from './TimeLineItem';
 import ClipDialog from './ClipDialog';
 import Fab from '../Fab';
 import './TimeLineItem.css';
 
-export default function TimeLine({ url, timeStamp, playerTime }) {
+export default function TimeLine({ url }) {
     const player = useRef();
     const quickScroll = React.useRef(null);
     const [playVideo, setPlayVideo] = useState(true);
@@ -24,12 +25,12 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
 
     const [addMode, setAddMode] = useState(false);
     useEffect(() => {
-        console.log(`add Mode On: ${addMode}`);
+        // console.log(`add Mode On: ${addMode}`);
     }, [addMode]);
 
     const [editMode, setEditMode] = useState(false);
     useEffect(() => {
-        console.log(`edit Mode On: ${editMode}`);
+        // console.log(`edit Mode On: ${editMode}`);
     }, [editMode]);
 
     const [currClip, setCurrClip] = React.useState({
@@ -38,24 +39,23 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
         end: 0
     });
     useEffect(() => {
-        if (currClip === null) {
-            console.log('Current item is null');
-        } else if (
-            currClip.question !== '' &&
-            currClip.start !== 0 &&
-            currClip.end !== 0
-        ) {
-            console.log(`Current item: ${currClip.question} ${currClip.start} ${currClip.end}`);
-        }
+        // if (currClip === null) {
+        //     console.log('Current item is null');
+        // } else if (
+        //     currClip.question !== '' &&
+        //     currClip.start !== 0 &&
+        //     currClip.end !== 0
+        // ) {
+        //     console.log(
+        //         `Current item: ${currClip.question} ${currClip.start} ${currClip.end}`
+        //     );
+        // }
     }, [currClip]);
 
     const [clips, setClipState] = useState([]);
-    useEffect(() => {
-        // console.log(clips);
-    }, [clips]);
 
-    const addToClips = newClip => {
-        setClipState([...clips, { ...newClip, id: clips.length }]);
+    const addToClips = () => {
+        setClipState([...clips, { ...currClip, id: clips.length }]);
     };
 
     function handleTimeStamp({ playedSeconds }) {
@@ -66,19 +66,9 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
         document.getElementById('header').innerHTML = playedSeconds;
     }
 
-    function editClips(x) {
-        console.log(`new time ${x.start} and ${x.end}`);
-
-        const index = clips.findIndex(clip => clip.id === currClip.id);
-        console.log(`Current index: ${index}`);
-
+    function editClips() {
         const newClips = [...clips];
-        newClips[index] = {
-            ...newClips[index],
-            start: x.start,
-            end: x.end,
-            question: x.question
-        };
+        newClips[currClip.id] = currClip;
         setClipState(newClips);
         // setCurrClip(null);
     }
@@ -88,7 +78,6 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
 
     return (
         <div>
-            <h1 id='header'>Another TimeLine</h1>
             <div ref={quickScroll} />
             <ReactPlayer
                 ref={player}
@@ -98,6 +87,8 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
                 playsinline
                 onProgress={handleTimeStamp}
             />
+            <h1 id='header'>Another TimeLine</h1>
+
             <Fab
                 onClick={() => {
                     // create new initial clip.
@@ -105,7 +96,14 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
                     setCurrClip({
                         question: '',
                         start: player.current.getCurrentTime(),
-                        end: player.current.getCurrentTime() + 15
+                        end: player.current.getCurrentTime() + 15,
+                        category: {
+                            tag: 'medium',
+                            color: '#018f69'
+                        },
+                        link: {
+                            text: 'Click Here'
+                        }
                     });
                     setEditMode(false);
                     setAddMode(true);
@@ -123,11 +121,6 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
             />
 
             <ClipDialog
-                // currentClip={{
-                //     question: '',
-                //     start: player.getCurrentTime(),
-                //     end: player.getCurrentTime() + 15
-                // }}
                 currentClip={currClip}
                 confirm={addToClips}
                 edit={editCurrentClip}
@@ -143,17 +136,14 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
                         data={x}
                         key={index}
                         onClickPlay={() => {
-                            // playerTime(x.start, x.end);
-                            // setCurrClip(x);
-                            console.log(`TimeFrame: ${x.start} ${x.end}`);
+                            // console.log(`TimeFrame: ${x.start} ${x.end}`);
                             setTimeFrame({
                                 start: x.start,
-                                end: x.end,
+                                end: x.end
                             });
-                            // player.current.seekTo(x.start, 'seconds');
                         }}
                         onClickEdit={() => {
-                            setCurrClip({...x});
+                            setCurrClip({ ...x });
                             setEditMode(true);
                         }}
                     />
@@ -163,11 +153,10 @@ export default function TimeLine({ url, timeStamp, playerTime }) {
     );
 }
 
-// TimeLine.defaultProps = {
-//     timeStamp: 0,
-// }
+TimeLine.defaultProps = {
+    url: ''
+};
 
-// TimeLine.propTypes = {
-//     timeStamp: PropTypes.number,
-//     playerTime: PropTypes.func.isRequired,
-// }
+TimeLine.propTypes = {
+    url: PropTypes.string
+};

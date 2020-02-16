@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 
 export default function TimeLineItem({ data, onClickPlay, onClickEdit }) {
     return (
@@ -30,15 +31,19 @@ export default function TimeLineItem({ data, onClickPlay, onClickEdit }) {
 }
 
 
-// TimeLineItem.propTypes = {
-//     data: PropTypes.shape({
-//         category: PropTypes.shape({
-//             color: PropTypes.string,
-//             tag: PropTypes.string,
-//         }),
-//         start: PropTypes.number,
-//         question: PropTypes.string,
-//     }).isRequired,
-//     onClickPlay: PropTypes.func.isRequired,
-//     onClickEdit: PropTypes.func.isRequired,
-// }
+TimeLineItem.propTypes = {
+    data: PropTypes.shape({
+        question: PropTypes.string,
+        start: PropTypes.number,
+        end: PropTypes.number,
+        category: PropTypes.shape({
+            tag: PropTypes.string,
+            color: PropTypes.string,
+        }),
+        link: PropTypes.shape({
+            text: PropTypes.string
+        })
+    }).isRequired,
+    onClickPlay: PropTypes.func.isRequired,
+    onClickEdit: PropTypes.func.isRequired,
+}

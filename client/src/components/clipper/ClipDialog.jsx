@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-// import PropTypes from 'prop-types';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 // import Dialog from '@material-ui/core/Dialog';
@@ -18,20 +18,8 @@ export default function ClipDialog({
     edit,
     modeOff,
 }) {
-    // console.log(currentClip);
-    const [form, setForm] = React.useState({...currentClip});
-    useEffect(() => {
-        console.log(`form: ${form.question} ${form.start} ${form.end}`);
-        // console.log(`currClip: ${currentClip.question} ${currentClip.start} ${currentClip.end}`);
-    }, [form]);
 
     const handleClose = () => {
-        setForm({...currentClip})
-        //     question:'',
-        //     start: 0,
-        //     end: 10,
-        // })
-
         modeOff();
     };
 
@@ -44,24 +32,7 @@ export default function ClipDialog({
     // https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault
     const handleSubmit = e => {
         e.preventDefault();
-
-        // if (editMode) {
-        //     editClips(form);
-        // } else {
-        // console.log(`Changed the question to ${form.question}`);
-        const newClip = {
-            question: currentClip.question,
-            start: currentClip.start,
-            end: currentClip.end,
-            category: {
-                tag: 'medium',
-                color: '#018f69'
-            },
-            link: {
-                text: 'Click Here'
-            }
-        };
-        confirm(newClip);
+        confirm();
         // }
 
         handleClose();
@@ -122,14 +93,22 @@ export default function ClipDialog({
 //     }),
 // };
 
-// ClipDialog.propTypes = {
-//     currentClip: PropTypes.shape({
-//         question: PropTypes.string,
-//         start: PropTypes.number,
-//         end: PropTypes.number,
-//     }),
-//     confirm: PropTypes.func.isRequired,
-//     openState: PropTypes.bool.isRequired,
-//     modeOff: PropTypes.func.isRequired,
+ClipDialog.propTypes = {
+    currentClip: PropTypes.shape({
+        question: PropTypes.string,
+        start: PropTypes.number,
+        end: PropTypes.number,
+        category: PropTypes.shape({
+            tag: PropTypes.string,
+            color: PropTypes.string,
+        }),
+        link: PropTypes.shape({
+            text: PropTypes.string
+        })
+    }).isRequired,
+    confirm: PropTypes.func.isRequired,
+    edit: PropTypes.func.isRequired,
+    openState: PropTypes.bool.isRequired,
+    modeOff: PropTypes.func.isRequired,
 
-// };
+};

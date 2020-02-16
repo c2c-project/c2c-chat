@@ -18,8 +18,8 @@ function valuetext(value) {
 
 export default function RangeSlider({ timeStamp, confirm }) {
     const classes = useStyles();
-    const initStart = parseInt(timeStamp.start);
-    const initEnd = parseInt(timeStamp.end);
+    const initStart = parseInt(timeStamp.start, 10);
+    const initEnd = parseInt(timeStamp.end, 10);
     const [value, setValue] = React.useState([initStart, initEnd]);
     useEffect(() => {
         confirm(value[0], value[1]);
@@ -51,7 +51,18 @@ export default function RangeSlider({ timeStamp, confirm }) {
 //     timeStamp: 0,
 // };
 
-// RangeSlider.propTypes = {
-//     timeStamp: PropTypes.number,
-//     confirm: PropTypes.func.isRequired,
-// }
+RangeSlider.propTypes = {
+    timeStamp: PropTypes.shape({
+        question: PropTypes.string,
+        start: PropTypes.number,
+        end: PropTypes.number,
+        category: PropTypes.shape({
+            tag: PropTypes.string,
+            color: PropTypes.string,
+        }),
+        link: PropTypes.shape({
+            text: PropTypes.string
+        })
+    }).isRequired,
+    confirm: PropTypes.func.isRequired,
+}
