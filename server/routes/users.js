@@ -23,15 +23,12 @@ router.post(
         const { user } = req;
         const clientUser = Accounts.filterSensitiveData(user);
         jwt.sign(clientUser, process.env.JWT_SECRET, {}, (err, token) => {
-            // let cookie = `jwt=${token}; HttpOnly; Domain=${process.env.ORIGIN}; SameSite=Strict;`;
-            // if (process.env.NODE_ENV === 'production') {
-            //     cookie = `${cookie} Secure;`;
-            // }
-            res.status(200)
-                // .setHeader('Set-Cookie', cookie)
-                .send({ jwt: token });
-            // console.log(res.getHeader('Set-Cookie'));
-            // res.send();
+            if (err) {
+                // NOTE: maybe throw a server error?
+                res.status(400).send();
+            } else {
+                res.status(200).send({ jwt: token });
+            }
         });
     }
 );
@@ -42,7 +39,12 @@ router.post('/login-temporary', (req, res) => {
     Accounts.registerTemporary(username, { roles: ['user'] })
         .then(userDoc => {
             jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
-                res.status(200).send({ jwt: token });
+                if (err) {
+                    // NOTE: maybe throw a server error?
+                    res.status(400).send();
+                } else {
+                    res.status(200).send({ jwt: token });
+                }
             });
         })
         .catch(e => errorHandler(e, res));

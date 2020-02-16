@@ -1,7 +1,6 @@
 import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
-import Accounts from '../lib/accounts';
 import Toxicity from '../lib/tf';
 import io from '../lib/socket-io';
 import { errorHandler } from '../lib/errors';
@@ -41,17 +40,15 @@ router.get(
     (req, res) => {
         const { user } = req;
         const { roomId } = req.params;
-
-        // TODO: move this to the privileged actions code
-        if (
-            Accounts.isAllowed(user.roles, {
-                requiredAny: ['moderator', 'admin']
+        const questionHistory = Questions.privilegedActions(
+            'QUESTION_HISTORY',
+            user
+        );
+        questionHistory({ sessionId: roomId })
+            .then(docs => {
+                res.status(200).json(docs);
             })
-        ) {
-            Questions.findBySession({ sessionId: roomId }).then(docs => {
-                res.json(docs);
-            });
-        }
+            .catch(err => errorHandler(err, res));
     }
 );
 

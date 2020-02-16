@@ -2,15 +2,19 @@ import express from 'express';
 import passport from 'passport';
 import Chat from '../db/collections/chat';
 import { moderate } from '../lib/socket-io';
+import { errorHandler } from '../lib/errors';
 
 const router = express.Router();
 
+// NOTE: only care if the user is logged in to see chat messages
 router.get(
     '/:roomId',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         const { roomId } = req.params;
-        Chat.findMessages({ sessionId: roomId }).then(r => res.json(r));
+        Chat.findMessages({ sessionId: roomId })
+            .then(r => res.json(r))
+            .catch(err => errorHandler(err, res));
     }
 );
 
@@ -24,12 +28,9 @@ router.post(
         removeMessage(messageId)
             .then(() => {
                 moderate(roomId, messageId);
-                res.send({ success: true });
+                res.status(200).send();
             })
-            .catch(err => {
-                console.log(err);
-                res.send({ success: false });
-            });
+            .catch(err => errorHandler(err, res));
     }
 );
 

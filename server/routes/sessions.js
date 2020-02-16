@@ -7,11 +7,14 @@ import { errorHandler } from '../lib/errors';
 const router = express.Router();
 
 // NOTE: remove passport auth if we don't want to require the user to be logged in
+// only need to verify that the user is logged in, req param does not matter
 router.get(
     '/find',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
-        Sessions.findAllSessions().then(r => res.json(r));
+        Sessions.findAllSessions()
+            .then(r => res.json(r))
+            .catch(err => errorHandler(err, res));
     }
 );
 
@@ -21,9 +24,11 @@ router.get(
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         const { sessionId } = req.params;
-        Sessions.findSessionById(sessionId).then(r => {
-            res.json(r);
-        });
+        Sessions.findSessionById(sessionId)
+            .then(r => {
+                res.json(r);
+            })
+            .catch(err => errorHandler(err, res));
     }
 );
 
