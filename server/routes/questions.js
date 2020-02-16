@@ -44,7 +44,7 @@ router.get(
             'QUESTION_HISTORY',
             user
         );
-        questionHistory({ sessionId: roomId })
+        questionHistory(roomId)
             .then(docs => {
                 res.status(200).json(docs);
             })

@@ -21,14 +21,12 @@ export default function QuestionActions({ targetMsg, onClick }) {
                 'Content-Type': 'application/json'
             }
         }).then(res => {
-            res.json().then(r => {
-                if (r.success) {
-                    snack('Successfully set the current question', 'success');
-                    onClick();
-                } else {
-                    snack('Something went wrong, please try again', 'error');
-                }
-            });
+            if (res.status === 200) {
+                snack('Successfully set the current question', 'success');
+                onClick();
+            } else {
+                snack('Something went wrong, please try again', 'error');
+            }
         });
     };
     return (

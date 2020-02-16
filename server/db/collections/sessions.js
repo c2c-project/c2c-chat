@@ -41,9 +41,8 @@ const updateSession = ({ sessionId, changes }) =>
 
 const privilegedActions = (action, userDoc) => {
     const { roles } = userDoc;
-    const standardError = Promise.reject(
-        new ClientError('Not allowed to do that!')
-    );
+    const standardError = () =>
+        Promise.reject(new ClientError('Not allowed to do that!'));
     switch (action) {
         case 'SET_QUESTION': {
             const requiredAny = ['admin', 'moderator'];
@@ -64,7 +63,7 @@ const privilegedActions = (action, userDoc) => {
                     );
                 }
                 // TODO: log this properly?
-                return standardError;
+                return standardError();
             };
         }
         case 'ADD_SESSION': {
@@ -81,7 +80,7 @@ const privilegedActions = (action, userDoc) => {
                     });
                 }
                 // TODO: log this properly?
-                return standardError;
+                return standardError();
             };
         }
         case 'UPDATE_SESSION': {
@@ -94,7 +93,7 @@ const privilegedActions = (action, userDoc) => {
                         changes: { speaker, moderator, description, date, url }
                     });
                 }
-                return standardError;
+                return standardError();
             };
         }
         case 'DELETE_SESSION': {
@@ -103,7 +102,7 @@ const privilegedActions = (action, userDoc) => {
                 if (Accounts.isAllowed(roles, { requiredAny })) {
                     return deleteSession({ sessionId });
                 }
-                return standardError;
+                return standardError();
             };
         }
         default: {
