@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 // import Dialog from '@material-ui/core/Dialog';
@@ -8,29 +8,36 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import RangeSlider from './RangeSlider';
-import FullScreenDialog from './Dialoag';
+import FullScreenDialog from '../Dialoag';
 
 
 export default function ClipDialog({
     currentClip,
     confirm,
     openState,
-    modeOff
+    edit,
+    modeOff,
 }) {
-    const [form, setForm] = React.useState(currentClip);
+    // console.log(currentClip);
+    const [form, setForm] = React.useState({...currentClip});
     useEffect(() => {
         console.log(`form: ${form.question} ${form.start} ${form.end}`);
         // console.log(`currClip: ${currentClip.question} ${currentClip.start} ${currentClip.end}`);
     }, [form]);
 
     const handleClose = () => {
-        // create new clip
+        setForm({...currentClip})
+        //     question:'',
+        //     start: 0,
+        //     end: 10,
+        // })
+
         modeOff();
     };
 
     // case: editing the timeframe without the question.
     function handleClipTime(start, end) {
-        setForm({ ...form, start, end });
+        edit({ ...currentClip, start, end });
     }
 
     // e is pre-defined event object to stop form from refreshing.
@@ -43,9 +50,9 @@ export default function ClipDialog({
         // } else {
         // console.log(`Changed the question to ${form.question}`);
         const newClip = {
-            question: form.question,
-            start: form.start,
-            end: form.end,
+            question: currentClip.question,
+            start: currentClip.start,
+            end: currentClip.end,
             category: {
                 tag: 'medium',
                 color: '#018f69'
@@ -78,10 +85,12 @@ export default function ClipDialog({
                             id='name'
                             label='edit question here'
                             type='text'
-                            defaultValue={currentClip.question || ''}
+                            value={currentClip.question}
                             onChange={event => {
                                 const question = event.target.value;
-                                setForm({ ...form, question });
+                                // console.log('Current event: '+event.target.value);
+                                // setForm({ ...form, question });
+                                edit({...currentClip, question});
                             }}
                             fullWidth
                         />
