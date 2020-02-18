@@ -25,9 +25,6 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
     card: {
-        maxWidth: 345,
-    },
-    media: {
         height: 140,
     },
 });
@@ -49,6 +46,11 @@ export default function SessionSummary() {
             JSON.stringify(data.find(session => sessionId === session._id))
         );
         fetch(`/api/sessions/findSummary/${sessionId}`, {
+            headers: {
+                Authorization: `bearer ${jwt}`
+            }
+        });
+        fetch(`/api/chat/findMessages/${sessionId}`, {
             headers: {
                 Authorization: `bearer ${jwt}`
             }

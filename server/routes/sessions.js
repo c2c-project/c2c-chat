@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import Sessions from '../db/collections/sessions';
 import Questions from '../db/collections/questions';
+import Chat from '../db/collections/chat';
 import ioInterface from '../lib/socket-io';
 import { setCurrentQuestion } from '../lib/socket-io';
 

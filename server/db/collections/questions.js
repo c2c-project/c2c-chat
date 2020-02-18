@@ -71,8 +71,8 @@ const countQuestionsBySession = sessionId =>
     mongo.then(db =>
         db
             .collection('questions')
-            .find({ "sessionId": sessionId }).count(function (err, docs) {
-                console.log(docs);    // returns the amount of questions per sessionId
+            .find({ 'sessionId': sessionId }).count(function (err, docs) {
+                console.log("session ", docs);    // returns the amount of questions per sessionId
             })
     );
 

@@ -53,12 +53,14 @@ const findMessages = ({ sessionId }) =>
             .toArray()
     );
 
-const countMessagesBySession = ({ sessionId }) =>
-    mongo.then(db =>
-        db
-            .collection('sessions')
-            .find({ $and:[{sessionId},{messages},{sent}] })
-            .count()
+const countMessagesBySession =  sessionId  =>
+mongo.then(db =>
+    db
+        .collection('messages')
+        .find({ 'sessionId': sessionId }).count(function (err, docs) {
+            console.log("chat ", docs);    // returns the amount of questions per sessionId
+        })
+
     );
 
 const updateMessageToxicity = ({ messageId, result, toxicityReason }) => {
