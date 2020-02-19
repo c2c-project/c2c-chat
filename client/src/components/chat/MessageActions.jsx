@@ -2,56 +2,60 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
 import { useParams } from 'react-router-dom';
-import Dialog from '../Dialoag';
-import FormMessage from '../FormMessage';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
+
 import useSnack from '../../hooks/useSnack';
 
+const useStyles = makeStyles(theme => ({
+    Message: {
+        width: 330,
+    },
+    UserName : {
+        margin: theme.spacing(2)
+    }
+}));
+  
 export default function MessageActions({ targetMsg, onClick }) {
+    const classes = useStyles();
+    const [message, setMessage] = React.useState(targetMsg.message);
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
-    const [isEditOpen, setEditOpen] = React.useState(false);
 
-    // // const newMessage = {message: 'test message'};
-    // const handleEdit = () => {
-    //     // Updates a message to  "test message". Data is passed in the body of the request
-    //     fetch('/api/chat/update-message/', {
-    //         method: 'POST',
-    //         headers: {
-    //             Authorization: `bearer ${jwt}`,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(
-    //             {
-    //                 newMessage : 'Hello from Front end',
-    //                 messageId : targetMsg._id
-    //             }
-    //         )
-    //     })
-    //         .then(r => {
-    //             r.json().then(res => {
-    //                 if (res.success){
-    //                     // targetMsg.message = res.editedMessage
-    //                     snack('Message edited sucessfully', 'success');
-    //                     // Toggle the target message to close dialog window
-    //                     onClick();
-    //                 }
-    //                 else {
-    //                     snack('Something went wrong! Try again.', 'error');
-    //                 }
-    //             });
-    //         })
-    //         .catch(err => {
-    //             console.log(err);
-    //             snack('Something went wrong! Try again.', 'error');
-    //         })
-    //     // To do Handle Promise( then and catch )
-    // };
+    const handleEdit = () => {
+        fetch('/api/chat/update-message/', {
+            method: 'POST',
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    newMessage : message,
+                    messageId : targetMsg._id
+                }
+            )
+        })
+            .then(r => {
+                r.json().then(res => {
+                    if (res.success){
+                        snack('Message edited sucessfully', 'success');
+                        onClick();
+                    }
+                    else {
+                        snack('Something went wrong! Try again.', 'error');
+                    }
+                });
+            })
+            .catch(err => {
+                console.log(err);
+                snack('Something went wrong! Try again.', 'error');
+            })
+    };
 
     const handleDelete = () => {
         fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
@@ -92,13 +96,17 @@ export default function MessageActions({ targetMsg, onClick }) {
             <Grid item xs={12}>
                 <Grid container>
                     <Grid container>
-                        <Grid item xs='auto'>
+                        <Grid item xs='auto' className={classes.UserName}>
                             <Bold>{`${targetMsg.username}:`}</Bold>
                         </Grid>
-                        <Grid item xs='auto'>
-                            <Typography color='textPrimary' variant='body1'>
-                                {targetMsg.message}
-                            </Typography>
+                        <Grid item xs='auto' className={classes.Message}>
+                            <TextField
+                                value={message}
+                                onChange={e => setMessage(e.target.value)}
+                                fullWidth='true'
+                                color='secondary'
+                                variant='outlined'
+                            />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -118,23 +126,10 @@ export default function MessageActions({ targetMsg, onClick }) {
                     color='secondary'
                     variant='contained'
                     fullWidth
-                    onClick={() => setEditOpen(true)}
+                    onClick={handleEdit}
                 >
                     Edit
                 </Button>
-                <Dialog open={isEditOpen} onClose={() => setEditOpen(false)}>
-                    <Container
-                        maxWidth='md'
-                    >
-                        <Typography variant='h4'>
-                            Edit the Message
-                        </Typography>
-                        <FormMessage
-                            onSubmit={() => setEditOpen(false)}
-                            targetMsg={targetMsg}
-                        />
-                    </Container>
-                </Dialog>
             </Grid>
 
             <Grid item xs={12}>

@@ -35,7 +35,6 @@ router.post(
 
 // Create a POST Request route to update a message
 // Figure out:
-//      what is ioInterface for?
 //      Do I need roomId?
 
 router.post(
@@ -43,15 +42,14 @@ router.post(
     '/update-message',
     passport.authenticate('jwt', {session: false}),
     (req, res) => {
-        // const messageId = '5e38a0e849ea30241411b015';
-        // const message = 'HELLO FROM API';
-        // const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
-
-        // PROBLEM: DATABASE NOT UPDATING THE MESSAGE WITH DUMMY DATA
-        Chat.updateMessage({messageId:  '5e4736cb6da33304d8d84975', newMessage: 'HELLO FROM API'})
-            .then((arg) => {
-                console.log(arg);
-                res.send({success: true})
+        // console.log(req.body);
+        const {messageId, newMessage} = req.body;
+        // console.log(messageId);
+        // console.log(newMessage);
+        Chat.updateMessage({messageId, newMessage})
+            .then(() => {
+                // console.log(arg);
+                res.send({success: true, editedMessage: newMessage})
             })
             .catch(err => {
                 console.log(err);
