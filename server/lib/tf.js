@@ -1,12 +1,18 @@
 import '@tensorflow/tfjs-node';
 import * as toxicity from '@tensorflow-models/toxicity';
+import * as use from '@tensorflow-models/universal-sentence-encoder';
+import * as math from 'mathjs';
 import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';
 
-const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
-const toxicityLoad = toxicity.load(threshold);// load toxicity before hand
+const dataset = []; // Similarity storage
+const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sensitive.
+const similarityThreshold = 0.85; // Will be change if the similarity test is too sensitive.
+const toxicityLoad = toxicity.load(toxicityThreshold);// load toxicity 
+const useLoad = use.load(); // Load universal sentence encoder
+let sentenceCounter = 0;
 
-async function checkTfToxicity(question) {
+function checkTfToxicity(question) {
     return new Promise(function(resolve) {
         const toxicityResult = {};
         const toxicityReason = [];
@@ -52,7 +58,7 @@ function AutoRemoveMessage(result, reason, messageId, io, roomId) {
     });
 }
 
-async function tfToxicityQuestion(questionDoc) {
+function tfToxicityQuestion(questionDoc) {
     if (questionDoc) {
         checkTfToxicity(
             questionDoc.question
@@ -83,7 +89,61 @@ function tfToxicityMessage(messageDoc, io, roomId) {
     }
 }
 
+async function USEGenerater(sentence) {
+    let data = [];
+    await useLoad.then(async model => {
+        // Embed an array of sentences. 
+        await model.embed(sentence).then(async embeddings => { 
+            // `embeddings` is a 2D tensor consisting of the 512-dimensional embeddings for each sentence. 
+            // So in this example `embeddings` has the shape [2, 512]. 
+            data = await embeddings.arraySync();
+        });
+    });
+    return data[0];
+}
+
+async function tfUseQuestion(questionDoc) {
+    let inserted = false;
+    const questionCode = await USEGenerater(questionDoc); // return USE value
+    for (let i = 0; i < dataset.length && inserted === false; i += 1) { // for each cluster, check with leader question
+        let productrResult = math.dot(dataset[i][0].value,questionCode);
+        if (productrResult > similarityThreshold) { // if productrResult over 0.85, suppose they are similar
+            inserted = true; // flag to jump out the loop
+            let questionWeight = 0;
+            for (let j = 0; j < dataset[i].length; j += 1) { // for each sentence in the same cluster, renew the weight
+                productrResult = math.dot(dataset[i][j].value, questionCode);
+                dataset[i][j].weight += productrResult;
+                questionWeight += productrResult;
+            }
+            dataset[i].push({
+                'string' : questionDoc, 
+                'id': sentenceCounter.toString(),
+                'value':questionCode,
+                'weight':questionWeight
+            });
+            sentenceCounter += 1;
+            dataset[i].sort(function(first, second){
+                return second.weight - first.weight;
+            });
+        }
+    }
+    if (inserted === false) {
+        dataset.push([{
+            'string' : questionDoc, 
+            'id': sentenceCounter.toString(),
+            'value':questionCode,
+            'weight':0
+        }]);
+        sentenceCounter += 1;
+    }
+    // eslint-disable-next-line no-console
+    console.log('This is final dataset.');
+    // eslint-disable-next-line no-console
+    console.log(dataset);
+}
+
 export default {
     tfToxicityMessage,
-    tfToxicityQuestion
+    tfToxicityQuestion,
+    tfUseQuestion
 };

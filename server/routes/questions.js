@@ -3,7 +3,7 @@ import passport from 'passport';
 import Questions from '../db/collections/questions';
 import Accounts from '../lib/accounts';
 import ioInterface from '../lib/socket-io';
-import Toxicity from '../lib/tf';
+import TensorFlow from '../lib/tf';
 
 const router = express.Router();
 
@@ -30,7 +30,8 @@ router.post(
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
-                Toxicity.tfToxicityQuestion(questionDoc);
+                TensorFlow.tfToxicityQuestion(questionDoc);
+                TensorFlow.tfUseQuestion(questionDoc);
                 // TODO: 193
                 /**
                  * @questionDoc is the question json
