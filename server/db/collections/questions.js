@@ -49,6 +49,33 @@ const removeQuestion = ({ questionId, reason }) =>
             )
         // close();
     );
+/*   
+// Attempt to get aggregate to work...
+const countQuestionsBySession = sessionId =>
+    mongo.then(db =>
+        db
+            .collection('questions')
+            .aggregate([
+                {
+                    "$group": {
+                        "_id": sessionId,
+                        "count": { "$sum": 1 }
+                    }
+                }
+            ]).toArray(function (err, docs) {
+                console.log(docs);
+            })
+    );*/
+
+const countQuestionsBySession = sessionId =>
+    mongo.then(db =>
+        db
+            .collection('questions')
+            .find({ 'sessionId': sessionId }).count(function (err, docs) {
+                console.log("session ", docs);    // returns the amount of questions per sessionId
+            })
+    );
+
 const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
@@ -58,11 +85,8 @@ const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
         // close();
     });
 
-// TODO: joseph
-/**
- *  read comment in chat.js first & do something similar here
- */
 
+// TODO create an aggregate
 // TODO: 193
 /**
  * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
@@ -72,6 +96,7 @@ export default {
     findById,
     createQuestion,
     findBySession,
+    countQuestionsBySession,
     removeQuestion,
     updateQuestionToxicity
 };

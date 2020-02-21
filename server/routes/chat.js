@@ -14,6 +14,16 @@ router.get(
     }
 );
 
+router.get(
+    '/findMessages/:sessionId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { sessionId } = req.params;
+        Chat.countMessagesBySession(sessionId);
+    }
+
+);
+
 router.post(
     '/remove-message/:roomId/:messageId',
     passport.authenticate('jwt', { session: false }),
@@ -32,5 +42,7 @@ router.post(
             });
     }
 );
+
+// Will get to this get request once chat is implemented
 
 module.exports = router;
