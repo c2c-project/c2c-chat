@@ -7,7 +7,7 @@ import Questions from '../db/collections/questions';
 
 const dataset = []; // Similarity storage
 const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sensitive.
-const similarityThreshold = 0.85; // Will be change if the similarity test is too sensitive.
+const similarityThreshold = 0.5; // Will be change if the similarity test is too sensitive.
 const toxicityLoad = toxicity.load(toxicityThreshold);// load toxicity 
 const useLoad = use.load(); // Load universal sentence encoder
 let sentenceCounter = 0;
@@ -91,6 +91,8 @@ function tfToxicityMessage(messageDoc, io, roomId) {
 
 async function USEGenerater(sentence) {
     let data = [];
+    console.log('Incoming sentencec:')
+    console.log(sentence);
     await useLoad.then(async model => {
         // Embed an array of sentences. 
         await model.embed(sentence).then(async embeddings => { 
@@ -104,7 +106,7 @@ async function USEGenerater(sentence) {
 
 async function tfUseQuestion(questionDoc) {
     let inserted = false;
-    const questionCode = await USEGenerater(questionDoc); // return USE value
+    const questionCode = await USEGenerater(questionDoc.question); // return USE value
     for (let i = 0; i < dataset.length && inserted === false; i += 1) { // for each cluster, check with leader question
         let productrResult = math.dot(dataset[i][0].value,questionCode);
         if (productrResult > similarityThreshold) { // if productrResult over 0.85, suppose they are similar
@@ -116,7 +118,7 @@ async function tfUseQuestion(questionDoc) {
                 questionWeight += productrResult;
             }
             dataset[i].push({
-                'string' : questionDoc, 
+                'string' : questionDoc.question, 
                 'id': sentenceCounter.toString(),
                 'value':questionCode,
                 'weight':questionWeight
@@ -129,7 +131,7 @@ async function tfUseQuestion(questionDoc) {
     }
     if (inserted === false) {
         dataset.push([{
-            'string' : questionDoc, 
+            'string' : questionDoc.question, 
             'id': sentenceCounter.toString(),
             'value':questionCode,
             'weight':0
@@ -137,7 +139,7 @@ async function tfUseQuestion(questionDoc) {
         sentenceCounter += 1;
     }
     // eslint-disable-next-line no-console
-    console.log('This is final dataset.');
+    console.log('Final dataset:');
     // eslint-disable-next-line no-console
     console.log(dataset);
 }
