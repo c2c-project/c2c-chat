@@ -56,7 +56,7 @@ const verifyPassword = (textPw, hash, cb) => {
 
 const sendEmailVerification = (email, id) => {
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
-    const url = `${process.env.ORIGIN}/verification/${id}`;
+    const url = `${process.env.ORIGIN}:3000/verification/${id}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
         to: email,

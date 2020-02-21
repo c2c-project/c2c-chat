@@ -127,9 +127,20 @@ export default function RegisterPage() {
                                         label='Confirm Password'
                                     />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid 
+                                    container
+                                    item
+                                    item xs={12}
+                                    justify='space-between'
+                                >
                                     <Button
-                                        fullWidth
+                                        type='button'
+                                        onClick={e => {e.preventDefault(); history.push('/login');}}
+                                        variant='contained'
+                                    >
+                                        Login
+                                    </Button>
+                                    <Button
                                         type='submit'
                                         variant='contained'
                                         color='primary'
