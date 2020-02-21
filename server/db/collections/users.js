@@ -11,10 +11,20 @@ const addUser = userDoc =>
         db
             .collection('users')
             .insertOne(userDoc)
-            .then(r => r.ops[0]/* Add in send Email here using docid */)
+            .then(r => r.ops[0])
             .catch(e => console.log('TODO: addUser error checking', e))
     );
-const updateUser = () => {};
+
+const updateUser = (doc, addition) => {
+    mongo.then(db => {
+        db.collection('users').updateOne(
+            doc,
+            addition
+        )
+        .catch(e => console.log(e))
+    })
+};
+
 const removeUser = () => {};
 const findByUsername = ({ username }) =>
     mongo.then(db =>

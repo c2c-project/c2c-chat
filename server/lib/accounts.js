@@ -74,6 +74,20 @@ const sendEmailVerification = (email, id) => {
     });
 }
 
+const verifyUser = (userId) => {
+    return Users.findByUserId(userId).then(doc => {
+        if(doc) {
+            const verified = {$set: {'Verified': true}};
+            return Users.updateUser(doc, verified);
+        } else {
+            return Promise.reject(new ClientError('Invalid userId'));
+        }
+    }).catch(err => {
+        console.error(err);
+        return Promise.reject(new ClientError('Invalid userId'));
+    })
+}
+
 // always returns a promise
 const register = (username, password, confirmPass, additionalFields = {}) => {
     const { email } = additionalFields;
@@ -148,5 +162,6 @@ export default {
     isAllowed,
     filterSensitiveData,
     isOwner,
-    sendEmailVerification
+    sendEmailVerification,
+    verifyUser
 };
