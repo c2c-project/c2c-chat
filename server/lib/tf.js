@@ -89,19 +89,20 @@ function tfToxicityMessage(messageDoc, io, roomId) {
     }
 }
 
-async function USEGenerater(sentence) {
-    let data = [];
-    console.log('Incoming sentencec:')
-    console.log(sentence);
-    await useLoad.then(async model => {
-        // Embed an array of sentences. 
-        await model.embed(sentence).then(async embeddings => { 
-            // `embeddings` is a 2D tensor consisting of the 512-dimensional embeddings for each sentence. 
-            // So in this example `embeddings` has the shape [2, 512]. 
-            data = await embeddings.arraySync();
-        });
+function USEGenerater(sentence) {
+    return new Promise( function(resolve) {
+        let data = [];
+        useLoad
+            .then( model => {
+                // Embed an array of sentences. 
+                model.embed(sentence).then( embeddings => { 
+                    // `embeddings` is a 2D tensor consisting of the 512-dimensional embeddings for each sentence. 
+                    // So in this example `embeddings` has the shape [2, 512]. 
+                    data = embeddings.arraySync();
+                    resolve(data[0]);
+                });
+            });
     });
-    return data[0];
 }
 
 async function tfUseQuestion(questionDoc) {
