@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import dotenv from 'dotenv';
 import passport from 'passport';
-import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 import chatRouter from './routes/chat';
 import sessionRouter from './routes/sessions';
@@ -21,14 +20,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'client/build')));
+// app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(passport.initialize());
 
-app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/api/questions', questionRouter);
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'client/build')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'client/build/index.html'));
+    });
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

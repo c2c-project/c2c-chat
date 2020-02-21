@@ -17,6 +17,7 @@ import DateTimePicker from '../components/DateTimePicker';
 import PageContainer from '../layout/PageContainer';
 import GateKeep from '../components/GateKeep';
 import useSnack from '../hooks/useSnack';
+import useJwt from '../hooks/useJwt';
 
 function SessionForm({ type, onSubmit: cb, editTarget }) {
     const [state, setState] = React.useState({
@@ -26,9 +27,14 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
         description: '',
         url: ''
     });
+    const [jwt] = useJwt();
     React.useEffect(() => {
         if (type === 'update') {
-            fetch(`/api/sessions/find/${editTarget}`).then(res =>
+            fetch(`/api/sessions/find/${editTarget}`, {
+                headers: {
+                    Authorization: `bearer ${jwt}`
+                }
+            }).then(res =>
                 res.json().then(r => {
                     setState({
                         speaker: r.speaker,
@@ -41,7 +47,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                 })
             );
         }
-    }, [type, editTarget]);
+    }, [type, editTarget, jwt]);
     const onSubmit = e => {
         e.preventDefault();
         fetch(`/api/sessions/${type}`, {
@@ -51,6 +57,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                     ? JSON.stringify({ form: state })
                     : JSON.stringify({ form: state, sessionId: editTarget }),
             headers: {
+                Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'
             }
         }).then(() => {
@@ -60,6 +67,8 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
     };
     const handleChange = (e, key) => {
         const { value } = e.target;
+        console.log(e.target);
+        console.log(value);
         setState(prev => ({ ...prev, [key]: value }));
     };
     return (
@@ -116,7 +125,7 @@ function SessionForm({ type, onSubmit: cb, editTarget }) {
                                 variant='outlined'
                                 value={state.date}
                                 onChange={value =>
-                                    handleChange({ target: value }, 'date')
+                                    handleChange({ target: { value } }, 'date')
                                 }
                             />
                         </Grid>
@@ -171,11 +180,16 @@ export default function Sessions() {
     const [force, refetch] = React.useReducer(x => x + 1, 0);
     const [anchorEl, setAnchor] = React.useState(null);
     const [target, setTarget] = React.useState(null);
+    const [jwt] = useJwt();
     React.useEffect(() => {
-        fetch('/api/sessions/find').then(res => {
+        fetch('/api/sessions/find', {
+            headers: {
+                Authorization: `bearer ${jwt}`
+            }
+        }).then(res => {
             res.json().then(r => setData(r));
         });
-    }, [force]);
+    }, [force, jwt]);
 
     // this is the card vert menu in the card actions
     const handleSessionOptionsClick = (e, sessionId) => {
@@ -203,6 +217,7 @@ export default function Sessions() {
             method: 'POST',
             body: JSON.stringify({ sessionId: target }),
             headers: {
+                Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'
             }
         })
@@ -218,61 +233,63 @@ export default function Sessions() {
 
     const goToSession = sessionId => {
         // TODO: change this when I change how I get the session data
-        localStorage.setItem(
-            'session',
-            JSON.stringify(data.find(session => sessionId === session._id))
-        );
+        // localStorage.setItem(
+        //     'session',
+        //     JSON.stringify(data.find(session => sessionId === session._id))
+        // );
         history.push(`/app/sessions/${sessionId}/live`);
     };
     // TODO: generate menu options based on user role
     // TODO: add ics download option w/ icon, probably inside the session component
     return (
         <PageContainer>
-            <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
-                <Container maxWidth='lg' className={classes.dialogForm}>
-                    <SessionForm
-                        type={formType}
-                        onSubmit={() => {
-                            setFormOpen(false);
-                            refetch();
-                            snack(
-                                formType === 'update'
-                                    ? 'Successfully updated the session!'
-                                    : 'Successfully created a new session!',
-                                'success'
-                            );
-                        }}
-                        editTarget={target}
-                    />
-                </Container>
-            </Dialog>
-            <SessionList
-                sessions={data}
-                onClickOptions={handleSessionOptionsClick}
-                onClickGoToSession={goToSession}
-            />
-            <GateKeep
-                local
-                permissions={{ requiredAny: ['moderator', 'admin'] }}
-            >
-                <Fab
-                    onClick={() => {
-                        setFormOpen(true);
-                        setFormType('create');
-                    }}
+            <Container maxWidth='lg'>
+                <Dialog open={isFormOpen} onClose={() => setFormOpen(false)}>
+                    <Container maxWidth='lg' className={classes.dialogForm}>
+                        <SessionForm
+                            type={formType}
+                            onSubmit={() => {
+                                setFormOpen(false);
+                                refetch();
+                                snack(
+                                    formType === 'update'
+                                        ? 'Successfully updated the session!'
+                                        : 'Successfully created a new session!',
+                                    'success'
+                                );
+                            }}
+                            editTarget={target}
+                        />
+                    </Container>
+                </Dialog>
+                <SessionList
+                    sessions={data}
+                    onClickOptions={handleSessionOptionsClick}
+                    onClickGoToSession={goToSession}
                 />
-            </GateKeep>
-            <Menu
-                id='session-options'
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleSessionOptionsClose}
-            >
-                <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
-            </Menu>
+                <GateKeep
+                    local
+                    permissions={{ requiredAny: ['moderator', 'admin'] }}
+                >
+                    <Fab
+                        onClick={() => {
+                            setFormOpen(true);
+                            setFormType('create');
+                        }}
+                    />
+                </GateKeep>
+                <Menu
+                    id='session-options'
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleSessionOptionsClose}
+                >
+                    <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                    {/* <MenuItem onClick={handleSessionOptionsClose}>Logout</MenuItem> */}
+                </Menu>
+            </Container>
         </PageContainer>
     );
 }

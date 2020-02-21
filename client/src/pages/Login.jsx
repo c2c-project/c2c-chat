@@ -9,14 +9,20 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Grow from '@material-ui/core/Grow';
 import useSnack from '../hooks/useSnack';
+import banner from '../assets/spp-banner.png';
 
 const useStyles = makeStyles(theme => ({
     root: {
         height: '100%'
     },
     paper: {
-        marginTop: '-64px', // slight offset to make the component feel more vertically centered
+        // not necessary anymore?
+        // marginTop: '64-px', // slight offset to make the component feel more vertically centered
         padding: theme.spacing(2)
+    },
+    img: {
+        width: '100%',
+        height: 'auto'
     }
 }));
 
@@ -24,7 +30,7 @@ export default function Loginpage() {
     const classes = useStyles();
     const history = useHistory();
     const [form, setForm] = React.useState({
-        email: '',
+        username: '',
         password: ''
     });
     const [snack] = useSnack();
@@ -43,7 +49,7 @@ export default function Loginpage() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username: form.email,
+                username: form.username,
                 password: form.password
             })
         })
@@ -71,46 +77,86 @@ export default function Loginpage() {
                     justify='center'
                 >
                     <Paper className={classes.paper}>
-                        <form onSubmit={handleSubmit}>
+                        <img
+                            className={classes.img}
+                            src={banner}
+                            alt='spp-banner'
+                        />
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <form onSubmit={handleSubmit}>
+                                    <Grid
+                                        container
+                                        spacing={2}
+                                        className={classes.root}
+                                        alignContent='center'
+                                    >
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                required
+                                                fullWidth
+                                                variant='outlined'
+                                                type='text'
+                                                value={form.username}
+                                                onChange={e =>
+                                                    handleChange(e, 'username')
+                                                }
+                                                label='Username'
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                required
+                                                fullWidth
+                                                variant='outlined'
+                                                type='password'
+                                                value={form.password}
+                                                onChange={e =>
+                                                    handleChange(e, 'password')
+                                                }
+                                                label='Password'
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Button
+                                                fullWidth
+                                                type='submit'
+                                                variant='contained'
+                                                color='primary'
+                                            >
+                                                Login
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                </form>
+                            </Grid>
                             <Grid
                                 container
-                                spacing={2}
-                                className={classes.root}
-                                alignContent='center'
+                                item
+                                xs={12}
+                                justify='space-between'
                             >
-                                <Grid item xs={12}>
-                                    <TextField
-                                        fullWidth
-                                        variant='outlined'
-                                        type='email'
-                                        value={form.email}
-                                        onChange={e => handleChange(e, 'email')}
-                                        label='Email'
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        fullWidth
-                                        variant='outlined'
-                                        type='password'
-                                        value={form.password}
-                                        onChange={e =>
-                                            handleChange(e, 'password')
-                                        }
-                                        label='Password'
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Button
-                                        fullWidth
-                                        type='submit'
-                                        variant='contained'
-                                    >
-                                        Login
-                                    </Button>
-                                </Grid>
+                                <Button
+                                    onClick={() => history.push('/register')}
+                                >
+                                    Register
+                                </Button>
+                                {/* <Button
+                                    onClick={() =>
+                                        history.push('/forgot-password')
+                                    }
+                                >
+                                    Forgot Password?
+                                </Button> */}
+                                <Button
+                                    onClick={() =>
+                                        history.push('/login-temporary')
+                                    }
+                                >
+                                    Temporarily Login
+                                </Button>
                             </Grid>
-                        </form>
+                        </Grid>
                     </Paper>
                 </Grid>
             </Grow>

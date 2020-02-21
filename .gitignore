@@ -4,6 +4,7 @@
 node_modules/
 /.pnp
 .pnp.js
+/server/package-lock.json
 
 # testing
 /coverage
@@ -25,3 +26,8 @@ yarn-error.log*
 # environment files
 **/.env
 **/creds/**
+dist
+build
+
+# build
+*.tar.gz

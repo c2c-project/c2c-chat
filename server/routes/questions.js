@@ -2,7 +2,8 @@ import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
 import Accounts from '../lib/accounts';
-import ioInterface from '../lib/socket-io';
+import Toxicity from '../lib/tf';
+import io from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -17,16 +18,17 @@ router.post(
             question: form.question,
             sessionId,
             username: user.username,
-            userId: user._id
+            userId: user._id,
+            toxicity: false,
+            toxicityReason: []
         })
             .then(r => {
                 const questionDoc = r.ops[0];
-                ioInterface
-                    .io()
-                    .of('/questions')
+                io.of('/questions')
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
+                Toxicity.tfToxicityQuestion(questionDoc);
                 // TODO: 193
                 /**
                  * @questionDoc is the question json
