@@ -44,6 +44,15 @@ const findByUserId = _id =>
             .then(r => r[0])
     );
 
+const findByEmail = (email) => {
+    mongo.then(db => {
+        db.collection('users')
+        .find({email: email})
+        .toArray()
+        .then(r => r[0])
+    });
+}
+
 const find = (...args) =>
     mongo.then(db =>
         db
@@ -58,5 +67,6 @@ export default {
     removeUser,
     findByUsername,
     findByUserId,
+    findByEmail,
     find
 };
