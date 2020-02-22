@@ -15,13 +15,13 @@ const addUser = userDoc =>
             .catch(e => console.log('TODO: addUser error checking', e))
     );
 
-const updateUser = (doc, addition) => {
-    mongo.then(db => {
-        db.collection('users')
+const updateUser = (doc, addition) => 
+    mongo.then(db => 
+        db
+            .collection('users')
             .updateOne(doc, addition)
-            .catch(e => console.log(e));
-    });
-};
+            .catch(e => console.log(e))
+    );
 
 const removeUser = () => {};
 const findByUsername = ({ username }) =>
