@@ -79,19 +79,18 @@ describe('users', function () {
                     done();
                 })
         })
-        // it('should accept a valid userId', function (done) {
-        //     const email = 'admin@example.com';
-        //     Users.findByEmail(email).then(result => {
-        //         console.log(result);
-        //     })
-        
-        //     chai.request(server)
-        //         .post('/api/users/verification')
-        //         .send({ userId: '5e34c4a22aea29a6ba186a39' })
-        //         .end(function (err, res) {
-        //             res.should.have.status(200);
-        //             done();
-        //         })
-        // })
+        it('should accept a valid userId', function (done) {
+            const username = {username: 'admin@example.com'};
+            Users.findByUsername(username).then(result => {
+                const {_id} = result;
+                chai.request(server)
+                    .post('/api/users/verification')
+                    .send({ userId: _id })
+                    .end(function(err, res) {
+                        res.should.have.status(200);
+                        done();
+                    });
+            })
+        })
     });
 });

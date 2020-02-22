@@ -45,8 +45,8 @@ const findByUserId = _id =>
     );
 
 const findByEmail = (email) => {
-    mongo.then(db => {
-        db.collection('users')
+    return mongo.then(db => {
+        return db.collection('users')
         .find({email: email})
         .toArray()
         .then(r => r[0])
