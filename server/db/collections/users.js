@@ -17,12 +17,10 @@ const addUser = userDoc =>
 
 const updateUser = (doc, addition) => {
     mongo.then(db => {
-        db.collection('users').updateOne(
-            doc,
-            addition
-        )
-        .catch(e => console.log(e))
-    })
+        db.collection('users')
+            .updateOne(doc, addition)
+            .catch(e => console.log(e));
+    });
 };
 
 const removeUser = () => {};
@@ -44,14 +42,14 @@ const findByUserId = _id =>
             .then(r => r[0])
     );
 
-const findByEmail = (email) => {
-    return mongo.then(db => {
-        return db.collection('users')
-        .find({email: email})
-        .toArray()
-        .then(r => r[0])
-    });
-}
+const findByEmail = email =>
+    mongo.then(db =>
+        db
+            .collection('users')
+            .find({ email })
+            .toArray()
+            .then(r => r[0])
+    );
 
 const find = (...args) =>
     mongo.then(db =>
