@@ -64,6 +64,11 @@ function useQuestions(roomId = 'session') {
             });
         });
 
+        // TODO: Johan 
+        /**
+         * I know we talked about this earlier, but this is where you'd declare the event listener 'update'
+         */
+
         // SOCKET IO CLEANUP
         return () => {
             console.log('closing');

@@ -117,6 +117,12 @@ const isOwner = (userId, doc) => {
     return doc.userId === userId;
 };
 
+// TODO: Johan
+/**
+ * The function above is what you'd use to check if the 
+ * requesting user is the owner of the document they are trying to manipulate
+ */
+
 export default {
     register,
     registerTemporary,

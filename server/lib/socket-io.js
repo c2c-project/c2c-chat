@@ -64,6 +64,11 @@ export function moderate(roomId, messageId) {
         .to(roomId)
         .emit('moderate', messageId);
 }
+// TODO: Johan
+/**
+ * Once again, I know you were working on this earlier, 
+ * and this is where you'd add the update function (like you already have)
+ */
 
 /**
  * QUESTIONS
@@ -75,6 +80,7 @@ io.of('/questions').on('connection', socket => {
         socket.join(roomId);
     }
 });
+
 
 export function setCurrentQuestion(sessionId, question) {
     io.of('/questions')
