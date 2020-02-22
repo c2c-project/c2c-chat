@@ -134,9 +134,8 @@ export default function RegisterPage() {
                                     justify='space-between'
                                 >
                                     <Button
-                                        type='button'
                                         onClick={e => {e.preventDefault(); history.push('/login');}}
-                                        variant='contained'
+                                        variant='text'
                                     >
                                         Login
                                     </Button>
