@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Chat from '../db/collections/chat';
-import { moderate } from '../lib/socket-io';
+import { moderate, update } from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -42,14 +42,15 @@ router.post(
     '/update-message',
     passport.authenticate('jwt', {session: false}),
     (req, res) => {
-        // console.log(req.body);
-        const {messageId, newMessage} = req.body;
-        // console.log(messageId);
-        // console.log(newMessage);
+        console.log(req.body);
+        const {messageId, newMessage, roomId} = req.body;
+        console.log(messageId);
+        console.log(newMessage);
+        console.log(roomId);
         Chat.updateMessage({messageId, newMessage})
             .then(() => {
-                // console.log(arg);
-                res.send({success: true, editedMessage: newMessage})
+                update(roomId, messageId, newMessage);
+                res.send({success: true})
             })
             .catch(err => {
                 console.log(err);

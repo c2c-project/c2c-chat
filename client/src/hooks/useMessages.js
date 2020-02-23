@@ -42,6 +42,20 @@ function useMessages(roomId = 'session') {
                 );
             }
         });
+
+        chat.on('update', message => {
+            console.log("chat.on update called at useMessages file");
+            console.log(message.messageId);
+            if (isMounted) {
+                // console.log(messages);
+                // console.log(messages.find(msg => msg._id === message.messageId));
+                setMessages(curMessages => 
+                    // curMessages.filter(msg => msg._id !== messageId)
+                    console.log(curMessages.find(msg => msg._id === message.messageId))
+                );
+            }
+        });
+
         // FETCH
         fetch(`/api/chat/${roomId}`, {
             headers: {

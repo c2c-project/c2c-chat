@@ -7,7 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
-
 import useSnack from '../../hooks/useSnack';
 
 const useStyles = makeStyles(theme => ({
@@ -36,7 +35,8 @@ export default function MessageActions({ targetMsg, onClick }) {
             body: JSON.stringify(
                 {
                     newMessage : message,
-                    messageId : targetMsg._id
+                    messageId : targetMsg._id,
+                    roomId
                 }
             )
         })
@@ -95,7 +95,7 @@ export default function MessageActions({ targetMsg, onClick }) {
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
                 <Grid container>
-                    <Grid container>
+                    <Grid container justify='center'>
                         <Grid item xs='auto' className={classes.UserName}>
                             <Bold>{`${targetMsg.username}:`}</Bold>
                         </Grid>
