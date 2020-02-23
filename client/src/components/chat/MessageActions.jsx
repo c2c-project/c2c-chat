@@ -35,7 +35,8 @@ export default function MessageActions({ targetMsg, onClick }) {
             body: JSON.stringify(
                 {
                     newMessage : message,
-                    messageId : targetMsg._id,
+                    //messageId : targetMsg._id,
+                    messageDoc : targetMsg,
                     roomId
                 }
             )

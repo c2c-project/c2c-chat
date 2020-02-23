@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import Chat from '../db/collections/chat';
 import { moderate, update } from '../lib/socket-io';
+import Accounts from '../lib/accounts';
 
 const router = express.Router();
 
@@ -33,10 +34,6 @@ router.post(
     }
 );
 
-// Create a POST Request route to update a message
-// Figure out:
-//      Do I need roomId?
-
 router.post(
     // To do: Do research about getting information from the request (from the body)
     '/update-message',
@@ -44,14 +41,12 @@ router.post(
     (req, res) => {
 
         console.log(req.body);
-        const {messageId, newMessage, roomId} = req.body;
-        console.log(messageId);
+        const { user } = req;
+        const {newMessage, messageDoc, roomId} = req.body;
+        console.log(user);
+        console.log(messageDoc);
         console.log(newMessage);
         console.log(roomId);
-        // console.log(req.body);
-        const {messageId, newMessage} = req.body;
-        // console.log(messageId);
-        // console.log(newMessage);
         // TODO: Johan
         /**
          * look how I get the user doc in the post route above this one
@@ -68,15 +63,21 @@ router.post(
          * for a failure do res.status(400).send()
          * 
          */
-        Chat.updateMessage({messageId, newMessage})
-            .then(() => {
-                update(roomId, messageId, newMessage);
-                res.send({success: true})
-            })
-            .catch(err => {
-                console.log(err);
-                res.send({ success: false});
-            });
+
+        if (Accounts.isOwner(user._id,  messageDoc)){
+            Chat.updateMessage({ messageId: messageDoc._id , newMessage})
+                .then(() => {
+                    update(roomId, messageDoc._id  , newMessage);
+                    res.status(200).send({success: true});
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.status(400).send({success: false});
+                });
+        }
+        else {
+            res.send({messageError: 'Not allowed message'});
+        }
     }
 )
 
