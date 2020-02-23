@@ -81,4 +81,19 @@ router.post(
     }
 );
 
+router.post(
+    '/verification', (req, res) => {
+        const {userId} = req.body;
+        Accounts.verifyUser(userId).then(() => {
+            res.status(200).send();
+        }).catch(e => {
+            console.error(e);
+            if(e instanceof ClientError) {
+                res.statusMessage = e.message;
+            }
+            res.status(400).send();
+        })
+    }
+);
+
 module.exports = router;

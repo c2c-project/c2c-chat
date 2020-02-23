@@ -2,7 +2,6 @@ import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
 import Accounts from '../lib/accounts';
-import Toxicity from '../lib/tf';
 import io from '../lib/socket-io';
 
 const router = express.Router();
