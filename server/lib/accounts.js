@@ -80,11 +80,11 @@ const verifyUser = (userId) => {
             const verified = {$set: {'verified': true}};
             return Users.updateUser(doc, verified);
         } else {
-            return Promise.reject(new ClientError('Invalid userId'));
+            return Promise.reject(new ClientError('Invalid Link'));
         }
     }).catch(err => {
         console.error(err);
-        return Promise.reject(new ClientError('Invalid userId'));
+        return Promise.reject(new ClientError('Invalid Link'));
     })
 }
 
