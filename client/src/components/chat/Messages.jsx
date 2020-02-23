@@ -82,6 +82,26 @@ function Messages({ messages, variant }) {
                         _id
                     } = {}) => (
                         <ListItem
+                        // TODO: Johan
+                        /**
+                         * below is the button logic, I explained this before, and wanted to write it here again
+                         * we want to make a the list item a button every time the user is the owner of the question
+                         * so we'd want something like isModerator || isOwner, isOwner is the logic you'd have to write
+                         * 
+                         * to make this inline we'd instead have to do a conditional render https://reactjs.org/docs/conditional-rendering.html
+                         * Where instead of rendering the message, denoted below as COND RENDER HERE, we render the textbox with the existing text
+                         * this would require testing to make sure the user can still edit the question while new emssages are being sent
+                         * of course, the inline rendering is completely optional/up to you if you wanan give it a go
+                         * 
+                         * Here's the process stated in a more procedural/logical way
+                         * 1. If user is owner, ListItem should be a button
+                         * 2. If user clicks on the ListItem and owns that message/it is a button, one of two things will happen:
+                         *  a. The modal will pop up (like you already showed me)
+                         *  b. You will change a state, lets call it editState, to reflect that the user is currently editing the clicked message
+                         * 3. On Press enter or clicking some sort of confirm, the UI will go back to normal
+                         * 
+                         * Let me know if you have any questions here
+                         */
                             button={isModerator}
                             onClick={() => {
                                 if (isModerator) {
@@ -100,6 +120,7 @@ function Messages({ messages, variant }) {
                                     <Bold>{`${username}:`}</Bold>
                                 </Grid>
                                 <Grid item xs='auto'>
+                                    {/* COND RENDER HERE */}
                                     <Typography
                                         color='textPrimary'
                                         variant='body1'
