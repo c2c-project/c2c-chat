@@ -27,8 +27,7 @@ router.post(
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
-                TensorFlow.tfToxicityQuestion(questionDoc);
-                TensorFlow.tfUseQuestion(questionDoc);
+                Toxicity.tfToxicityQuestion(questionDoc);
                 // TODO: 193
                 /**
                  * @questionDoc is the question json
