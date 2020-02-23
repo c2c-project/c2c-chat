@@ -84,7 +84,7 @@ const verifyUser = (userId) => {
         }
     }).catch(err => {
         console.error(err);
-        return Promise.reject(new ClientError('Invalid Link'));
+        return Promise.reject(new ClientError('Server Error, Please Contact Support'));
     })
 }
 
