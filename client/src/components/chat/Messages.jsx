@@ -41,11 +41,14 @@ function Messages({ messages, variant }) {
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
+    const firstRender = React.useRef(true);
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
-            behavior: 'smooth'
+            behavior: firstRender.current ? 'smooth' : 'auto'
         });
+        firstRender.current = !messages.length;
     };
+
     React.useEffect(() => {
         let isMounted = true;
         fetch('/api/users/authenticate', {
@@ -66,6 +69,7 @@ function Messages({ messages, variant }) {
             isMounted = false;
         };
     }, [jwt]);
+
     React.useEffect(scrollToBottom, [messages]);
 
     return (

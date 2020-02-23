@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaihttp from 'chai-http';
 import server from '../../app';
+import Users from '../../db/collections/users';
 
 chai.should();
 chai.use(chaihttp);
@@ -66,6 +67,29 @@ describe('users', function() {
                     res.should.have.status(401);
                     done();
                 });
+        });
+    });
+    describe('#verification', function() {
+        it('should reject an invalid userId', function(done) {
+            chai.request(server)
+                .post('/api/users/verification')
+                .send({ userId: '1234' })
+                .end(function(err, res) {
+                    res.should.have.status(400);
+                    done();
+                });
+        });
+        it('should accept a valid userId', function(done) {
+            Users.findByEmail('admin@example.com').then(result => {
+                const { _id } = result;
+                chai.request(server)
+                    .post('/api/users/verification')
+                    .send({ userId: _id })
+                    .end(function(err, res) {
+                        res.should.have.status(200);
+                        done();
+                    });
+            });
         });
     });
 });

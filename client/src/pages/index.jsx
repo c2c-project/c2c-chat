@@ -7,6 +7,8 @@ import Login from './Login';
 import Layout from '../layout';
 import LoggedIn from '../components/LoggedIn';
 import LoginTemp from './LoginTemp';
+import Register from './Register';
+import Verification from './Verification';
 
 export default function Routes() {
     return (
@@ -26,11 +28,17 @@ export default function Routes() {
             <Route exact path='/login'>
                 <Login />
             </Route>
+            <Route exact path='/register'>
+                <Register />
+            </Route>
             <Route exact path='/login-temporary'>
                 <LoginTemp />
             </Route>
             <Route exact path='/logout'>
                 <Logout />
+            </Route>
+            <Route path='/verification/:userId' >
+                <Verification />
             </Route>
             <Route path='/'>
                 <Redirect to='/login' />

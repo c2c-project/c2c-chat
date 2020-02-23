@@ -29,3 +29,6 @@ yarn-error.log*
 **/creds/**
 dist
 build
+
+# build
+*.tar.gz
