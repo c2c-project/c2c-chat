@@ -66,13 +66,9 @@ export function moderate(roomId, messageId) {
 }
 
 export function update(roomId, messageId, newMessage) {
-    console.log("Enter update function in socket-io.js");
-    // console.log(messageId);
-    // console.log(roomId);
     io.of('/chat')
         .to(roomId)
         .emit('update', {messageId, newMessage});
-    console.log("Function call finished");
 }
 /**
  * QUESTIONS
