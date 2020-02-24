@@ -64,11 +64,6 @@ export function moderate(roomId, messageId) {
         .to(roomId)
         .emit('moderate', messageId);
 }
-// TODO: Johan
-/**
- * Once again, I know you were working on this earlier, 
- * and this is where you'd add the update function (like you already have)
- */
 
 export function update(roomId, messageId, newMessage) {
     console.log("Enter update function in socket-io.js");

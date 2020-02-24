@@ -47,12 +47,11 @@ function useMessages(roomId = 'session') {
             console.log("chat.on update called at useMessages file");
             console.log(message.messageId);
             if (isMounted) {
-                // console.log(messages);
-                // console.log(messages.find(msg => msg._id === message.messageId));
-                setMessages(curMessages => 
-                    // curMessages.filter(msg => msg._id !== messageId)
-                    console.log(curMessages.find(msg => msg._id === message.messageId))
-                );
+                setMessages(curMessages => {
+                    const index = curMessages.findIndex(msg => msg._id === message.messageId);
+                    curMessages[index].message = message.newMessage;
+                    return curMessages;
+                })
             }
         });
 
@@ -80,7 +79,7 @@ function useMessages(roomId = 'session') {
     return [
         messages,
         message => {
-            // prevent a blank message or a message with only spaces from being sent
+            // prevent a blank message or a message with only spaces from being s   ent
             if (message.trim()) {
                 sendFunc.emit('message', { jwt, message });
             }

@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import Users from '../db/collections/users';
 import { ClientError } from './errors';
 
+
 const SALT_ROUNDS = 10;
 const BASE_USER = {
     roles: ['user']
@@ -112,16 +113,12 @@ const filterSensitiveData = userDoc => {
 
 /**
  * all docs must have a userId field if they want to have a concept of ownership
+ * Bug:
+ * doc.userId field is of type string while userId is type object. For the comparison to work userId has to be converted to a string
  */
 const isOwner = (userId, doc) => {
-    return doc.userId === userId;
+    return doc.userId === String(userId);
 };
-
-// TODO: Johan
-/**
- * The function above is what you'd use to check if the 
- * requesting user is the owner of the document they are trying to manipulate
- */
 
 export default {
     register,

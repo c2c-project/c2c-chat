@@ -35,36 +35,12 @@ router.post(
 );
 
 router.post(
-    // To do: Do research about getting information from the request (from the body)
     '/update-message',
     passport.authenticate('jwt', {session: false}),
     (req, res) => {
-
-        console.log(req.body);
         const { user } = req;
         const {newMessage, messageDoc, roomId} = req.body;
-        console.log(user);
-        console.log(messageDoc);
-        console.log(newMessage);
-        console.log(roomId);
-        // TODO: Johan
-        /**
-         * look how I get the user doc in the post route above this one
-         * 
-         * Here's what you want to change here:
-         * Wrap the below code in an if statement
-         * so if (Accounts.isOwner(user, messageDoc)) {
-         * your current code here
-         * } else {
-         * not allowed message
-         * }
-         * Also, I actually unified how we send success messages in the branch I'm working on
-         * so for a succsess just do res.status(200).send({your code here});
-         * for a failure do res.status(400).send()
-         * 
-         */
-
-        if (Accounts.isOwner(user._id,  messageDoc)){
+        if (Accounts.isOwner(user._id, messageDoc)){
             Chat.updateMessage({ messageId: messageDoc._id , newMessage})
                 .then(() => {
                     update(roomId, messageDoc._id  , newMessage);
@@ -76,7 +52,7 @@ router.post(
                 });
         }
         else {
-            res.send({messageError: 'Not allowed message'});
+            res.status(400).send({ sucess: false });
         }
     }
 )

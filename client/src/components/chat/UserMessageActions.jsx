@@ -18,59 +18,36 @@ const useStyles = makeStyles(theme => ({
     }
 }));
   
-export default function MessageActions({ targetMsg, onClick }) {
+export default function UserMessageActions({ targetMsg, onClick }) {
     const classes = useStyles();
     const [message, setMessage] = React.useState(targetMsg.message);
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
 
-    // const handleEdit = () => {
-    //     fetch('/api/chat/update-message/', {
-    //         method: 'POST',
-    //         headers: {
-    //             Authorization: `bearer ${jwt}`,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(
-    //             {
-    //                 newMessage : message,
-    //                 messageDoc : targetMsg,
-    //                 roomId
-    //             }
-    //         )
-    //     })
-    //         .then(r => {
-    //             r.json().then(res => {
-    //                 if (res.success){
-    //                     snack('Message edited sucessfully', 'success');
-    //                     onClick();
-    //                 }
-    //                 else {
-    //                     snack('Something went wrong! Try again.', 'error');
-    //                 }
-    //             });
-    //         })
-    //         .catch(err => {
-    //             console.log(err);
-    //             snack('Something went wrong! Try again.', 'error');
-    //         })
-    // };
-
-    const handleModerate = () => {
-        fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
+    const handleEdit = (e) => {
+        e.preventDefault();
+        fetch('/api/chat/update-message/', {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify(
+                {
+                    newMessage : message,
+                    messageDoc : targetMsg,
+                    roomId
+                }
+            )
         })
             .then(r => {
                 r.json().then(res => {
-                    if (res.success) {
-                        snack('Successfully moderated messsage', 'success');
+                    if (res.success){
+                        snack('Message edited sucessfully', 'success');
                         onClick();
-                    } else {
+                    }
+                    else {
                         snack('Something went wrong! Try again.', 'error');
                     }
                 });
@@ -78,19 +55,34 @@ export default function MessageActions({ targetMsg, onClick }) {
             .catch(err => {
                 console.log(err);
                 snack('Something went wrong! Try again.', 'error');
-            });
+            })
     };
-    // const handleSetCurrent = () => {
-    // fetch(`/api/sessions/set-question/:${roomId}`, {
-    //     method: 'POST',
-    //     headers: {
-    //         Authorization: `bearer ${jwt}`,
-    //         'Content-Type': 'application/json'
-    //     }    
-    // }).then( res => {
 
-    // });
-    // };
+    // Change the delete message to just hide it. ie markit as deleted
+    const handleDelete = () => {
+        // fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
+        //     method: 'POST',
+        //     headers: {
+        //         Authorization: `bearer ${jwt}`,
+        //         'Content-Type': 'application/json'
+        //     }
+        // })
+        //     .then(r => {
+        //         r.json().then(res => {
+        //             if (res.success) {
+        //                 snack('Successfully moderated messsage', 'success');
+        //                 onClick();
+        //             } else {
+        //                 snack('Something went wrong! Try again.', 'error');
+        //             }
+        //         });
+        //     })
+        //     .catch(err => {
+        //         console.log(err);
+        //         snack('Something went wrong! Try again.', 'error');
+        //     });
+    };
+ 
     return (
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
@@ -100,46 +92,50 @@ export default function MessageActions({ targetMsg, onClick }) {
                             <Bold>{`${targetMsg.username}:`}</Bold>
                         </Grid>
                         <Grid item xs='auto' className={classes.Message}>
-                            <TextField
-                                value={message}
-                                onChange={e => setMessage(e.target.value)}
-                                fullWidth='true'
-                                color='secondary'
-                                variant='outlined'
-                            />
+                            <form onSubmit={handleEdit}>
+                                <TextField
+                                    value={message}
+                                    onChange={e => setMessage(e.target.value)}
+                                    fullWidth='true'
+                                    color='secondary'
+                                    variant='outlined'
+                                />
+                            </form>
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-            {/* <Grid item xs={12}>
-                <Button
-                    color='secondary'
-                    variant='contained'
-                    fullWidth
-                    onClick={handleEdit}
-                >
-                    Edit
-                </Button>
-            </Grid> */}
             <Grid item xs={12}>
                 <Button
                     color='secondary'
                     variant='contained'
                     fullWidth
-                    onClick={handleModerate}
+                    onClick={handleEdit}
+                    type='submit'
                 >
-                    Moderate/Hide
+                    Edit
+                </Button>
+            </Grid>
+
+            <Grid item xs={12}>
+                <Button
+                    color='danger'
+                    variant='contained'
+                    fullWidth
+                    onClick={handleDelete}
+                >
+                    Delete
                 </Button>
             </Grid>
         </Grid>
     );
 }
 
-MessageActions.defaultProps = {
+UserMessageActions.defaultProps = {
     onClick: () => {}
 };
 
-MessageActions.propTypes = {
+UserMessageActions.propTypes = {
     targetMsg: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         message: PropTypes.string.isRequired,

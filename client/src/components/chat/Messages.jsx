@@ -9,9 +9,12 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import useJwt from '../../hooks/useJwt';
 import MessageActions from './MessageActions';
+import UserMessageActions from './UserMessageActions';
 import QuestionActions from './QuestionActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
+
+
 
 const useStyles = makeStyles({
     root: {
@@ -34,11 +37,16 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
+const checkIsOwner = (user, messageUserId) => {
+    return user._id === messageUserId;
+}
+
 function Messages({ messages, variant }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
-    const [jwt] = useJwt();
+    const [jwt, user] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
+    //const [isOwner, setOwner] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
     const firstRender = React.useRef(true);
@@ -79,7 +87,8 @@ function Messages({ messages, variant }) {
                     ({
                         username = 'author',
                         message = 'message',
-                        _id
+                        _id,
+                        userId
                     } = {}) => (
                         <ListItem
                         // TODO: Johan
@@ -102,13 +111,18 @@ function Messages({ messages, variant }) {
                          * 
                          * Let me know if you have any questions here
                          */
-                            button={isModerator}
+                         /*
+                            Implement a boolean operation that checks if the userId of the message is the same as 
+                            the _id of the current user
+                         */
+                            button={isModerator || checkIsOwner(user, userId)}
                             onClick={() => {
-                                if (isModerator) {
+                                if (isModerator || checkIsOwner(user, userId)) {
                                     setTargetMsg({
                                         _id,
                                         message,
-                                        username
+                                        username,
+                                        userId
                                     });
                                 }
                             }}
@@ -144,13 +158,18 @@ function Messages({ messages, variant }) {
                         className={classes.maxHeight}
                         alignContent='center'
                     >
-                        {targetMsg && isModerator ? (
+                        {targetMsg && isModerator && (
                             <Actions
                                 targetMsg={targetMsg}
                                 onClick={() => setTargetMsg(null)}
                             />
-                        ) : (
-                            <></>
+                        )}
+
+                        {targetMsg && !isModerator && (
+                            <UserMessageActions
+                                targetMsg={targetMsg}
+                                onClick={() => setTargetMsg(null)}
+                            />
                         )}
                     </Grid>
                 </Container>
