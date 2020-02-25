@@ -67,6 +67,17 @@ const updateMessageToxicity = ({ messageId, result, toxicityReason }) => {
     });
 };
 
+const deleteMessage = ({ messageId }) =>
+    mongo.then(
+        db =>
+            db.collection('messages').updateOne(
+                {
+                    _id: new ObjectID(messageId)
+                },
+                { $set: { deletedByUser: true } }
+            )
+    );
+
 /**
  * Actions that a non-owner may take and the permissions required to do so
  */
@@ -83,6 +94,7 @@ const privilegedActions = (action, userDoc) => {
             const requiredAny = ['admin', 'moderator'];
             return messageId => {
                 if (Accounts.isAllowed(roles, { requiredAny })) {
+                    console.log('Switch statement remove', messageId);
                     return removeMessage({
                         messageId,
                         reason: 'Removed by moderator'
@@ -92,7 +104,6 @@ const privilegedActions = (action, userDoc) => {
                 return Promise.reject(Error('Not allowed'));
             };
         }
-
         case 'AUTO_REMOVE_MESSAGE': {
             return messageId => {
                 return removeMessage({
@@ -109,6 +120,7 @@ const privilegedActions = (action, userDoc) => {
 
 export default {
     createMessage,
+    deleteMessage,
     removeMessage,
     updateMessage,
     findMessages,

@@ -42,10 +42,7 @@ function useMessages(roomId = 'session') {
                 );
             }
         });
-
         chat.on('update', message => {
-            console.log("chat.on update called at useMessages file");
-            console.log(message.messageId);
             if (isMounted) {
                 setMessages(curMessages => {
                     const index = curMessages.findIndex(msg => msg._id === message.messageId);
@@ -63,7 +60,8 @@ function useMessages(roomId = 'session') {
         }).then(r => {
             r.json().then(history => {
                 if (isMounted) {
-                    setMessages(history.filter(m => !m.moderated));
+                    console.log(history);
+                    setMessages(history.filter(m => !m.moderated && !m.deletedByUser));
                 }
             });
         });

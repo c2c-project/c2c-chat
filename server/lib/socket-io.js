@@ -70,6 +70,7 @@ export function update(roomId, messageId, newMessage) {
         .to(roomId)
         .emit('update', {messageId, newMessage});
 }
+
 /**
  * QUESTIONS
  */

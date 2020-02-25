@@ -36,7 +36,7 @@ export default function UserMessageActions({ targetMsg, onClick }) {
             body: JSON.stringify(
                 {
                     newMessage : message,
-                    messageDoc : targetMsg,
+                    message : targetMsg,
                     roomId
                 }
             )
@@ -60,27 +60,32 @@ export default function UserMessageActions({ targetMsg, onClick }) {
 
     // Change the delete message to just hide it. ie markit as deleted
     const handleDelete = () => {
-        // fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
-        //     method: 'POST',
-        //     headers: {
-        //         Authorization: `bearer ${jwt}`,
-        //         'Content-Type': 'application/json'
-        //     }
-        // })
-        //     .then(r => {
-        //         r.json().then(res => {
-        //             if (res.success) {
-        //                 snack('Successfully moderated messsage', 'success');
-        //                 onClick();
-        //             } else {
-        //                 snack('Something went wrong! Try again.', 'error');
-        //             }
-        //         });
-        //     })
-        //     .catch(err => {
-        //         console.log(err);
-        //         snack('Something went wrong! Try again.', 'error');
-        //     });
+        fetch(`/api/chat/delete-message/${roomId}`, {
+            method: 'POST',
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    message : targetMsg,
+                }
+            )
+        })
+            .then(r => {
+                r.json().then(res => {
+                    if (res.success) {
+                        snack('Successfully deleted messsage', 'success');
+                        onClick();
+                    } else {
+                        snack('Something went wrong! Try again.', 'error');
+                    }
+                });
+            })
+            .catch(err => {
+                console.log(err);
+                snack('Something went wrong! Try again.', 'error');
+            });
     };
  
     return (
