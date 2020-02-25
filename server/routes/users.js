@@ -87,7 +87,6 @@ router.post(
         Accounts.verifyUser(userId).then(() => {
             res.status(200).send();
         }).catch(e => {
-            console.error(e);
             if(e instanceof ClientError) {
                 res.statusMessage = e.message;
             }
@@ -99,19 +98,16 @@ router.post(
 router.post(
     '/passwordreset', (req, res) => {
         if(req.body.email !== undefined) {
-            const { email } = req.body;
-
-            Accounts.passwordReset(email).then(() => {
+            Accounts.passwordReset(req.body.email).then(() => {
                 res.status(200).send();
             }).catch(e => {
-                console.error(e);
                 if(e instanceof ClientError) {
                     res.statusMessage = e.message;
                 }
                 res.status(400).send();
             })
         } else {
-            res.send('Email missing');
+            res.status(400).send('Email Missing');
         }
     }
 );
@@ -119,6 +115,19 @@ router.post(
 router.post(
     '/resetpassword', (req, res) => {
         //TODO Validate request from user, passwords match, then hash and update password
+        if(req.body.token !== undefined) {
+            const { token, password, confirmPassword } = req.body;
+            Accounts.resetPassword(token, password, confirmPassword).then(() => {
+                console.log('test');
+            }).catch(e => {
+                if(e instanceof ClientError) {
+                    res.statusMessage = e.message;
+                }
+                res.status(400).send();
+            })
+        } else {
+            res.status(400).send('Token Missing');
+        }
     }
 );
 

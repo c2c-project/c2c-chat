@@ -92,4 +92,34 @@ describe('users', function() {
             });
         });
     });
+    describe('#passwordreset', function() {
+        it('should accept valid email', function(done) {
+            chai.request(server)
+                .post('/api/users/passwordreset')
+                .send({ email: 'admin@example.com' })
+                .end(function(err, res) {
+                    res.should.have.status(200);
+                    done();
+                });
+        });
+        it('should reject undefined email', function(done) {
+            chai.request(server)
+                .post('/api/users/passwordreset')
+                .send({ email: undefined })
+                .end(function(err, res) {
+                    res.should.have.status(400);
+                    done();
+                });
+        });
+        it('should reject invalid email', function(done) {
+            chai.request(server)
+                .post('/api/users/passwordreset')
+                .send({ email: 'invalidemail' })
+                .end(function(err, res) {
+                    res.should.have.status(400);
+                    done();
+                });
+        });
+    });
+    //describe('#resetpassword')
 });

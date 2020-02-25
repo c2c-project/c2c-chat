@@ -75,9 +75,9 @@ const sendEmailVerification = (email, _id) => {
     });
 }
 
-const sendPasswordResetEmail = (email, _id, token) => {
+const sendPasswordResetEmail = (email, token) => {
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
-    const url = `${process.env.ORIGIN}/resetpassword/${_id}/${token}`;
+    const url = `${process.env.ORIGIN}/resetpassword/${token}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
         to: email,
@@ -105,24 +105,26 @@ const verifyUser = (userId) => {
         }
     }).catch(err => {
         console.error(err);
-        return Promise.reject(new ClientError('Server Error, Please Contact Support'));
-    })
+        if(err.message === 'Invalid Link') {
+            return Promise.reject(new ClientError('Invalid Link'));
+        } else {
+            return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+        }
+    });
 }
 
 /** 
  * Function to send reset password link to user's email using jwt based on user's doc
- * @param email -- user's email to send reset password link to
+ * @param {string} email -- user's email to send reset password link to
 */
 const passwordReset = (email) => {
     return Users.findByEmail(email).then(doc => {
         if(doc) {
-            console.log(doc);
-            const { _id } = doc;
             return jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
                 if(err) {
-                    console.error(err);
+                    return Promise.reject(new ClientError('Invalid Email'));
                 } else {
-                    sendPasswordResetEmail(email, _id, token);
+                    sendPasswordResetEmail(email, token);
                 }
             }); 
         } else {
@@ -130,18 +132,44 @@ const passwordReset = (email) => {
         }
     }).catch(err => {
         console.error(err);
-        return Promise.reject(new ClientError('Server Error, Please Contact Support'));
-    })
+        if(err.message === 'Invalid Email') {
+            return Promise.reject(new ClientError('Invalid Email'));
+        } else {
+            return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+        }
+    });
 }
 
-const resetPassword = (token, password, confirmPass) => {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+/**
+ * Function to reset user's password in database
+ * @param {string} token -- jwt token to be verified
+ * @param {string} password -- new password
+ * @param {string} confirmPassword -- new password confirmation
+ */
+const resetPassword = (token, password, confirmPassword) => {
+    return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if(err) {
-            console.error(err);
+            if(err.message === 'jwt expired') {
+                return Promise.reject(new ClientError('Expired Link'));
+            } else {
+                return Promise.reject(new ClientError('Invalid Link'));
+            }
         } else {
             console.log(decoded);
+            //Check if expired
+            const { _id } = decoded;
+            //Find user in database then hash and update with new password
         }
-    })
+    }).catch(err => {
+        console.error(err);
+        if(err.message === 'Expired Link') {
+            return Promise.reject(new ClientError('Expired Link'));
+        } else if(err.message === 'Invalid Link') {
+            return Promise.reject(new ClientError('Invalid Link'));
+        } else {
+            return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+        }
+    });
 }
 
 // always returns a promise
