@@ -44,13 +44,7 @@ function useQuestions(roomId = 'session') {
         question.on('set-question', q => {
             setCurrent(q);
         });
-        // question.on('moderate', messageId => {
-        //     if (isMounted) {
-        //         setQuestions(curMessages =>
-        //             curMessages.filter(msg => msg._id !== messageId)
-        //         );
-        //     }
-        // });
+
         // FETCH
         fetch(`/api/questions/${roomId}`, {
             headers: {
@@ -63,11 +57,6 @@ function useQuestions(roomId = 'session') {
                 }
             });
         });
-
-        // TODO: Johan 
-        /**
-         * I know we talked about this earlier, but this is where you'd declare the event listener 'update'
-         */
 
         // SOCKET IO CLEANUP
         return () => {
