@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import mailgun from 'mailgun-js';
+import jwt from 'jsonwebtoken';
 import Users from '../db/collections/users';
 import { ClientError } from './errors';
 
@@ -54,9 +55,9 @@ const verifyPassword = (textPw, hash, cb) => {
     bcrypt.compare(textPw, hash, cb);
 };
 
-const sendEmailVerification = (email, id) => {
+const sendEmailVerification = (email, _id) => {
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
-    const url = `${process.env.ORIGIN}/verification/${id}`;
+    const url = `${process.env.ORIGIN}/verification/${_id}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
         to: email,
@@ -64,6 +65,26 @@ const sendEmailVerification = (email, id) => {
         text: 'Please click the link to confirm your email',
         html: `
         <h3>Please click the lik to confirm your email</h3>
+        <a href="${url}">${url}</a>`
+    };
+    mg.messages().send(data, (error, body) => {
+        if (error) {
+            console.error(error);
+        }
+        console.log(body);
+    });
+}
+
+const sendPasswordResetEmail = (email, _id, token) => {
+    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
+    const url = `${process.env.ORIGIN}/resetpassword/${_id}/${token}`;
+    const data = {
+        from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
+        to: email,
+        subject: 'Password Reset',
+        text: 'Please click the link to reset your password',
+        html: `
+        <h3>Please click the link to reset your password</h3>
         <a href="${url}">${url}</a>`
     };
     mg.messages().send(data, (error, body) => {
@@ -85,6 +106,41 @@ const verifyUser = (userId) => {
     }).catch(err => {
         console.error(err);
         return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+    })
+}
+
+/** 
+ * Function to send reset password link to user's email using jwt based on user's doc
+ * @param email -- user's email to send reset password link to
+*/
+const passwordReset = (email) => {
+    return Users.findByEmail(email).then(doc => {
+        if(doc) {
+            console.log(doc);
+            const { _id } = doc;
+            return jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
+                if(err) {
+                    console.error(err);
+                } else {
+                    sendPasswordResetEmail(email, _id, token);
+                }
+            }); 
+        } else {
+            return Promise.reject(new ClientError('Invalid Email'));
+        }
+    }).catch(err => {
+        console.error(err);
+        return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+    })
+}
+
+const resetPassword = (token, password, confirmPass) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if(err) {
+            console.error(err);
+        } else {
+            console.log(decoded);
+        }
     })
 }
 
@@ -163,5 +219,7 @@ export default {
     filterSensitiveData,
     isOwner,
     sendEmailVerification,
-    verifyUser
+    verifyUser,
+    passwordReset,
+    resetPassword
 };
