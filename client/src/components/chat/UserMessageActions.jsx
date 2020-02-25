@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
+import { red } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
@@ -15,9 +16,17 @@ const useStyles = makeStyles(theme => ({
     },
     UserName : {
         margin: theme.spacing(2)
+    },
+    DangerButton : {
+        color: theme.palette.getContrastText(red[500]),
+        backgroundColor: red[500],
+        '&:hover': {
+            backgroundColor: red[700],
+        },
     }
 }));
-  
+
+
 export default function UserMessageActions({ targetMsg, onClick }) {
     const classes = useStyles();
     const [message, setMessage] = React.useState(targetMsg.message);
@@ -124,10 +133,10 @@ export default function UserMessageActions({ targetMsg, onClick }) {
 
             <Grid item xs={12}>
                 <Button
-                    color='danger'
                     variant='contained'
                     fullWidth
                     onClick={handleDelete}
+                    className={classes.DangerButton}
                 >
                     Delete
                 </Button>
