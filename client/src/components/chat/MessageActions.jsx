@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
 import useSnack from '../../hooks/useSnack';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     Message: {
@@ -20,42 +21,9 @@ const useStyles = makeStyles(theme => ({
   
 export default function MessageActions({ targetMsg, onClick }) {
     const classes = useStyles();
-    const [message, setMessage] = React.useState(targetMsg.message);
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
-
-    // const handleEdit = () => {
-    //     fetch('/api/chat/update-message/', {
-    //         method: 'POST',
-    //         headers: {
-    //             Authorization: `bearer ${jwt}`,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(
-    //             {
-    //                 newMessage : message,
-    //                 messageDoc : targetMsg,
-    //                 roomId
-    //             }
-    //         )
-    //     })
-    //         .then(r => {
-    //             r.json().then(res => {
-    //                 if (res.success){
-    //                     snack('Message edited sucessfully', 'success');
-    //                     onClick();
-    //                 }
-    //                 else {
-    //                     snack('Something went wrong! Try again.', 'error');
-    //                 }
-    //             });
-    //         })
-    //         .catch(err => {
-    //             console.log(err);
-    //             snack('Something went wrong! Try again.', 'error');
-    //         })
-    // };
 
     const handleModerate = () => {
         fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
@@ -100,13 +68,9 @@ export default function MessageActions({ targetMsg, onClick }) {
                             <Bold>{`${targetMsg.username}:`}</Bold>
                         </Grid>
                         <Grid item xs='auto' className={classes.Message}>
-                            <TextField
-                                value={message}
-                                onChange={e => setMessage(e.target.value)}
-                                fullWidth='true'
-                                color='secondary'
-                                variant='outlined'
-                            />
+                            <Typography>
+                                {targetMsg.message}
+                            </Typography>
                         </Grid>
                     </Grid>
                 </Grid>
