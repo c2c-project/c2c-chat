@@ -2,25 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import { Typography } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
 import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
 import useSnack from '../../hooks/useSnack';
-import { Typography } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
-    Message: {
-        width: 330,
-    },
-    UserName : {
-        margin: theme.spacing(2)
-    }
-}));
-  
 export default function MessageActions({ targetMsg, onClick }) {
-    const classes = useStyles();
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
@@ -63,28 +51,18 @@ export default function MessageActions({ targetMsg, onClick }) {
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
                 <Grid container>
-                    <Grid container justify='center'>
-                        <Grid item xs='auto' className={classes.UserName}>
+                    <Grid container>
+                        <Grid item xs='auto'>
                             <Bold>{`${targetMsg.username}:`}</Bold>
                         </Grid>
-                        <Grid item xs='auto' className={classes.Message}>
-                            <Typography>
+                        <Grid item xs='auto'>
+                            <Typography color='textPrimary' variant='body1'>
                                 {targetMsg.message}
                             </Typography>
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-            {/* <Grid item xs={12}>
-                <Button
-                    color='secondary'
-                    variant='contained'
-                    fullWidth
-                    onClick={handleEdit}
-                >
-                    Edit
-                </Button>
-            </Grid> */}
             <Grid item xs={12}>
                 <Button
                     color='secondary'

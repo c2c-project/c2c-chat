@@ -60,7 +60,6 @@ function useMessages(roomId = 'session') {
         }).then(r => {
             r.json().then(history => {
                 if (isMounted) {
-                    console.log(history);
                     setMessages(history.filter(m => !m.moderated && !m.deletedByUser));
                 }
             });
