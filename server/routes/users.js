@@ -114,11 +114,10 @@ router.post(
 
 router.post(
     '/resetpassword', (req, res) => {
-        //TODO Validate request from user, passwords match, then hash and update password
         if(req.body.token !== undefined) {
             const { token, password, confirmPassword } = req.body;
             Accounts.resetPassword(token, password, confirmPassword).then(() => {
-                console.log('test');
+                res.status(200).send('Password Reset');
             }).catch(e => {
                 if(e instanceof ClientError) {
                     res.statusMessage = e.message;

@@ -146,7 +146,7 @@ const passwordReset = (email) => {
  * @param {string} password -- new password
  * @param {string} confirmPassword -- new password confirmation
  */
-const resetPassword = (token, password, confirmPassword) => {
+const resetPassword = async (token, password, confirmPassword) => {
     return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if(err) {
             if(err.message === 'jwt expired') {
@@ -155,19 +155,21 @@ const resetPassword = (token, password, confirmPassword) => {
                 return Promise.reject(new ClientError('Invalid Link'));
             }
         } else {
-            console.log(decoded);
-            //Check if expired
             const { _id } = decoded;
             //Find user in database then hash and update with new password
-        }
-    }).catch(err => {
-        console.error(err);
-        if(err.message === 'Expired Link') {
-            return Promise.reject(new ClientError('Expired Link'));
-        } else if(err.message === 'Invalid Link') {
-            return Promise.reject(new ClientError('Invalid Link'));
-        } else {
-            return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+            if(password === confirmPassword) {
+                return Users.findByUserId(_id).then(doc => {
+                    return bcrypt.hash(password, SALT_ROUNDS).then(hash => {
+                        const updatedPassword = {$set: {'password': hash}};
+                        return Users.updateUser(doc, updatedPassword);
+                    }).catch(err => console.error(err));
+                }).catch(err => {
+                    console.error(err);
+                    return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+                })
+            } else {
+                return Promise.reject(new ClientError('Passwords do not match'));
+            }
         }
     });
 }
