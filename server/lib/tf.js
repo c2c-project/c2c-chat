@@ -10,7 +10,8 @@ const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sen
 const similarityThreshold = 0.5; // Will be change if the similarity test is too sensitive.
 const toxicityLoad = toxicity.load(toxicityThreshold);// load toxicity 
 const useLoad = use.load(); // Load universal sentence encoder
-let sentenceCounter = 0;
+let sentenceCounter = 0; // Global variable to store sentence number
+let similarityClusterCounter = 0; // Global variable to store similarity cluster number
 
 function checkTfToxicity(question) {
     return new Promise(function(resolve) {
@@ -101,41 +102,88 @@ function USEGenerater(sentence) {
                     data = embeddings.arraySync();
                     resolve(data[0]);
                 });
+            })
+            .catch(function(exception) {
+                // eslint-disable-next-line no-console
+                console.error(`Tf-Universal sentence encoder fail: ${  exception.message}`);
             });
     });
 }
 
 async function tfUseQuestion(questionDoc) {
     let inserted = false;
-    const questionCode = await USEGenerater(questionDoc.question); // return USE value
-    for (let i = 0; i < dataset.length && inserted === false; i += 1) { // for each cluster, check with leader question
+    const questionCode = await USEGenerater(questionDoc.question);
+    for (let i = 0; i < dataset.length && inserted === false; i += 1) { 
+        // for each cluster, check similarity between each leader question and incoming question
         let productrResult = math.dot(dataset[i][0].value,questionCode);
-        if (productrResult > similarityThreshold) { // if productrResult over 0.85, suppose they are similar
+        if (productrResult > similarityThreshold) {
             inserted = true; // flag to jump out the loop
             let questionWeight = 0;
-            for (let j = 0; j < dataset[i].length; j += 1) { // for each sentence in the same cluster, renew the weight
+            let clusterNumber = 0;
+            for (let j = 0; j < dataset[i].length; j += 1) { 
+                // for each sentence in the same cluster, renew the weight
                 productrResult = math.dot(dataset[i][j].value, questionCode);
                 dataset[i][j].weight += productrResult;
                 questionWeight += productrResult;
+                Questions.updateQuestionWeight({
+                    questionId: dataset[i][j]._id,
+                    weight: dataset[i][j].weight
+                });
+            } 
+            // renew the incoming question weight
+            Questions.updateQuestionWeight({
+                questionId: questionDoc._id,
+                weight: questionWeight
+            });
+            if (dataset[i].length === 1) { 
+                // Every cluster with 2 questions are significent (from non-similarity to similarity cluster).
+                // The length is 1 because the question has not been inserted to memory.
+                similarityClusterCounter += 1;
+                clusterNumber = similarityClusterCounter; 
+                dataset[i][0].similarityCluster = similarityClusterCounter;
+                Questions.updateQuestionSimilarity({
+                    questionId: questionDoc._id,
+                    similarity: true,
+                    similarityCluster: clusterNumber
+                });
+                Questions.updateQuestionSimilarity({
+                    questionId: dataset[i][0]._id,
+                    similarity: true,
+                    similarityCluster: clusterNumber
+                });
+            }else{
+                // if the third or more questions join into the cluster, get the peer cluster number
+                clusterNumber = dataset[i][0].similarityCluster; 
+                Questions.updateQuestionSimilarity({
+                    questionId: questionDoc._id,
+                    similarity: true,
+                    similarityCluster: clusterNumber
+                });
             }
             dataset[i].push({
                 'string' : questionDoc.question, 
+                '_id': questionDoc._id,
                 'id': sentenceCounter.toString(),
-                'value':questionCode,
-                'weight':questionWeight
+                'value': questionCode,
+                'weight': questionWeight,
+                'similarityCluster': clusterNumber
             });
             sentenceCounter += 1;
+            // sort the questions by weight from high to low
             dataset[i].sort(function(first, second){
                 return second.weight - first.weight;
             });
         }
     }
+    // if the dataset is empty or there is no similar question, create a new cluster
     if (inserted === false) {
         dataset.push([{
             'string' : questionDoc.question, 
+            '_id': questionDoc._id,
             'id': sentenceCounter.toString(),
-            'value':questionCode,
-            'weight':0
+            'value': questionCode,
+            'weight': 0,
+            'similarityCluster': null
         }]);
         sentenceCounter += 1;
     }

@@ -20,7 +20,10 @@ router.post(
             username: user.username,
             userId: user._id,
             toxicity: false,
-            toxicityReason: []
+            toxicityReason: [],
+            similarity: false,
+            similarityCluster: null,
+            weight: 0
         })
             .then(r => {
                 const questionDoc = r.ops[0];
