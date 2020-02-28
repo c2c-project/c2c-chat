@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import PropTypes from 'prop-types';
 import TimeLineItem from './TimeLineItem';
 import ClipDialog from './ClipDialog';
 import Fab from '../Fab';
 import './TimeLineItem.css';
+import useJwt from '../../hooks/useJwt';
 
 export default function TimeLine({ url }) {
     const player = useRef();
+    const location = useLocation();
     const quickScroll = React.useRef(null);
+
+    const [jwt] = useJwt();
+    const [currUrl, setUrl] = useState(url);
     const [playVideo, setPlayVideo] = useState(true);
 
     const [timeFrame, setTimeFrame] = useState({
@@ -38,21 +44,48 @@ export default function TimeLine({ url }) {
         start: 0,
         end: 0
     });
-    useEffect(() => {
-        // if (currClip === null) {
-        //     console.log('Current item is null');
-        // } else if (
-        //     currClip.question !== '' &&
-        //     currClip.start !== 0 &&
-        //     currClip.end !== 0
-        // ) {
-        //     console.log(
-        //         `Current item: ${currClip.question} ${currClip.start} ${currClip.end}`
-        //     );
-        // }
-    }, [currClip]);
+    
 
     const [clips, setClipState] = useState([]);
+    useEffect(() => {
+        // initialize our set of clips
+        fetch(`/api/sessions/find/${location.state.id}`, {
+            headers: {
+                Authorization: `bearer ${jwt}`
+            }
+        }).then(res => {
+            res.json().then(r => {
+                console.log(r);
+                if (r.clips !== undefined) {
+                    setClipState(r.clips);
+                }
+                if (r.url !== undefined) {
+                    setUrl(r.url);
+                }
+            });
+        });
+    }, []);
+    useEffect(() => {
+        fetch('/api/sessions/updateClips', {
+            method: 'POST',
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                sessionId: location.state.id,
+                changes: [...clips]
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }, [clips]);
+
 
     const addToClips = () => {
         setClipState([...clips, { ...currClip, id: clips.length }]);
@@ -81,7 +114,7 @@ export default function TimeLine({ url }) {
             <div ref={quickScroll} />
             <ReactPlayer
                 ref={player}
-                url={url}
+                url={currUrl}
                 playing={playVideo}
                 width='100%'
                 playsinline

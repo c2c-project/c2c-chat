@@ -43,7 +43,14 @@ const updateSession = ({ sessionId, changes }) =>
             .collection('sessions')
             .updateOne({ _id: new ObjectID(sessionId) }, { $set: changes })
     );
-
+////
+const updateSessionClips = ({ sessionId, changes }) =>
+    mongo.then(db =>
+        db
+            .collection('sessions')
+            .updateOne({ _id: new ObjectID(sessionId) }, { $set: { clips: changes }}, {upsert: true})
+    );
+////
 const privilegedActions = (action, userDoc) => {
     const { roles } = userDoc;
     switch (action) {
@@ -83,5 +90,6 @@ export default {
     addSession,
     removeSession,
     updateSession,
+    updateSessionClips,
     privilegedActions
 };

@@ -10,6 +10,8 @@ import Layout from '../layout';
 import LoggedIn from '../components/LoggedIn';
 import LoginTemp from './LoginTemp';
 import Register from './Register';
+import Timeline from '../components/clipper/TimeLine';
+
 
 export default function Routes() {
     return (
@@ -26,8 +28,9 @@ export default function Routes() {
                         <Route path='/app/sessions/summary'>
                             <SessionSummary />
                         </Route>
-                        <Route path='/app/sessions/:sessionId/session-summary' component={SessionData}>
-
+                        <Route path='/app/sessions/:sessionId/session-summary' component={SessionData} />
+                        <Route path='/app/sessions/:sessionId/clips'>
+                            <Timeline />
                         </Route>
                     </Layout>
                 </LoggedIn>
