@@ -141,13 +141,13 @@ export default function Loginpage() {
                                 >
                                     Register
                                 </Button>
-                                {/* <Button
+                                <Button
                                     onClick={() =>
                                         history.push('/forgot-password')
                                     }
                                 >
                                     Forgot Password?
-                                </Button> */}
+                                </Button>
                                 <Button
                                     onClick={() =>
                                         history.push('/login-temporary')

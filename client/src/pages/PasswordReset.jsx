@@ -20,12 +20,11 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-export default function ResetPasswordPage() {
+export default function PasswordResetPage() {
 	const classes = useStyles();
 	const history = useHistory();
 	const [form, setForm] = React.useState({
-		password: '',
-		confirmPassword: ''
+		email: ''
 	});
 	const {token} = useParams();
 	const [snack] = useSnack();
@@ -39,16 +38,16 @@ export default function ResetPasswordPage() {
 
 	const handleSubmit = e => {
 		e.preventDefault();
-		fetch('/api/users/resetpassword', {
+		fetch('/api/users/passwordreset', {
 				method: 'POST',
-				body: JSON.stringify({ form, token }),
+				body: JSON.stringify({ form }),
 				headers: {
 					'Content-Type': 'application/json'
 				}
 		}).then(res => {
 			if (res.status === 200) {
 				history.push('/login');
-				snack('Password Changed', 'success');
+				snack('Email Sent', 'success');
 			} else {
 				snack(`Error: ${res.statusText}`, 'error');
 			}
@@ -79,26 +78,13 @@ export default function ResetPasswordPage() {
 										required
 										fullWidth
 										variant='outlined'
-										type='password'
+										type='email'
 										value={form.password}
 										onChange={e =>
-											handleChange(e, 'password')
+											handleChange(e, 'email')
 										}
-										label='Password'
+										label='Email'
 									/>
-									</Grid>
-									<Grid item xs={12}>
-										<TextField
-											required
-											fullWidth
-											variant='outlined'
-											type='password'
-											value={form.confirmPassword}
-											onChange={e =>
-												handleChange(e, 'confirmPassword')
-											}
-											label='Confirm Password'
-										/>
 									</Grid>
 									<Grid
 										container
@@ -121,7 +107,7 @@ export default function ResetPasswordPage() {
 											variant='contained'
 											color='primary'
 										>
-											Reset Password
+											Send Reset Email
 										</Button>
 									</Grid>
 							</Grid>
