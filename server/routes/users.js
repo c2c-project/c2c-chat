@@ -95,10 +95,11 @@ router.post(
     }
 );
 
+//Call to send password reset email
 router.post(
     '/passwordreset', (req, res) => {
-        if(req.body.email !== undefined) {
-            Accounts.passwordReset(req.body.email).then(() => {
+        if(req.body.form.email !== undefined) {
+            Accounts.passwordReset(req.body.form.email).then(() => {
                 res.status(200).send();
             }).catch(e => {
                 if(e instanceof ClientError) {
@@ -112,11 +113,12 @@ router.post(
     }
 );
 
+//Call to update to new password
 router.post(
     '/resetpassword', (req, res) => {
-        if(req.body.token !== undefined) {
-            const { token, password, confirmPassword } = req.body;
-            Accounts.resetPassword(token, password, confirmPassword).then(() => {
+        if(req.body.token !== undefined || req.body.form.password !== undefined) {
+            const { token, form } = req.body;
+            Accounts.resetPassword(token, form.password, form.confirmPassword).then(() => {
                 res.status(200).send('Password Reset');
             }).catch(e => {
                 if(e instanceof ClientError) {
@@ -125,7 +127,13 @@ router.post(
                 res.status(400).send();
             })
         } else {
-            res.status(400).send('Token Missing');
+            if(req.body.token === undefined) {
+                res.statusText = 'Token Missing';
+                res.status(400).send();
+            } else if(req.body.form.password === undefined) {
+                res.statusText = 'Password Missing';
+                res.status(400).send();
+            }
         }
     }
 );

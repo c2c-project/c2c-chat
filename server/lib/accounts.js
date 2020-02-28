@@ -113,20 +113,20 @@ const verifyUser = (userId) => {
     });
 }
 
-/** 
+/**
  * Function to send reset password link to user's email using jwt based on user's doc
  * @param {string} email -- user's email to send reset password link to
 */
 const passwordReset = (email) => {
     return Users.findByEmail(email).then(doc => {
         if(doc) {
-            return jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
+            return jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '30m'}, (err, token) => {
                 if(err) {
                     return Promise.reject(new ClientError('Invalid Email'));
                 } else {
                     sendPasswordResetEmail(email, token);
                 }
-            }); 
+            });
         } else {
             return Promise.reject(new ClientError('Invalid Email'));
         }
