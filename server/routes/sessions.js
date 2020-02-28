@@ -1,12 +1,24 @@
 import express from 'express';
 import passport from 'passport';
 import Sessions from '../db/collections/sessions';
+import SessionModel from '../models/session.model';
 import Questions from '../db/collections/questions';
 import Chat from '../db/collections/chat';
 import ioInterface from '../lib/socket-io';
 import { setCurrentQuestion } from '../lib/socket-io';
+import { UserRefreshClient } from 'google-auth-library';
 
 const router = express.Router();
+
+
+router.route('/').get((req, res) => {
+    console.log('Getting sessions: ');
+    Sessions.findAllSessions()
+        .then(sess => {
+            res.json(sess);
+        })
+        .catch(err => res.status(400).json(`Error: ${  err}`));
+});
 
 // NOTE: remove passport auth if we don't want to require the user to be logged in
 router.get(
