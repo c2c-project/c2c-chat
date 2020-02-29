@@ -36,17 +36,6 @@ export default function MessageActions({ targetMsg, onClick }) {
                 snack('Something went wrong! Try again.', 'error');
             });
     };
-    // const handleSetCurrent = () => {
-    // fetch(`/api/sessions/set-question/:${roomId}`, {
-    //     method: 'POST',
-    //     headers: {
-    //         Authorization: `bearer ${jwt}`,
-    //         'Content-Type': 'application/json'
-    //     }    
-    // }).then( res => {
-
-    // });
-    // };
     return (
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
