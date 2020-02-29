@@ -42,6 +42,13 @@ function useMessages(roomId = 'session') {
                 );
             }
         });
+        chat.on('remove', messageId => {
+            if (isMounted){
+                setMessages(curMessages => 
+                    curMessages.filter(msg => msg._id !== messageId)
+                );
+            }
+        });
         chat.on('update', message => {
             if (isMounted) {
                 setMessages(curMessages => {
@@ -51,7 +58,6 @@ function useMessages(roomId = 'session') {
                 })
             }
         });
-
         // FETCH
         fetch(`/api/chat/${roomId}`, {
             headers: {
