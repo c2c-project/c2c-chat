@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Chat from '../db/collections/chat';
-import { moderate, update } from '../lib/socket-io';
+import { moderate, update, remove} from '../lib/socket-io';
 import Accounts from '../lib/accounts';
 
 const router = express.Router();
@@ -67,9 +67,7 @@ router.post(
         if (Accounts.isOwner(user._id, message)){
             Chat.deleteMessage({ messageId: message._id })    
                 .then(() => {
-                    // Reuse moderate event listener since it removes the message from the list of messages. 
-                    // Disucess with David if this is okay
-                    moderate(roomId, message._id);
+                    remove(roomId, message._id);
                     res.status(200).send({ success: true });
                 })
                 .catch(err => {
