@@ -71,6 +71,12 @@ export function update(roomId, messageId, newMessage) {
         .emit('update', {messageId, newMessage});
 }
 
+// This remove function does the same as the moderate function. This was done on purpose, for code clarity purposes. 
+export function remove(roomId, messageId) {
+    io.of('/chat')
+        .to(roomId)
+        .emit('moderate', messageId);
+}
 /**
  * QUESTIONS
  */
