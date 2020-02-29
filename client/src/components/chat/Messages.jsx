@@ -46,7 +46,6 @@ function Messages({ messages, variant }) {
     const lastMessageRef = React.useRef(null);
     const [jwt, user] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
-    //const [isOwner, setOwner] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
     const firstRender = React.useRef(true);
@@ -91,31 +90,9 @@ function Messages({ messages, variant }) {
                         userId
                     } = {}) => (
                         <ListItem
-                        // TODO: Johan
-                        /**
-                         * below is the button logic, I explained this before, and wanted to write it here again
-                         * we want to make a the list item a button every time the user is the owner of the question
-                         * so we'd want something like isModerator || isOwner, isOwner is the logic you'd have to write
-                         * 
-                         * to make this inline we'd instead have to do a conditional render https://reactjs.org/docs/conditional-rendering.html
-                         * Where instead of rendering the message, denoted below as COND RENDER HERE, we render the textbox with the existing text
-                         * this would require testing to make sure the user can still edit the question while new emssages are being sent
-                         * of course, the inline rendering is completely optional/up to you if you wanan give it a go
-                         * 
-                         * Here's the process stated in a more procedural/logical way
-                         * 1. If user is owner, ListItem should be a button
-                         * 2. If user clicks on the ListItem and owns that message/it is a button, one of two things will happen:
-                         *  a. The modal will pop up (like you already showed me)
-                         *  b. You will change a state, lets call it editState, to reflect that the user is currently editing the clicked message
-                         * 3. On Press enter or clicking some sort of confirm, the UI will go back to normal
-                         * 
-                         * Let me know if you have any questions here
-                         */
-                         /*
-                            Implement a boolean operation that checks if the userId of the message is the same as 
-                            the _id of the current user
-                         */
+                            // If user is moderator on the owner of the message then this ListItem is rendered as a button
                             button={isModerator || checkIsOwner(user, userId)}
+                            // If user is moderator on the owner of the message then this ListItem's onClick event calls setTargetMsg
                             onClick={() => {
                                 if (isModerator || checkIsOwner(user, userId)) {
                                     setTargetMsg({
@@ -134,7 +111,6 @@ function Messages({ messages, variant }) {
                                     <Bold>{`${username}:`}</Bold>
                                 </Grid>
                                 <Grid item xs='auto'>
-                                    {/* COND RENDER HERE */}
                                     <Typography
                                         color='textPrimary'
                                         variant='body1'
@@ -158,15 +134,17 @@ function Messages({ messages, variant }) {
                         className={classes.maxHeight}
                         alignContent='center'
                     >
-                        {targetMsg && isModerator && (
-                            <Actions
+                        {/* If the (user is not a moderator) OR (user is a moderator and is the owner of the message) then render UserMessageActions */}
+                        {targetMsg && (!isModerator || (isModerator && checkIsOwner(user, targetMsg.userId))) && (
+                            <UserMessageActions
                                 targetMsg={targetMsg}
                                 onClick={() => setTargetMsg(null)}
                             />
                         )}
 
-                        {targetMsg && !isModerator && (
-                            <UserMessageActions
+                        {/* If the (user is a moderator) AND (is not the owner of the message) then render Actions */}
+                        {targetMsg && isModerator && !checkIsOwner(user, targetMsg.userId) &&  (
+                            <Actions
                                 targetMsg={targetMsg}
                                 onClick={() => setTargetMsg(null)}
                             />
