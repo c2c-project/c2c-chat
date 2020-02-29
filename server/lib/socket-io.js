@@ -75,7 +75,7 @@ export function update(roomId, messageId, newMessage) {
 export function remove(roomId, messageId) {
     io.of('/chat')
         .to(roomId)
-        .emit('moderate', messageId);
+        .emit('remove', messageId);
 }
 /**
  * QUESTIONS
