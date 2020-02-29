@@ -127,7 +127,7 @@ export default function UserMessageActions({ targetMsg, onClick }) {
                     onClick={handleEdit}
                     type='submit'
                 >
-                    Edit
+                    Submit Change
                 </Button>
             </Grid>
 
