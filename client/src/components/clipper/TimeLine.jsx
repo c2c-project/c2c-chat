@@ -29,6 +29,13 @@ export default function TimeLine({ url }) {
         setPlayVideo(true);
     }, [timeFrame]);
 
+    const [timeStamp, setTimeStamp] = useState(0);
+    useEffect(() => {
+        if (timeStamp >= timeFrame.end) {
+            player.current.seekTo(timeFrame.start, 'seconds');
+        }
+    });
+
     const [addMode, setAddMode] = useState(false);
     useEffect(() => {
         // console.log(`add Mode On: ${addMode}`);
@@ -44,7 +51,6 @@ export default function TimeLine({ url }) {
         start: 0,
         end: 0
     });
-    
 
     const [clips, setClipState] = useState([]);
     useEffect(() => {
@@ -86,16 +92,16 @@ export default function TimeLine({ url }) {
             });
     }, [clips]);
 
-
     const addToClips = () => {
         setClipState([...clips, { ...currClip, id: clips.length }]);
     };
 
     function handleTimeStamp({ playedSeconds }) {
-        if (playedSeconds >= timeFrame.end) {
-            // setPlayVideo(false);
-            player.current.seekTo(timeFrame.start, 'seconds');
-        }
+        // if (playedSeconds >= timeFrame.end) {
+        //     // setPlayVideo(false);
+        //     player.current.seekTo(timeFrame.start, 'seconds');
+        // }
+        setTimeStamp(playedSeconds);
         document.getElementById('header').innerHTML = playedSeconds;
     }
 
@@ -178,6 +184,9 @@ export default function TimeLine({ url }) {
                         onClickEdit={() => {
                             setCurrClip({ ...x });
                             setEditMode(true);
+                        }}
+                        onClickDelete={() => {
+                            console.log(`Deleting Clip ${x.question}`);
                         }}
                     />
                 ))}
