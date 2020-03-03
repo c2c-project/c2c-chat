@@ -72,24 +72,25 @@ export default function TimeLine({ url }) {
         });
     }, []);
     useEffect(() => {
-        fetch('/api/sessions/updateClips', {
-            method: 'POST',
-            headers: {
-                Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                sessionId: location.state.id,
-                changes: [...clips]
+        if (clips.length != 0)
+            fetch('/api/sessions/updateClips', {
+                method: 'POST',
+                headers: {
+                    Authorization: `bearer ${jwt}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sessionId: location.state.id,
+                    changes: [...clips]
+                })
             })
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
     }, [clips]);
 
     const addToClips = () => {
@@ -111,6 +112,7 @@ export default function TimeLine({ url }) {
         setClipState(newClips);
         // setCurrClip(null);
     }
+
     function editCurrentClip(item) {
         setCurrClip(item);
     }
@@ -170,26 +172,34 @@ export default function TimeLine({ url }) {
             />
 
             <div className='timeline-container'>
-                {clips.map((x, index) => (
-                    <TimeLineItem
-                        data={x}
-                        key={index}
-                        onClickPlay={() => {
-                            // console.log(`TimeFrame: ${x.start} ${x.end}`);
-                            setTimeFrame({
-                                start: x.start,
-                                end: x.end
-                            });
-                        }}
-                        onClickEdit={() => {
-                            setCurrClip({ ...x });
-                            setEditMode(true);
-                        }}
-                        onClickDelete={() => {
-                            console.log(`Deleting Clip ${x.question}`);
-                        }}
-                    />
-                ))}
+                {clips.map((x, index) => {
+                    var i = index;
+                    return (
+                        <TimeLineItem
+                            data={x}
+                            key={index}
+                            onClickPlay={() => {
+                                // console.log(`TimeFrame: ${x.start} ${x.end}`);
+                                setTimeFrame({
+                                    start: x.start,
+                                    end: x.end
+                                });
+                            }}
+                            onClickEdit={() => {
+                                setCurrClip({ ...x });
+                                setEditMode(true);
+                            }}
+                            onClickDelete={() => {
+                                console.log(`Deleting Clip ${x.question}`);
+                                var temp = [];
+                                for(let i = 0; i < clips.length; i++)
+                                    if(i != index){
+                                        temp.push(clips[i]);
+                                    }
+                                setClipState(temp);
+                            }}
+                        />)
+                })}
             </div>
         </div>
     );
