@@ -58,7 +58,10 @@ const verifyPassword = (textPw, hash, cb) => {
  * always returns a promise -- expects to have .catch used on it
  */
 const sendEmailVerification = (email, id) => {
-    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
+    const mg = mailgun({
+        apiKey: process.env.MAILGUN_API_KEY,
+        domain: process.env.MAILGUN_DOMAIN
+    });
     const url = `${process.env.ORIGIN}/verification/${id}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
@@ -75,21 +78,22 @@ const sendEmailVerification = (email, id) => {
         }
         console.log(body);
     });
-}
+};
 
-const verifyUser = (userId) => {
-    return Users.findByUserId(userId).then(doc => {
-        if(doc) {
-            const verified = {$set: {'verified': true}};
-            return Users.updateUser(doc, verified);
-        } else {
-            return Promise.reject(new ClientError('Invalid Link'));
-        }
-    }).catch(err => {
-        console.error(err);
-        return Promise.reject(new ClientError('Server Error, Please Contact Support'));
-    })
-}
+const verifyUser = userId => {
+    return Users.findByUserId(userId)
+        .then(doc => {
+            if (doc) {
+                const verified = { $set: { verified: true } };
+                return Users.updateUser(doc, verified);
+            } else {
+                throw new ClientError('Invalid Link');
+            }
+        })
+        .catch(err => {
+            throw new ClientError('Server Error, Please Contact Support', err);
+        });
+};
 
 // always returns a promise
 const register = (username, password, confirmPass, additionalFields = {}) => {
@@ -110,10 +114,12 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
                             // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
                             ...BASE_USER,
                             ...additionalFields
-                        }).then(userDoc => {
-                            const { _id } = userDoc;
-                            sendEmailVerification(email, _id);
-                        }).catch(err => console.log(err))
+                        })
+                            .then(userDoc => {
+                                const { _id } = userDoc;
+                                sendEmailVerification(email, _id);
+                            })
+                            .catch(err => console.log(err))
                     )
                     .catch(err => console.log(err));
             }

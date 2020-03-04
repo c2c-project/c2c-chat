@@ -2,7 +2,6 @@ import express from 'express';
 import passport from 'passport';
 import Chat from '../db/collections/chat';
 import { moderate } from '../lib/socket-io';
-import { errorHandler } from '../lib/errors';
 
 const router = express.Router();
 
@@ -10,18 +9,18 @@ const router = express.Router();
 router.get(
     '/:roomId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { roomId } = req.params;
         Chat.findMessages({ sessionId: roomId })
             .then(r => res.json(r))
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 
 router.post(
     '/remove-message/:roomId/:messageId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
         const { messageId, roomId } = req.params;
         const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
@@ -30,7 +29,7 @@ router.post(
                 moderate(roomId, messageId);
                 res.status(200).send();
             })
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 

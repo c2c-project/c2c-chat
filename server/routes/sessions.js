@@ -2,7 +2,6 @@ import express from 'express';
 import passport from 'passport';
 import Sessions from '../db/collections/sessions';
 import { setCurrentQuestion } from '../lib/socket-io';
-import { errorHandler } from '../lib/errors';
 
 const router = express.Router();
 
@@ -11,10 +10,10 @@ const router = express.Router();
 router.get(
     '/find',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         Sessions.findAllSessions()
             .then(r => res.json(r))
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 
@@ -22,20 +21,20 @@ router.get(
 router.get(
     '/find/:sessionId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { sessionId } = req.params;
         Sessions.findSessionById(sessionId)
             .then(r => {
                 res.json(r);
             })
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 
 router.post(
     '/create',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { form } = req.body;
         const { user } = req;
         const addSession = Sessions.privilegedActions('ADD_SESSION', user);
@@ -47,14 +46,14 @@ router.post(
                         `Successfully created ${mongoRes.modifiedCount} session!`
                     )
             )
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 
 router.post(
     '/update',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { sessionId, form } = req.body;
         const { user } = req;
         const updateSession = Sessions.privilegedActions(
@@ -69,14 +68,14 @@ router.post(
                         `Successfully updated ${mongoRes.modifiedCount} session!`
                     )
             )
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 
 router.post(
     '/delete',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { sessionId } = req.body;
         const { user } = req;
         const deleteSession = Sessions.privilegedActions(
@@ -91,24 +90,24 @@ router.post(
                         `Successfully deleted ${mongoRes.modifiedCount} document!`
                     )
             )
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 
 router.post(
     '/set-question/:sessionId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
         const { sessionId } = req.params;
         const { question } = req.body;
-        const setQuestion = Sessions.privilegedActions('SET_QUESTION', user);
+        const setQuestion = Sessions.privilegedActions('asdf', user);
         setQuestion(sessionId, question)
             .then(() => {
                 setCurrentQuestion(sessionId, question);
                 res.status(200).send();
             })
-            .catch(err => errorHandler(err, res));
+            .catch(next);
     }
 );
 

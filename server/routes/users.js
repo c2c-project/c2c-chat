@@ -2,24 +2,17 @@ import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import Accounts from '../lib/accounts';
-import { errorHandler } from '../lib/errors';
 
 const router = express.Router();
 
-router.post('/register', (req, res) => {
+router.post('/register', (req, res, next) => {
     const { form } = req.body;
     const { username, email, password, confirmPass } = form;
     Accounts.register(username, password, confirmPass, { email })
         .then(() => {
             res.status(200).send();
         })
-        .catch(e => {
-            // not really sure if this is best practice
-            if (e instanceof ClientError) {
-                res.statusMessage = e.message;
-            }
-            res.status(400).send();
-        });
+        .catch(next);
 });
 
 router.post(
@@ -40,7 +33,7 @@ router.post(
 );
 
 // NOTE: unprotected route here
-router.post('/login-temporary', (req, res) => {
+router.post('/login-temporary', (req, res, next) => {
     const { username } = req.body;
     Accounts.registerTemporary(username, { roles: ['user'] })
         .then(userDoc => {
@@ -53,12 +46,7 @@ router.post('/login-temporary', (req, res) => {
                 }
             });
         })
-        .catch(e => {
-            if (e instanceof ClientError) {
-                res.statusMessage = e.message;
-            }
-            res.status(400).send();
-        });
+        .catch(next);
 });
 
 router.post(
@@ -78,19 +66,13 @@ router.post(
     }
 );
 
-router.post(
-    '/verification', (req, res) => {
-        const {userId} = req.body;
-        Accounts.verifyUser(userId).then(() => {
+router.post('/verification', (req, res, next) => {
+    const { userId } = req.body;
+    Accounts.verifyUser(userId)
+        .then(() => {
             res.status(200).send();
-        }).catch(e => {
-            console.error(e);
-            if(e instanceof ClientError) {
-                res.statusMessage = e.message;
-            }
-            res.status(400).send();
         })
-    }
-);
+        .catch(next);
+});
 
 module.exports = router;
