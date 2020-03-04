@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import mailgun from 'mailgun-js';
 import Users from '../db/collections/users';
 import { ClientError } from './errors';
 
@@ -56,6 +57,41 @@ const verifyPassword = (textPw, hash, cb) => {
 /**
  * always returns a promise -- expects to have .catch used on it
  */
+const sendEmailVerification = (email, id) => {
+    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
+    const url = `${process.env.ORIGIN}/verification/${id}`;
+    const data = {
+        from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
+        to: email,
+        subject: 'Email Verificaiton',
+        text: 'Please click the link to confirm your email',
+        html: `
+        <h3>Please click the lik to confirm your email</h3>
+        <a href="${url}">${url}</a>`
+    };
+    mg.messages().send(data, (error, body) => {
+        if (error) {
+            console.error(error);
+        }
+        console.log(body);
+    });
+}
+
+const verifyUser = (userId) => {
+    return Users.findByUserId(userId).then(doc => {
+        if(doc) {
+            const verified = {$set: {'verified': true}};
+            return Users.updateUser(doc, verified);
+        } else {
+            return Promise.reject(new ClientError('Invalid Link'));
+        }
+    }).catch(err => {
+        console.error(err);
+        return Promise.reject(new ClientError('Server Error, Please Contact Support'));
+    })
+}
+
+// always returns a promise
 const register = (username, password, confirmPass, additionalFields = {}) => {
     const { email } = additionalFields;
     // if the user registered with an email & username, then find by username or email
@@ -65,17 +101,23 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
         // returning a Promise here -- so register.then.catch will work
         return Users.find(query).then(docArray => {
             if (!docArray[0]) {
-                return bcrypt.hash(password, SALT_ROUNDS).then(hash =>
-                    Users.addUser({
-                        username,
-                        password: hash,
-                        // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
-                        ...BASE_USER,
-                        ...additionalFields
-                    })
-                );
+                return bcrypt
+                    .hash(password, SALT_ROUNDS)
+                    .then(hash =>
+                        Users.addUser({
+                            username,
+                            password: hash,
+                            // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
+                            ...BASE_USER,
+                            ...additionalFields
+                        }).then(userDoc => {
+                            const { _id } = userDoc;
+                            sendEmailVerification(email, _id);
+                        }).catch(err => console.log(err))
+                    )
+                    .catch(err => console.log(err));
             }
-            // will bubble up to the .catch
+            console.log(docArray);
             throw new ClientError('Username or E-mail already exists');
         });
     }
@@ -126,5 +168,7 @@ export default {
     verifyPassword,
     isAllowed,
     filterSensitiveData,
-    isOwner
+    isOwner,
+    sendEmailVerification,
+    verifyUser
 };

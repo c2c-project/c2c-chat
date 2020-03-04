@@ -2,7 +2,7 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import CurrentQuestionComponent from './CurrentQuestion';
-import Clipper from './Clipper';
+import TimeLine from './clipper/TimeLine';
 
 export default { title: 'components' };
 
@@ -45,7 +45,8 @@ export const CurrentQuestion = () => {
 
 export const Clips = () => {
     return(
-        <Clipper /> 
+        // <Clipper url='https://www.youtube.com/watch?v=LXb3EKWsInQ' /> 
+        <TimeLine url='https://www.youtube.com/watch?v=LXb3EKWsInQ' />
     );
 };
 
