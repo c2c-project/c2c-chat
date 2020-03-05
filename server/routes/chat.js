@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import Chat from '../db/collections/chat';
+import Messages from '../db/collections/messsages';
 import { moderate } from '../lib/socket-io';
 
 const router = express.Router();
@@ -11,7 +11,7 @@ router.get(
     passport.authenticate('jwt', { session: false }),
     (req, res, next) => {
         const { roomId } = req.params;
-        Chat.findMessages({ sessionId: roomId })
+        Messages.findMessages({ sessionId: roomId })
             .then(r => res.json(r))
             .catch(next);
     }
@@ -23,7 +23,7 @@ router.post(
     (req, res, next) => {
         const { user } = req;
         const { messageId, roomId } = req.params;
-        const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
+        const removeMessage = Messages.privilegedActions('REMOVE_MESSAGE', user);
         removeMessage(messageId)
             .then(() => {
                 moderate(roomId, messageId);
