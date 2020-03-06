@@ -96,7 +96,7 @@ describe('users', function() {
         it('should accept valid email', function(done) {
             chai.request(server)
                 .post('/api/users/passwordreset')
-                .send({ email: 'admin@example.com' })
+                .send({form: { email: 'admin@example.com' }})
                 .end(function(err, res) {
                     res.should.have.status(200);
                     done();
@@ -105,7 +105,7 @@ describe('users', function() {
         it('should reject undefined email', function(done) {
             chai.request(server)
                 .post('/api/users/passwordreset')
-                .send({ email: undefined })
+                .send({form: { email: undefined }})
                 .end(function(err, res) {
                     res.should.have.status(400);
                     done();
@@ -114,7 +114,7 @@ describe('users', function() {
         it('should reject invalid email', function(done) {
             chai.request(server)
                 .post('/api/users/passwordreset')
-                .send({ email: 'invalidemail' })
+                .send({form: { email: 'invalidEmail' }})
                 .end(function(err, res) {
                     res.should.have.status(400);
                     done();
