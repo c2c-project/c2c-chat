@@ -49,6 +49,11 @@ function useQuestions(roomId = 'session') {
             console.log('set question');
             setCurrent(q);
         });
+        // TODO: 193
+        /**
+         * here is where you'd add your listener for the 'classification' event on the client
+         * and update the state appropriately to trigger a re-render in react
+         */
         // question.on('moderate', messageId => {
         //     if (isMounted) {
         //         setQuestions(curMessages =>

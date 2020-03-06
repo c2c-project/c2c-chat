@@ -68,3 +68,10 @@ export default (function socketioInterface() {
         io: () => io
     };
 })();
+
+// TODO: 193 
+/**
+ * Here is where you'd create the new socketio event
+ * maybe name the event 'classification' it'd be something like 
+ * io.of('/chat').to(roomId).emit('classification', yourDataHere), where roomId is the sessionId
+ */
