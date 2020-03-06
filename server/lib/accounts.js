@@ -120,7 +120,10 @@ const verifyUser = (userId) => {
 const passwordReset = (email) => {
     return Users.findByEmail(email).then(doc => {
         if(doc) {
-            return jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '30m'}, (err, token) => {
+            //Filter doc
+            const { _id } = doc;
+            //const filteredDoc = filterSensitiveData(doc);
+            return jwt.sign({_id}, process.env.JWT_SECRET, { expiresIn: '30m'}, (err, token) => {
                 if(err) {
                     return Promise.reject(new ClientError('Invalid Email'));
                 } else {
@@ -225,7 +228,7 @@ const registerTemporary = (username, additionalFields = {}) =>
 
 const filterSensitiveData = userDoc => {
     // okay fields to send to client via jwt or any given time
-    const okayFields = ['_id', 'email', 'username', 'roles', 'name'];
+    const okayFields = ['_id', 'email', 'username', 'roles', 'name', 'verified'];
     return Object.entries(userDoc).reduce((accum, [key, value]) => {
         if (okayFields.includes(key)) {
             return { ...accum, [key]: value };
