@@ -1,5 +1,6 @@
 import chai from 'chai';
 import chaihttp from 'chai-http';
+import jwt from 'jsonwebtoken';
 import server from '../../app';
 import Users from '../../db/collections/users';
 
@@ -80,8 +81,8 @@ describe('users', function() {
                 });
         });
         it('should accept a valid userId', function(done) {
-            Users.findByEmail('admin@example.com').then(result => {
-                const { _id } = result;
+            Users.findByEmail('admin@example.com').then(doc => {
+                const { _id } = doc;
                 chai.request(server)
                     .post('/api/users/verification')
                     .send({ userId: _id })
@@ -121,5 +122,56 @@ describe('users', function() {
                 });
         });
     });
-    //describe('#resetpassword')
+    describe('#resetpassword', function() {
+        it('should accept valid token', function(done) {
+            Users.findByEmail('admin@example.com').then(doc => {
+                jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
+                    chai.request(server)
+                        .post('/api/users/resetpassword')
+                        .send({ token: token, password: '1', confirmPassword: '1'})
+                        .end(function(err, res) {
+                            res.should.have.status(200);
+                            done();
+                        });
+                });
+            });
+        });
+        // it('should reject invalid token', function(done) {
+        //     chai.request(server)
+        //         .post('api/users/resetpassword')
+        //         .send({token: '1111', password: '1', confirmPassword: '1'})
+        //         .end(function(err, res) {
+        //             res.should.have.status(400);
+        //             done();
+        //         })
+        // });
+        // it('should reject expired token', function(done) {
+        //     Users.findByEmail('admin@example.com').then(doc => {
+        //         jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1s'}, (err, token) => {
+        //             setTimeout(function() {
+        //                 return chai.request(server)
+        //                     .post('/api/users/resetpassword')
+        //                     .send({ token: token, password: '1', confirmPassword: '1'})
+        //                     .end(function(err, res) {
+        //                         res.should.have.status(400);
+        //                         done();
+        //                     });
+        //             }, 2000);
+        //         });
+        //     });
+        // });
+        // it('should reject mismatching password', function(done) {
+        //     Users.findByEmail('admin@example.com').then(doc => {
+        //         jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
+        //             chai.request(server)
+        //                 .post('/api/users/resetpassword')
+        //                 .send({ token: token, password: '1', confirmPassword: '2'})
+        //                 .end(function(err, res) {
+        //                     res.should.have.status(400);
+        //                     done();
+        //                 });
+        //         });
+        //     });
+        // })
+    });
 });
