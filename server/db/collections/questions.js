@@ -27,9 +27,6 @@ const createQuestion = ({
     toxicityReason,
     sentenceCode,
     relaventWeight,
-    similarity,
-    similarityCluster,
-    weight,
 }) =>
     mongo.then(db =>
         db.collection('questions').insertOne({
@@ -41,9 +38,6 @@ const createQuestion = ({
             toxicityReason,
             sentenceCode,
             relaventWeight,
-            similarity,
-            similarityCluster,
-            weight,
         })
     );
 // 193

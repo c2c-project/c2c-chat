@@ -21,13 +21,10 @@ router.post(
             userId: user._id,
             toxicity: false,
             toxicityReason: [],
-            similarity: false,
-            similarityCluster: null,
-            weight: 0
         })
             .then(r => {
                 const questionDoc = r.ops[0];
-                
+
                 ioInterface
                     .io()
                     .of('/questions')
