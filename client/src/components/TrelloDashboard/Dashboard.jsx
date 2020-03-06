@@ -19,7 +19,7 @@ export default function TrelloDashboard() {
                 id: 'lane1',
                 title: 'Wait for Asking',
                 label: cards.length,
-                cards: cards
+                cards
             },
             {
                 id: 'pastCard',
@@ -40,7 +40,7 @@ export default function TrelloDashboard() {
         setQuestion('')
         let now = new Date();
 
-        cards.push({id: id, title: question,label: now.getHours()+':'+now.getMinutes()+':'+now.getSeconds(),draggable: true})
+        cards.push({id, title: question,label: now.getHours()+':'+now.getMinutes()+':'+now.getSeconds(),draggable: true})
         setId((id+1).toString())
         console.log(cards.length)
     }

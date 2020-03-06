@@ -37,7 +37,8 @@ function useQuestions(roomId = 'session') {
             }
         });
         question.on('question', function(message) {
-            console.log('it is in question')
+            console.log(message)
+            
             if (isMounted) {
                 setQuestions(state => [...state, message]);
             }

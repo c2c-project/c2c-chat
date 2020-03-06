@@ -35,7 +35,7 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
-function Question({ messages, variant,currentQuestion }) {
+function Question({ messages, variant, currentQuestion }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const [jwt] = useJwt();
@@ -83,7 +83,7 @@ function Question({ messages, variant,currentQuestion }) {
                             button={isModerator}
                             onClick={() => {
                                 if (isModerator) {
-                                    if(currentQuestion.message!== message){
+                                    if(currentQuestion && currentQuestion._id !== _id){
                                         setTargetMsg({
                                             _id,
                                             message,
@@ -101,10 +101,10 @@ function Question({ messages, variant,currentQuestion }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color={currentQuestion.message === message? "textSecondary":'textPrimary'}
+                                        color={currentQuestion._id === _id? 'error':'textPrimary'}
                                         variant='body1'
                                     >
-                                        {currentQuestion.message === message? 'asking': message}
+                                        {message}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -144,7 +144,8 @@ Question.defaultProps = {
 
 Question.propTypes = {
     messages: PropTypes.array,
-    variant: PropTypes.oneOf(['questions', 'messages']).isRequired
+    variant: PropTypes.oneOf(['questions', 'messages']).isRequired,
+    currentQuestion: PropTypes.oneOf(['message', '_id']).isRequired
 };
 
 export default Question;
