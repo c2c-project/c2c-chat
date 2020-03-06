@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button'
 import Dialog from './Dialog'
 export default function TrelloDashboard() {
+
     const [cards, setCards] = React.useState([
         {id: 'Card1', title: 'Write Blog', description: 'Can AI make memes', label: '30 mins', draggable: true},
         {id: 'Card2', title: 'Pay Rent', description: 'Transfer via NEFT', label: '5 mins', draggable: true},
@@ -17,13 +18,13 @@ export default function TrelloDashboard() {
             {
                 id: 'lane1',
                 title: 'Wait for Asking',
-                label: '2/2',
+                label: cards.length,
                 cards: cards
             },
             {
                 id: 'pastCard',
                 title: 'Past Card',
-                label: '2/2',
+                label: pastCard.length,
                 cards: pastCard,
             },
         ]
@@ -37,7 +38,9 @@ export default function TrelloDashboard() {
     function enterHit(e){
         e.preventDefault()
         setQuestion('')
-        cards.push({id: id, title: question,draggable: true})
+        let now = new Date();
+
+        cards.push({id: id, title: question,label: now.getHours()+':'+now.getMinutes()+':'+now.getSeconds(),draggable: true})
         setId((id+1).toString())
         console.log(cards.length)
     }

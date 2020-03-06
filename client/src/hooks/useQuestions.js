@@ -31,11 +31,13 @@ function useQuestions(roomId = 'session') {
         question.on('connect', function() {
             // TODO: login tokens here? or some kind of security?
             // chat.emit('new-user');
+            console.log('it is in connect')
             if (isMounted) {
                 setFunc(question);
             }
         });
         question.on('question', function(message) {
+            console.log('it is in question')
             if (isMounted) {
                 setQuestions(state => [...state, message]);
             }

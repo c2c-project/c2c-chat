@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Chatbar from './Chatbar';
 import Messages from './Messages';
+import Questions from './Questions';
 import useMessages from '../../hooks/useMessages';
 import useQuestions from '../../hooks/useQuestions';
 
@@ -31,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function QuestionWindow({ roomId, title }) {
-    const [questions] = useQuestions(roomId);
+    const [questions, sendQuestion, currentQuestion] = useQuestions(roomId);
     const classes = useStyles();
 
     return (
@@ -42,12 +43,13 @@ export function QuestionWindow({ roomId, title }) {
                 </Grid>
                 <Divider className={classes.divider} />
                 <Grid item xs={12} className={classes.messages}>
-                    <Messages
+                    <Questions
                         messages={questions.map(question => ({
                             ...question,
                             message: question.question
                         }))}
                         variant='questions'
+                        currentQuestion={currentQuestion}
                     />
                 </Grid>
                 {/* <Divider className={classes.divider} /> */}

@@ -35,7 +35,7 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
-function Messages({ messages, variant }) {
+function Question({ messages, variant,currentQuestion }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const [jwt] = useJwt();
@@ -47,6 +47,7 @@ function Messages({ messages, variant }) {
             behavior: 'smooth'
         });
     };
+    
     React.useEffect(() => {
         let isMounted = true;
         fetch('/api/users/authenticate', {
@@ -82,11 +83,13 @@ function Messages({ messages, variant }) {
                             button={isModerator}
                             onClick={() => {
                                 if (isModerator) {
-                                    setTargetMsg({
-                                        _id,
-                                        message,
-                                        username
-                                    });
+                                    if(currentQuestion.message!== message){
+                                        setTargetMsg({
+                                            _id,
+                                            message,
+                                            username
+                                        });
+                                    }
                                 }
                             }}
                             key={_id}
@@ -98,10 +101,10 @@ function Messages({ messages, variant }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color='textPrimary'
+                                        color={currentQuestion.message === message? "textSecondary":'textPrimary'}
                                         variant='body1'
                                     >
-                                        {message}
+                                        {currentQuestion.message === message? 'asking': message}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -135,13 +138,13 @@ function Messages({ messages, variant }) {
     );
 }
 
-Messages.defaultProps = {
+Question.defaultProps = {
     messages: []
 };
 
-Messages.propTypes = {
+Question.propTypes = {
     messages: PropTypes.array,
     variant: PropTypes.oneOf(['questions', 'messages']).isRequired
 };
 
-export default Messages;
+export default Question;
