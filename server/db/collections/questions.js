@@ -25,9 +25,8 @@ const createQuestion = ({
     userId,
     toxicity,
     toxicityReason,
-    similarity,
-    similarityCluster,
-    weight
+    sentenceCode,
+    relaventWeight
 }) =>
     mongo.then(db =>
         db.collection('questions').insertOne({
@@ -37,9 +36,8 @@ const createQuestion = ({
             userId,
             toxicity,
             toxicityReason,
-            similarity,
-            similarityCluster,
-            weight
+            sentenceCode,
+            relaventWeight
         })
     );
 // 193
@@ -65,20 +63,20 @@ const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
         // close();
     });
 
-const updateQuestionSimilarity = ({ questionId, similarity, similarityCluster }) =>
+const updateQuestionSentenceCode = ({ questionId, sentenceCode }) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
             { _id: questionId },
-            { $set: { similarity, similarityCluster } }
+            { $set: { sentenceCode } }
         );
         // close();
     });
 
-const updateQuestionWeight = ({ questionId, weight }) =>
+const updateQuestionRelaventWeight = ({ questionId, relaventWeight }) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
             { _id: questionId },
-            { $set: { weight } }
+            { $set: { relaventWeight } }
         );
         // close();
     });
@@ -94,6 +92,6 @@ export default {
     findBySession,
     removeQuestion,
     updateQuestionToxicity,
-    updateQuestionSimilarity,
-    updateQuestionWeight
+    updateQuestionSentenceCode,
+    updateQuestionRelaventWeight
 };
