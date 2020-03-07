@@ -63,21 +63,19 @@ function tfToxicityQuestion(questionDoc,sessionId ) {
         checkTfToxicity(
             questionDoc.question
         ).then(tfToxicityResult =>{
-            Questions.updateQuestionToxicity({
-                questionId: questionDoc._id,
-                result: tfToxicityResult.toxicity,
-                toxicityReason: tfToxicityResult.reason
-            })            
-                .then( r =>{
-                    if(tfToxicityResult){
-                        ioInterface
-                        .io()
-                        .of('/questions')
-                        .to(sessionId)
-                        .emit('updateToxicity', questionDoc._id);   
-                    }
-                
+            Questions
+                .updateQuestionToxicity({
+                    questionId: questionDoc._id,
+                    result: tfToxicityResult.toxicity,
+                    toxicityReason: tfToxicityResult.reason
                 });
+            if(tfToxicityResult){
+                ioInterface
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateToxicity', questionDoc._id);   
+            }
         });
     }
 }

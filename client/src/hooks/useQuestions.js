@@ -38,13 +38,12 @@ function useQuestions(roomId = 'session') {
             console.log('It is toxic question')
             if (isMounted) {
                 setQuestions(curQuestions =>
-                    curQuestions.map(question => {
-                        if (question._id === messageId){
-                            question.toxicity = true
-                            return question
-                        }else{
-                            return question
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.toxicity = true
                         }
+                        return questionElement
                     })
                 );
             }
@@ -53,13 +52,12 @@ function useQuestions(roomId = 'session') {
             console.log('asked')
             if (isMounted) {
                 setQuestions(curQuestions =>
-                    curQuestions.map(question => {
-                        if (question._id === messageId){
-                            question.asked = true
-                            return question
-                        }else{
-                            return question
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.asked = true
                         }
+                        return questionElement
                     })
                 );
             }

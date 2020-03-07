@@ -103,7 +103,7 @@ function Question({ messages, variant, currentQuestion }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color="textSecondary"
+                                        color='textSecondary'
                                         variant='body1'
                                     >
                                         {toxicity ? ' (toxic) ' : ''}
@@ -111,10 +111,15 @@ function Question({ messages, variant, currentQuestion }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color={
-                                            currentQuestion._id === _id? 'error'
-                                            :
-                                            asked? 'textSecondary':'textPrimary'}
+                                        color={() =>{
+                                            if (currentQuestion._id === _id) {
+                                                return 'error'
+                                            }
+                                            if (asked) {
+                                                return 'textSecondary'
+                                            }
+                                            return 'textPrimary'
+                                        }}
                                         variant='body1'
                                     >
                                         {message}
