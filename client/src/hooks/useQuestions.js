@@ -23,7 +23,6 @@ function useQuestions(roomId = 'session') {
         // or just have a loading screen
         // console.log('not connected');
     });
-
     React.useEffect(() => {
         let isMounted = true;
         // SOCKET IO
@@ -31,14 +30,41 @@ function useQuestions(roomId = 'session') {
         question.on('connect', function() {
             // TODO: login tokens here? or some kind of security?
             // chat.emit('new-user');
-            console.log('it is in connect')
             if (isMounted) {
                 setFunc(question);
             }
         });
+        question.on('updateToxicity', function(messageId) {
+            console.log('It is toxic question')
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(question => {
+                        if (question._id === messageId){
+                            question.toxicity = true
+                            return question
+                        }else{
+                            return question
+                        }
+                    })
+                );
+            }
+        });
+        question.on('asked', function(messageId) {
+            console.log('asked')
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(question => {
+                        if (question._id === messageId){
+                            question.asked = true
+                            return question
+                        }else{
+                            return question
+                        }
+                    })
+                );
+            }
+        });
         question.on('question', function(message) {
-            console.log(message)
-            
             if (isMounted) {
                 setQuestions(state => [...state, message]);
             }

@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 export function QuestionWindow({ roomId, title }) {
     const [questions, sendQuestion, currentQuestion] = useQuestions(roomId);
     const classes = useStyles();
+    console.log(questions)
 
     return (
         <Paper className={classes.paper}>

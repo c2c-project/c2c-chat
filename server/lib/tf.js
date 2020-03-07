@@ -5,7 +5,7 @@ import * as math from 'mathjs';
 import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';
 import Similarity from '../db/collections/similarity';
-
+import ioInterface from './socket-io';
 const dataset = []; // Similarity storage
 const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sensitive.
 const similarityThreshold = 0.5; // Will be change if the similarity test is too sensitive.
@@ -58,7 +58,7 @@ function AutoRemoveMessage(result, reason, messageId, io, roomId) {
     });
 }
 
-function tfToxicityQuestion(questionDoc) {
+function tfToxicityQuestion(questionDoc,sessionId ) {
     if (questionDoc) {
         checkTfToxicity(
             questionDoc.question
@@ -67,7 +67,17 @@ function tfToxicityQuestion(questionDoc) {
                 questionId: questionDoc._id,
                 result: tfToxicityResult.toxicity,
                 toxicityReason: tfToxicityResult.reason
-            });
+            })            
+                .then( r =>{
+                    if(tfToxicityResult){
+                        ioInterface
+                        .io()
+                        .of('/questions')
+                        .to(sessionId)
+                        .emit('updateToxicity', questionDoc._id);   
+                    }
+                
+                });
         });
     }
 }

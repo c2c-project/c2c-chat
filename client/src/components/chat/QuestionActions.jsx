@@ -8,11 +8,30 @@ import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
 import useSnack from '../../hooks/useSnack';
 
-export default function QuestionActions({ targetMsg, onClick }) {
+export default function QuestionActions({ targetMsg, onClick, currentQuestion }) {
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
+    const handleSetAsked = () => {
+        fetch(`/api/questions/set-asked/${roomId}`, {
+            method: 'POST',
+            body: JSON.stringify({ question: currentQuestion }),
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            res.json().then(r => {
+                if (r.success) {
+                    snack('Successfully set the asked question', 'success');
+                } else {
+                    snack('Something went wrong, please try again', 'error');
+                }
+            });
+        });
+    }
     const handleSetCurrent = () => {
+        handleSetAsked()
         fetch(`/api/sessions/set-question/${roomId}`, {
             method: 'POST',
             body: JSON.stringify({ question: targetMsg }),
@@ -71,5 +90,10 @@ QuestionActions.propTypes = {
         message: PropTypes.string.isRequired,
         username: PropTypes.string.isRequired
     }).isRequired,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    currentQuestion: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        message: PropTypes.string.isRequired,
+        username: PropTypes.string.isRequired
+    }),
 };

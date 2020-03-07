@@ -21,6 +21,7 @@ router.post(
             userId: user._id,
             toxicity: false,
             toxicityReason: [],
+            asked: false,
         })
             .then(r => {
                 const questionDoc = r.ops[0];
@@ -31,14 +32,9 @@ router.post(
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
-                TensorFlow.tfToxicityQuestion(questionDoc);
+                TensorFlow.tfToxicityQuestion(questionDoc,sessionId);
                 TensorFlow.tfUseQuestion(questionDoc);
-                // TODO: 193
-                /**
-                 * @questionDoc is the question json
-                 * Ideally, you'd just take the questionDoc
-                 * and feed that into the text toxicity
-                 */
+                
             })
             .catch(console.error);
     }
@@ -63,5 +59,33 @@ router.get(
         }
     }
 );
+
+
+router.post(
+    '/set-asked/:roomId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { user } = req;
+        const { roomId } = req.params;
+        const { question } = req.body;
+        // TODO: move this to the privileged actions code
+        if (
+            Accounts.isAllowed(user.roles, {
+                requiredAny: ['moderator', 'admin']
+            })
+        ) {
+            Questions.updateQuestionAsked(question._id)
+
+            ioInterface
+                .io()
+                .of('/questions')
+                .to(roomId)
+                .emit('asked', question._id);
+            res.send({ success: true });
+        }
+    }
+);
+
+
 
 module.exports = router;

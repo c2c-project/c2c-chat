@@ -27,6 +27,7 @@ const createQuestion = ({
     toxicityReason,
     sentenceCode,
     relaventWeight,
+    asked, 
 }) =>
     mongo.then(db =>
         db.collection('questions').insertOne({
@@ -38,6 +39,7 @@ const createQuestion = ({
             toxicityReason,
             sentenceCode,
             relaventWeight,
+            asked,
         })
     );
 // 193
@@ -80,6 +82,14 @@ const updateQuestionRelaventWeight = ({ questionId, relaventWeight }) =>
         );
         // close();
     });
+const updateQuestionAsked = ({ questionId}) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: questionId },
+            { $set: { asked: true } }
+        );
+        // close();
+    });
 
 // TODO: 193
 /**
@@ -93,5 +103,6 @@ export default {
     removeQuestion,
     updateQuestionToxicity,
     updateQuestionSentenceCode,
-    updateQuestionRelaventWeight
+    updateQuestionRelaventWeight,
+    updateQuestionAsked
 };

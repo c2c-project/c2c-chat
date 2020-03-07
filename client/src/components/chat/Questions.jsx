@@ -77,7 +77,9 @@ function Question({ messages, variant, currentQuestion }) {
                     ({
                         username = 'author',
                         message = 'message',
-                        _id
+                        _id,
+                        toxicity = 'toxicity',
+                        asked = 'asked'
                     } = {}) => (
                         <ListItem
                             button={isModerator}
@@ -101,7 +103,18 @@ function Question({ messages, variant, currentQuestion }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color={currentQuestion._id === _id? 'error':'textPrimary'}
+                                        color="textSecondary"
+                                        variant='body1'
+                                    >
+                                        {toxicity ? ' (toxic) ' : ''}
+                                    </Typography>   
+                                </Grid>
+                                <Grid item xs='auto'>
+                                    <Typography
+                                        color={
+                                            currentQuestion._id === _id? 'error'
+                                            :
+                                            asked? 'textSecondary':'textPrimary'}
                                         variant='body1'
                                     >
                                         {message}
@@ -127,6 +140,7 @@ function Question({ messages, variant, currentQuestion }) {
                             <Actions
                                 targetMsg={targetMsg}
                                 onClick={() => setTargetMsg(null)}
+                                currentQuestion={currentQuestion}
                             />
                         ) : (
                             <></>
