@@ -82,11 +82,11 @@ const updateQuestionRelaventWeight = ({ questionId, relaventWeight }) =>
         );
         // close();
     });
-const updateQuestionAsked = ({ questionId}) =>
+const updateQuestionAsked = ({ questionId, asked}) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
-            { _id: questionId },
-            { $set: { asked: true } }
+            { _id: new ObjectID(questionId) },
+            { $set: { asked} }
         );
         // close();
     });

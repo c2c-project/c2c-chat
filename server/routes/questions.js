@@ -74,14 +74,15 @@ router.post(
                 requiredAny: ['moderator', 'admin']
             })
         ) {
-            Questions.updateQuestionAsked(question._id)
+            Questions.updateQuestionAsked({questionId: question._id, asked: true}).then(r =>{
 
-            ioInterface
+                ioInterface
                 .io()
                 .of('/questions')
                 .to(roomId)
                 .emit('asked', question._id);
-            res.send({ success: true });
+                res.send({ success: true });
+            })
         }
     }
 );
