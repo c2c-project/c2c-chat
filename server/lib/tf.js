@@ -11,6 +11,7 @@ const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sen
 const similarityThreshold = 0.5; // Will be change if the similarity test is too sensitive.
 const toxicityLoad = toxicity.load(toxicityThreshold);// load toxicity 
 const useLoad = use.load(); // Load universal sentence encoder
+let similarityClusterCounter = 0; // Global variable to store similarity cluster number
 
 function checkTfToxicity(question) {
     return new Promise(function(resolve) {
@@ -121,7 +122,7 @@ async function tfUseQuestion(questionDoc) {
     let inserted = false;
     const questionCode = await USEGenerater(questionDoc.question);
     Questions.updateQuestionSentenceCode({
-        questionId: questionDoc._id, 
+        questionId: questionDoc._id,
         sentenceCode: questionCode
     });
     for (let i = 0; i < dataset.length && inserted === false; i += 1) { 
@@ -130,7 +131,7 @@ async function tfUseQuestion(questionDoc) {
         if (productrResult > similarityThreshold) {
             inserted = true; // flag to jump out the loop
             let questionWeight = 0;
-            const clusterId = dataset[i][0].similarityCluster;
+            let clusterNumber = 0;
             let centerQuestionId = null;
             let subId = [];
             for (let j = 0; j < dataset[i].length; j += 1) { 
@@ -152,23 +153,62 @@ async function tfUseQuestion(questionDoc) {
                 '_id': questionDoc._id,
                 'value': questionCode,
                 'weight': questionWeight,
-                'similarityCluster': clusterId
+                'similarityCluster': clusterNumber
             });
             // sort the questions by weight from high to low
             if (dataset[i].length === 2) {
-                centerQuestionId = dataset[i][1]._id;
+                similarityClusterCounter += 1;
+                clusterNumber = similarityClusterCounter; 
+                centerQuestionId = questionDoc._id;
                 subId = [dataset[i][0]._id];
+                // change database dataset
+                Questions.updateClusterNumber({
+                    'questionId': centerQuestionId,
+                    clusterNumber
+                })
+                Questions.updateClusterNumber({
+                    'questionId': dataset[i][0]._id,
+                    clusterNumber
+                })
+                Questions.updateIsCenter({
+                    'questionId': centerQuestionId,
+                    'isCenter': true
+                })
+                Questions.updateIsCenter({
+                    'questionId': dataset[i][0]._id,
+                    'isCenter': false
+                })
+                // change memory dataset
+                dataset[i][0].similarityCluster = clusterNumber
+                dataset[i][1].similarityCluster = clusterNumber
+                dataset[i] = [dataset[i][1], dataset[i][0]];
             } else {
+                clusterNumber = dataset[i][0].similarityCluster;
+                // change memory dataset
+                dataset[i][dataset[i].length-1].similarityCluster = clusterNumber;
+                // change database dataset
+                Questions.updateClusterNumber({
+                    'questionId': questionDoc._id,
+                    clusterNumber
+                })
+                Questions.updateIsCenter({
+                    'questionId': dataset[i][0]._id,
+                    'isCenter': false
+                })
                 dataset[i].sort(function(first, second){
                     return second.weight - first.weight;
                 });
-                centerQuestionId =  dataset[i][0]._id;
+                centerQuestionId = dataset[i][0]._id;
+                Questions.updateIsCenter({
+                    'questionId': centerQuestionId,
+                    'isCenter': true
+                })
                 for (let j = 1; j < dataset[i].length; j += 1) {
                     subId.push(dataset[i][j]._id);
                 }
             }
             Similarity.updateSimilarityCluster({
-                'clusterId': clusterId,
+                'clusterId': clusterNumber,
                 'centerQuestionId': centerQuestionId,
                 'subId': subId
             })
@@ -185,19 +225,23 @@ async function tfUseQuestion(questionDoc) {
                 'centerQuestionId': questionDoc._id,
                 'subId': []
             })
-            .then(r => {
+            .then(() => {
                 dataset.push([{
                     'string' : questionDoc.question, 
                     '_id': questionDoc._id,
                     'value': questionCode,
                     'weight': 0,
-                    'similarityCluster': r.ops[0]._id
+                    'similarityCluster': 0
                 }]);
                 // eslint-disable-next-line no-console
                 console.log('Final dataset:');
                 // eslint-disable-next-line no-console
                 console.log(dataset);
             })
+        Questions.updateIsCenter({
+            'questionId': questionDoc._id,
+            'isCenter': true
+        })
     }
 }
 

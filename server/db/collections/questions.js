@@ -27,6 +27,8 @@ const createQuestion = ({
     toxicityReason,
     sentenceCode,
     relaventWeight,
+    isCenter,
+    clusterNumber,
     asked, 
 }) =>
     mongo.then(db =>
@@ -39,6 +41,8 @@ const createQuestion = ({
             toxicityReason,
             sentenceCode,
             relaventWeight,
+            isCenter,
+            clusterNumber, 
             asked,
         })
     );
@@ -82,11 +86,30 @@ const updateQuestionRelaventWeight = ({ questionId, relaventWeight }) =>
         );
         // close();
     });
+
 const updateQuestionAsked = ({ questionId, asked}) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
             { _id: new ObjectID(questionId) },
             { $set: { asked} }
+        );
+        // close();
+    });
+
+const updateIsCenter = ({ questionId, isCenter}) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: new ObjectID(questionId) },
+            { $set: { isCenter} }
+        );
+        // close();
+    });
+
+const updateClusterNumber = ({ questionId, clusterNumber}) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: new ObjectID(questionId) },
+            { $set: { clusterNumber} }
         );
         // close();
     });
@@ -104,5 +127,7 @@ export default {
     updateQuestionToxicity,
     updateQuestionSentenceCode,
     updateQuestionRelaventWeight,
-    updateQuestionAsked
+    updateQuestionAsked,
+    updateIsCenter,
+    updateClusterNumber
 };

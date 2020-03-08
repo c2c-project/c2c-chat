@@ -21,11 +21,14 @@ router.post(
             userId: user._id,
             toxicity: false,
             toxicityReason: [],
+            sentenceCode: [],
+            relaventWeight: 0,
+            isCenter: false,
+            clusterNumber: 0,
             asked: false,
         })
             .then(r => {
                 const questionDoc = r.ops[0];
-
                 ioInterface
                     .io()
                     .of('/questions')
@@ -34,7 +37,6 @@ router.post(
                 res.send({ success: true });
                 TensorFlow.tfToxicityQuestion(questionDoc,sessionId);
                 TensorFlow.tfUseQuestion(questionDoc);
-                
             })
             .catch(console.error);
     }
@@ -75,12 +77,11 @@ router.post(
             })
         ) {
             Questions.updateQuestionAsked({questionId: question._id, asked: true}).then(r =>{
-
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(roomId)
-                .emit('asked', question._id);
+                    .io()
+                    .of('/questions')
+                    .to(roomId)
+                    .emit('asked', question._id);
                 res.send({ success: true });
             })
         }
