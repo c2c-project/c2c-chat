@@ -95,5 +95,5 @@ QuestionActions.propTypes = {
         _id: PropTypes.string.isRequired,
         message: PropTypes.string.isRequired,
         username: PropTypes.string.isRequired
-    }),
+    }).isRequired,
 };

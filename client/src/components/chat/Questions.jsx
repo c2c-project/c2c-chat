@@ -111,15 +111,12 @@ function Question({ messages, variant, currentQuestion }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color={() =>{
-                                            if (currentQuestion._id === _id) {
-                                                return 'error'
-                                            }
-                                            if (asked) {
-                                                return 'textSecondary'
-                                            }
-                                            return 'textPrimary'
-                                        }}
+                                        color={
+                                            // eslint-disable-next-line no-nested-ternary
+                                            currentQuestion._id === _id? 'error'
+                                                :
+                                                asked? 'textSecondary':'textPrimary'
+                                        }
                                         variant='body1'
                                     >
                                         {message}
