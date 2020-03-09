@@ -36,7 +36,7 @@ router.post(
                     .emit('question', questionDoc);
                 res.send({ success: true });
                 TensorFlow.tfToxicityQuestion(questionDoc,sessionId);
-                TensorFlow.tfUseQuestion(questionDoc);
+                TensorFlow.tfUseQuestion(questionDoc,sessionId);
             })
             .catch(console.error);
     }

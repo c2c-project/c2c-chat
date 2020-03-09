@@ -41,12 +41,14 @@ function Question({ messages, variant, currentQuestion }) {
     const [jwt] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
+    const [previousClusterNumer, setPreviousClusterNumber] = React.useState(0);
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
             behavior: 'smooth'
         });
     };
+    
     
     React.useEffect(() => {
         let isMounted = true;
@@ -73,13 +75,20 @@ function Question({ messages, variant, currentQuestion }) {
     return (
         <div className={classes.root}>
             <List dense>
-                {messages.map(
+                {messages.sort(function(a, b){
+                    if(a.clusterNumber > b.clusterNumber) return 1;
+                    if(a.clusterNumber < b.clusterNumber) return -1;
+                    if(a.isCenter) return -1;
+                    else return 1;
+                }).map(
                     ({
                         username = 'author',
                         message = 'message',
                         _id,
                         toxicity = 'toxicity',
-                        asked = 'asked'
+                        asked = 'asked',
+                        isCenter = 'isCenter',
+                        clusterNumber = 'clusterNumber'
                     } = {}) => (
                         <ListItem
                             button={isModerator}
@@ -98,6 +107,9 @@ function Question({ messages, variant, currentQuestion }) {
                             className={classes.message}
                         >
                             <Grid container>
+                                <Grid item xs={isCenter ? 'auto': '1'}>
+                                    
+                                </Grid>
                                 <Grid item xs='auto'>
                                     <Bold>{`${username}:`}</Bold>
                                 </Grid>

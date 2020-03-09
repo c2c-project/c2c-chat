@@ -73,6 +73,38 @@ function useQuestions(roomId = 'session') {
             console.log('set question');
             setCurrent(q);
         });
+        question.on('updateIsCenter', function(messageId, isCenter) {
+            console.log('updateIsCenter')
+            console.log(messageId)
+            console.log(isCenter)
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.isCenter = isCenter
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
+        question.on('updateClusterNumber', function(messageId, clusterNumber) {
+            console.log('updateClusterNumber')
+            console.log(messageId)
+            console.log(clusterNumber)
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.clusterNumber = clusterNumber
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
         // TODO: 193
         /**
          * here is where you'd add your listener for the 'classification' event on the client
