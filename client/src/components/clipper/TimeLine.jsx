@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import PropTypes from 'prop-types';
 import TimeLineItem from './TimeLineItem';
@@ -12,7 +12,6 @@ export default function TimeLine({ url }) {
     const player = useRef();
     const location = useLocation();
     const quickScroll = React.useRef(null);
-
     const [jwt] = useJwt();
     const [currUrl, setUrl] = useState(url);
     const [playVideo, setPlayVideo] = useState(true);
@@ -71,7 +70,9 @@ export default function TimeLine({ url }) {
             });
         });
     }, []);
-    useEffect(() => {
+
+    const postData = (newClips) => {
+        console.log(newClips);
         fetch('/api/sessions/updateClips', {
             method: 'POST',
             headers: {
@@ -80,20 +81,24 @@ export default function TimeLine({ url }) {
             },
             body: JSON.stringify({
                 sessionId: location.state.id,
-                changes: [...clips]
+                changes: [...newClips]
             })
         })
             .then(res => res.json())
             .then(data => {
                 console.log('Success:', data);
+                setClipState(newClips);
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-    }, [clips]);
+
+        
+    }
 
     const addToClips = () => {
-        setClipState([...clips, { ...currClip, id: clips.length }]);
+        const newClips = [...clips, { ...currClip, id: clips.length }];
+        postData(newClips);
     };
 
     function handleTimeStamp({ playedSeconds }) {
@@ -108,9 +113,9 @@ export default function TimeLine({ url }) {
     function editClips() {
         const newClips = [...clips];
         newClips[currClip.id] = currClip;
-        setClipState(newClips);
-        // setCurrClip(null);
+        postData(newClips);
     }
+
     function editCurrentClip(item) {
         setCurrClip(item);
     }
@@ -187,6 +192,14 @@ export default function TimeLine({ url }) {
                         }}
                         onClickDelete={() => {
                             console.log(`Deleting Clip ${x.question}`);
+                            const temp = [];
+                            for(let i = 0; i < clips.length; i += 1){
+                                if(i !== index){
+                                    temp.push(clips[i]);
+                                }
+                            }
+                            postData(temp);
+                            // setClipState(temp);
                         }}
                     />
                 ))}
