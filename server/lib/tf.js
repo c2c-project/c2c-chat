@@ -121,26 +121,26 @@ function USEGenerater(sentence) {
 }
 
 async function tfUseQuestion(questionDoc,sessionId) {
-    let inserted = false;
+    let insertedFlag = false;
     const questionCode = await USEGenerater(questionDoc.question);
     Questions.updateQuestionSentenceCode({
         questionId: questionDoc._id,
         sentenceCode: questionCode
     });
-    for (let i = 0; i < dataset.length && inserted === false; i += 1) { 
-        // for each cluster, check similarity between each leader question and incoming question
-        let productrResult = math.dot(dataset[i][0].value,questionCode);
-        if (productrResult > similarityThreshold) {
-            inserted = true; // flag to jump out the loop
+    for (let i = 0; i < dataset.length && insertedFlag === false; i += 1) { 
+        // for each cluster, check similarity between each center question and incoming question
+        let productResult = math.dot(dataset[i][0].value,questionCode);
+        if (productResult > similarityThreshold) {
+            insertedFlag = true; // set flag to jump out the loop
             let questionWeight = 0;
             let clusterNumber = 0;
             let centerQuestionId = null;
             let subId = [];
             for (let j = 0; j < dataset[i].length; j += 1) { 
-                // for each sentence in the same cluster, renew the weight
-                productrResult = math.dot(dataset[i][j].value, questionCode);
-                dataset[i][j].weight += productrResult;
-                questionWeight += productrResult;
+                // for each sentence in the same cluster, renew the weight, then set self weight
+                productResult = math.dot(dataset[i][j].value, questionCode);
+                dataset[i][j].weight += productResult;
+                questionWeight += productResult;
                 Questions.updateQuestionRelaventWeight({
                     questionId: dataset[i][j]._id, 
                     relaventWeight: dataset[i][j].weight 
@@ -150,6 +150,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                 questionId: questionDoc._id, 
                 relaventWeight: questionWeight
             });
+            // add question to memory for quick operation
             dataset[i].push({
                 'string' : questionDoc.question, 
                 '_id': questionDoc._id,
@@ -157,76 +158,79 @@ async function tfUseQuestion(questionDoc,sessionId) {
                 'weight': questionWeight,
                 'similarityCluster': clusterNumber
             });
-            // sort the questions by weight from high to low
             if (dataset[i].length === 2) {
+                // when a cluster has two questions, it means a new cluster generated, renew both 
                 similarityClusterCounter += 1;
                 clusterNumber = similarityClusterCounter; 
                 centerQuestionId = questionDoc._id;
                 subId = [dataset[i][0]._id];
-                // change database dataset
+                // change database and socket-io dataset
                 Questions.updateClusterNumber({
                     'questionId': centerQuestionId,
                     clusterNumber
                 })
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('updateClusterNumber', centerQuestionId,clusterNumber)  
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateClusterNumber', centerQuestionId,clusterNumber)  
                 Questions.updateClusterNumber({
                     'questionId': dataset[i][0]._id,
                     clusterNumber
                 })
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('updateClusterNumber', dataset[i][0]._id,clusterNumber)  
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateClusterNumber', dataset[i][0]._id,clusterNumber)  
                 Questions.updateIsCenter({
                     'questionId': centerQuestionId,
                     'isCenter': true
                 })
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('updateIsCenter', centerQuestionId,true)
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateIsCenter', centerQuestionId,true)
                 Questions.updateIsCenter({
                     'questionId': dataset[i][0]._id,
                     'isCenter': false
                 })    
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('updateIsCenter',dataset[i][0]._id, false);  
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateIsCenter',dataset[i][0]._id, false);  
                 // change memory dataset
-                dataset[i][0].similarityCluster = clusterNumber
-                dataset[i][1].similarityCluster = clusterNumber
+                dataset[i][0].similarityCluster = clusterNumber;
+                dataset[i][1].similarityCluster = clusterNumber;
+                // when a cluster a two question, suppose 2rd is center
                 dataset[i] = [dataset[i][1], dataset[i][0]];
             } else {
+                // when a cluster has three or more questions, unlock center question -> sort -> lock new center question 
                 clusterNumber = dataset[i][0].similarityCluster;
                 // change memory dataset
                 dataset[i][dataset[i].length-1].similarityCluster = clusterNumber;
-                // change database dataset
+                // change database and socket-io dataset
                 Questions.updateClusterNumber({
                     'questionId': questionDoc._id,
                     clusterNumber
                 })
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('updateClusterNumber', questionDoc._id,clusterNumber)
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateClusterNumber', questionDoc._id,clusterNumber)
                 Questions.updateIsCenter({
                     'questionId': dataset[i][0]._id,
                     'isCenter': false
                 })
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('updateIsCenter',dataset[i][0]._id,false)
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateIsCenter',dataset[i][0]._id,false)
+                // sort the questions by weight from high to low
                 dataset[i].sort(function(first, second){
                     return second.weight - first.weight;
                 });
@@ -236,14 +240,15 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     'isCenter': true
                 })
                 ioInterface
-                .io()
-                .of('/questions')
-                .to(sessionId)
-                .emit('updateIsCenter',centerQuestionId,true)
+                    .io()
+                    .of('/questions')
+                    .to(sessionId)
+                    .emit('updateIsCenter',centerQuestionId,true)
                 for (let j = 1; j < dataset[i].length; j += 1) {
                     subId.push(dataset[i][j]._id);
                 }
             }
+            // not sure how to use similarity table
             Similarity.updateSimilarityCluster({
                 'clusterId': clusterNumber,
                 'centerQuestionId': centerQuestionId,
@@ -251,12 +256,13 @@ async function tfUseQuestion(questionDoc,sessionId) {
             })
         }
         // eslint-disable-next-line no-console
-        console.log('Final dataset:');
+        // console.log('Final dataset:');
         // eslint-disable-next-line no-console
-        console.log(dataset);
+        // console.log(dataset);
     }
-    // if the dataset is empty or there is no similar question, create a new cluster
-    if (inserted === false) {
+    // if the dataset is empty or there is no similar question, create a new cluster with cluster #0
+    if (insertedFlag === false) {
+        // not sure how to use similarity table
         Similarity
             .createSimilarityCluster({
                 'centerQuestionId': questionDoc._id,
@@ -271,19 +277,19 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     'similarityCluster': 0
                 }]);
                 // eslint-disable-next-line no-console
-                console.log('Final dataset:');
+                // console.log('Final dataset:');
                 // eslint-disable-next-line no-console
-                console.log(dataset);
+                // console.log(dataset);
             })
         Questions.updateIsCenter({
             'questionId': questionDoc._id,
             'isCenter': true
         })
         ioInterface
-        .io()
-        .of('/questions')
-        .to(sessionId)
-        .emit('updateIsCenter', questionDoc._id,true)  
+            .io()
+            .of('/questions')
+            .to(sessionId)
+            .emit('updateIsCenter', questionDoc._id,true)  
     }
 }
 
