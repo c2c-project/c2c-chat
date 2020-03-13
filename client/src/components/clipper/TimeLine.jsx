@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import PropTypes from 'prop-types';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import TimeLineItem from './TimeLineItem';
 import ClipDialog from './ClipDialog';
 import Fab from '../Fab';
@@ -15,42 +17,13 @@ export default function TimeLine({ url }) {
     const [jwt] = useJwt();
     const [currUrl, setUrl] = useState(url);
     const [playVideo, setPlayVideo] = useState(true);
-
-    const [timeFrame, setTimeFrame] = useState({
-        start: 0,
-        end: Number.MAX_SAFE_INTEGER
-    });
-    useEffect(() => {
-        quickScroll.current.scrollIntoView({
-            behavior: 'smooth'
-        });
-        player.current.seekTo(timeFrame.start, 'seconds');
-        setPlayVideo(true);
-    }, [timeFrame]);
-
-    const [timeStamp, setTimeStamp] = useState(0);
-    useEffect(() => {
-        if (timeStamp >= timeFrame.end) {
-            player.current.seekTo(timeFrame.start, 'seconds');
-        }
-    });
-
     const [addMode, setAddMode] = useState(false);
-    useEffect(() => {
-        // console.log(`add Mode On: ${addMode}`);
-    }, [addMode]);
-
     const [editMode, setEditMode] = useState(false);
-    useEffect(() => {
-        // console.log(`edit Mode On: ${editMode}`);
-    }, [editMode]);
-
     const [currClip, setCurrClip] = React.useState({
         question: '',
         start: 0,
         end: 0
     });
-
     const [clips, setClipState] = useState([]);
     useEffect(() => {
         // initialize our set of clips
@@ -71,7 +44,7 @@ export default function TimeLine({ url }) {
         });
     }, []);
 
-    const postData = (newClips) => {
+    const postData = newClips => {
         console.log(newClips);
         fetch('/api/sessions/updateClips', {
             method: 'POST',
@@ -92,9 +65,7 @@ export default function TimeLine({ url }) {
             .catch(error => {
                 console.error('Error:', error);
             });
-
-        
-    }
+    };
 
     const addToClips = () => {
         const newClips = [...clips, { ...currClip, id: clips.length }];
@@ -102,11 +73,6 @@ export default function TimeLine({ url }) {
     };
 
     function handleTimeStamp({ playedSeconds }) {
-        // if (playedSeconds >= timeFrame.end) {
-        //     // setPlayVideo(false);
-        //     player.current.seekTo(timeFrame.start, 'seconds');
-        // }
-        setTimeStamp(playedSeconds);
         document.getElementById('header').innerHTML = playedSeconds;
     }
 
@@ -131,8 +97,22 @@ export default function TimeLine({ url }) {
                 playsinline
                 onProgress={handleTimeStamp}
             />
-            <h1 id='header'>Another TimeLine</h1>
-
+            <Grid container>
+                
+                <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={() => {
+                        const [beforeUrl] = currUrl.split('?');
+                        setUrl(beforeUrl);
+                        setPlayVideo(true);
+                    }}
+                >
+                Reset Video
+                </Button>
+                <h1 id='header'>CurrentTime</h1>
+            </Grid>
+            
             <Fab
                 onClick={() => {
                     // create new initial clip.
@@ -181,9 +161,13 @@ export default function TimeLine({ url }) {
                         key={index}
                         onClickPlay={() => {
                             // console.log(`TimeFrame: ${x.start} ${x.end}`);
-                            setTimeFrame({
-                                start: x.start,
-                                end: x.end
+                            const [beforeUrl] = currUrl.split('?');
+                            setUrl(
+                                `${beforeUrl}?start=${x.start}&end=${x.end}`
+                            );
+                            setPlayVideo(true);
+                            quickScroll.current.scrollIntoView({
+                                behavior: 'smooth'
                             });
                         }}
                         onClickEdit={() => {
@@ -193,8 +177,8 @@ export default function TimeLine({ url }) {
                         onClickDelete={() => {
                             console.log(`Deleting Clip ${x.question}`);
                             const temp = [];
-                            for(let i = 0; i < clips.length; i += 1){
-                                if(i !== index){
+                            for (let i = 0; i < clips.length; i += 1) {
+                                if (i !== index) {
                                     temp.push(clips[i]);
                                 }
                             }
