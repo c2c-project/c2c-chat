@@ -76,6 +76,9 @@ describe('users', function() {
                 .post('/api/users/verification')
                 .send({ userId: '1234' })
                 .end(function(err, res) {
+                    if(err) {
+                        console.error(err);
+                    }
                     res.should.have.status(400);
                     done();
                 });
@@ -87,6 +90,9 @@ describe('users', function() {
                     .post('/api/users/verification')
                     .send({ userId: _id })
                     .end(function(err, res) {
+                        if(err) {
+                            console.error(err);
+                        }
                         res.should.have.status(200);
                         done();
                     });
@@ -99,6 +105,9 @@ describe('users', function() {
                 .post('/api/users/passwordreset')
                 .send({form: { email: 'admin@example.com' }})
                 .end(function(err, res) {
+                    if(err) {
+                        console.error(err);
+                    }
                     res.should.have.status(200);
                     done();
                 });
@@ -108,6 +117,9 @@ describe('users', function() {
                 .post('/api/users/passwordreset')
                 .send({form: { email: undefined }})
                 .end(function(err, res) {
+                    if(err) {
+                        console.error(err);
+                    }
                     res.should.have.status(400);
                     done();
                 });
@@ -117,6 +129,9 @@ describe('users', function() {
                 .post('/api/users/passwordreset')
                 .send({form: { email: 'invalidEmail' }})
                 .end(function(err, res) {
+                    if(err) {
+                        console.error(err);
+                    }
                     res.should.have.status(400);
                     done();
                 });
@@ -125,29 +140,39 @@ describe('users', function() {
     describe('#resetpassword', function() {
         it('should accept valid token', function(done) {
             Users.findByEmail('admin@example.com').then(doc => {
-                jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
+                const { _id } = doc;
+                jwt.sign(_id, process.env.JWT_SECRET, { expiresIn: '2m'}, (err, token) => {
+                    console.log(token)
                     chai.request(server)
                         .post('/api/users/resetpassword')
-                        .send({ token: token, password: '1', confirmPassword: '1'})
+                        .send({ token: token, form: {password: '1', confirmPassword: '1'}})
                         .end(function(err, res) {
+                            if(err) {
+                                console.error(err);
+                            }
                             res.should.have.status(200);
                             done();
                         });
                 });
-            });
+            }).catch(err => {
+                console.error(err);
+            })
         });
-        // it('should reject invalid token', function(done) {
-        //     chai.request(server)
-        //         .post('api/users/resetpassword')
-        //         .send({token: '1111', password: '1', confirmPassword: '1'})
-        //         .end(function(err, res) {
-        //             res.should.have.status(400);
-        //             done();
-        //         })
-        // });
+        it('should reject invalid token', function(done) {
+            chai.request(server)
+                .post('api/users/resetpassword')
+                .send({token: '111111', form: {password: '1', confirmPassword: '1'}})
+                .end(function(err, res) {
+                    if(err) {
+                        console.error(err);
+                    }
+                    res.should.have.status(400);
+                    done();
+                });
+        });
         // it('should reject expired token', function(done) {
         //     Users.findByEmail('admin@example.com').then(doc => {
-        //         jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1s'}, (err, token) => {
+        //         jwt.sign(doc._id, process.env.JWT_SECRET, { expiresIn: '1s'}, (err, token) => {
         //             setTimeout(function() {
         //                 return chai.request(server)
         //                     .post('/api/users/resetpassword')
@@ -162,7 +187,7 @@ describe('users', function() {
         // });
         // it('should reject mismatching password', function(done) {
         //     Users.findByEmail('admin@example.com').then(doc => {
-        //         jwt.sign(doc, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
+        //         jwt.sign(doc._id, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
         //             chai.request(server)
         //                 .post('/api/users/resetpassword')
         //                 .send({ token: token, password: '1', confirmPassword: '2'})
