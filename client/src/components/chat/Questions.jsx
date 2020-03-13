@@ -102,15 +102,13 @@ function Question({ messages, variant, currentQuestion }) {
                                     }
                                 }
                             }}
+                            style={isCenter === true ? {backgroundColor: asked ? 'rgb(230,230,230)':'lightyellow' , margin : '5px'}: {backgroundColor: asked?'rgb(230,230,230)':'white' ,margin : '5px'}}
                             key={_id}
                             className={classes.message}
                         >
-                            <Grid container>
-                                <Grid item xs={isCenter === true ? 'auto': '1'}>
-                                    
-                                </Grid>
-                                <Grid item xs='auto'>
-                                    <Bold>{`${username}:`}</Bold>
+                            <Grid container style={{ marginLeft: isCenter === true ?'0':'30px'}}>
+                                <Grid item xs='auto' >
+                                    <Bold >{`${username}:`}</Bold>
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
