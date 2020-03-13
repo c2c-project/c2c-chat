@@ -41,7 +41,6 @@ function Question({ messages, variant, currentQuestion }) {
     const [jwt] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
-    const [previousClusterNumer, setPreviousClusterNumber] = React.useState(0);
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
@@ -107,7 +106,7 @@ function Question({ messages, variant, currentQuestion }) {
                             className={classes.message}
                         >
                             <Grid container>
-                                <Grid item xs={isCenter ? 'auto': '1'}>
+                                <Grid item xs={isCenter === true ? 'auto': '1'}>
                                     
                                 </Grid>
                                 <Grid item xs='auto'>
@@ -118,7 +117,7 @@ function Question({ messages, variant, currentQuestion }) {
                                         color='textSecondary'
                                         variant='body1'
                                     >
-                                        {toxicity ? ' (toxic) ' : ''}
+                                        {toxicity === true ? ' (toxic) ' : ''}
                                     </Typography>   
                                 </Grid>
                                 <Grid item xs='auto'>
