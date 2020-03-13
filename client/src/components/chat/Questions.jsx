@@ -106,9 +106,7 @@ function Question({ messages, variant, currentQuestion }) {
                             className={classes.message}
                         >
                             <Grid container>
-                                <Grid item xs={isCenter === true ? 'auto': '1'}>
-                                    
-                                </Grid>
+                                <Grid item xs={isCenter === true ? 'auto': '1'} />
                                 <Grid item xs='auto'>
                                     <Bold>{`${username}:`}</Bold>
                                 </Grid>
