@@ -44,6 +44,7 @@ const createQuestion = ({
             isCenter,
             clusterNumber, 
             asked,
+            date: new Date(Date.now()),
         })
     );
 // 193
