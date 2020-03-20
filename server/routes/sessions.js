@@ -6,11 +6,14 @@ import { setCurrentQuestion } from '../lib/socket-io';
 const router = express.Router();
 
 // NOTE: remove passport auth if we don't want to require the user to be logged in
+// only need to verify that the user is logged in, req param does not matter
 router.get(
     '/find',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
-        Sessions.findAllSessions().then(r => res.json(r));
+    (req, res, next) => {
+        Sessions.findAllSessions()
+            .then(r => res.json(r))
+            .catch(next);
     }
 );
 
@@ -18,76 +21,93 @@ router.get(
 router.get(
     '/find/:sessionId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { sessionId } = req.params;
-        Sessions.findSessionById(sessionId).then(r => {
-            res.json(r);
-        });
+        Sessions.findSessionById(sessionId)
+            .then(r => {
+                res.json(r);
+            })
+            .catch(next);
     }
 );
 
 router.post(
     '/create',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { form } = req.body;
-        // TODO: add role checking
-        Sessions.addSession(form)
-            .then(() => res.send({ success: true }))
-            .catch(err => {
-                console.log(err);
-                res.send({ success: false });
-            });
+        const { user } = req;
+        const addSession = Sessions.privilegedActions('ADD_SESSION', user);
+        addSession(form)
+            .then(mongoRes =>
+                res
+                    .status(200)
+                    .send(
+                        `Successfully created ${mongoRes.modifiedCount} session!`
+                    )
+            )
+            .catch(next);
     }
 );
 
 router.post(
     '/update',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { sessionId, form } = req.body;
-        // TODO: add role checking
-        Sessions.updateSession({ sessionId, changes: form })
-            .then(r => {
-                // console.log(r);
-                if (r.modifiedCount === 1) {
-                    res.send({ success: true });
-                }
-            })
-            .catch(err => console.log(err));
+        const { user } = req;
+        const updateSession = Sessions.privilegedActions(
+            'UPDATE_SESSION',
+            user
+        );
+        updateSession(sessionId, form)
+            .then(mongoRes =>
+                res
+                    .status(200)
+                    .send(
+                        `Successfully updated ${mongoRes.modifiedCount} session!`
+                    )
+            )
+            .catch(next);
     }
 );
 
 router.post(
     '/delete',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { sessionId } = req.body;
-        // TODO: add role checking
-        Sessions.removeSession({ sessionId })
-            .then(r => {
-                if (r.modifiedCount === 1) {
-                    res.send({ success: true });
-                } else {
-                    res.send({ success: false });
-                }
-            })
-            .catch(err => console.log(err));
+        const { user } = req;
+        const deleteSession = Sessions.privilegedActions(
+            'DELETE_SESSION',
+            user
+        );
+        deleteSession(sessionId)
+            .then(mongoRes =>
+                res
+                    .status(200)
+                    .send(
+                        `Successfully deleted ${mongoRes.modifiedCount} document!`
+                    )
+            )
+            .catch(next);
     }
 );
 
 router.post(
     '/set-question/:sessionId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
         const { sessionId } = req.params;
         const { question } = req.body;
-        const setQuestion = Sessions.privilegedActions('SET_QUESTION', user);
-        setQuestion(sessionId, question).then(() => {
-            setCurrentQuestion(sessionId, question);
-            res.send({ success: true });
-        });
+        const setQuestion = Sessions.privilegedActions('asdf', user);
+        setQuestion(sessionId, question)
+            .then(() => {
+                setCurrentQuestion(sessionId, question);
+                res.status(200).send();
+            })
+            .catch(next);
     }
 );
 

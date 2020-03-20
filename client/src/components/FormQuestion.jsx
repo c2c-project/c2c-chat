@@ -21,9 +21,12 @@ export default function FormQuestion({ onSubmit, roomId }) {
             }
         })
             .then(res => {
-                console.log(res);
-                snack('Successfully sent the question!', 'success');
-                onSubmit();
+                if (res.status === 200) {
+                    snack('Successfully sent the question!', 'success');
+                    onSubmit();
+                } else {
+                    snack('Something went wrong! Try again.', 'error');
+                }
             })
             .catch(err => {
                 console.log(err);

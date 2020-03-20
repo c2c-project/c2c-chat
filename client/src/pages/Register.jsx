@@ -50,6 +50,8 @@ export default function RegisterPage() {
             if (res.status === 200) {
                 history.push('/login');
                 snack('You may now login', 'success');
+            } else if (res.status === 400) {
+                snack(`Error: ${res.statusText}`, 'error');
             } else {
                 snack(`Error: ${res.statusText}`, 'error');
             }

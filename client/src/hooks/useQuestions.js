@@ -58,6 +58,7 @@ function useQuestions(roomId = 'session') {
             }
         }).then(r => {
             r.json().then(history => {
+                console.log(history);
                 if (isMounted) {
                     setQuestions(history.filter(m => !m.moderated));
                 }

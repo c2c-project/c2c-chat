@@ -54,8 +54,14 @@ const verifyPassword = (textPw, hash, cb) => {
     bcrypt.compare(textPw, hash, cb);
 };
 
+/**
+ * always returns a promise -- expects to have .catch used on it
+ */
 const sendEmailVerification = (email, id) => {
-    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
+    const mg = mailgun({
+        apiKey: process.env.MAILGUN_API_KEY,
+        domain: process.env.MAILGUN_DOMAIN
+    });
     const url = `${process.env.ORIGIN}/verification/${id}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
@@ -72,21 +78,22 @@ const sendEmailVerification = (email, id) => {
         }
         console.log(body);
     });
-}
+};
 
-const verifyUser = (userId) => {
-    return Users.findByUserId(userId).then(doc => {
-        if(doc) {
-            const verified = {$set: {'verified': true}};
-            return Users.updateUser(doc, verified);
-        } else {
-            return Promise.reject(new ClientError('Invalid Link'));
-        }
-    }).catch(err => {
-        console.error(err);
-        return Promise.reject(new ClientError('Server Error, Please Contact Support'));
-    })
-}
+const verifyUser = userId => {
+    return Users.findByUserId(userId)
+        .then(doc => {
+            if (doc) {
+                const verified = { $set: { verified: true } };
+                return Users.updateUser(doc, verified);
+            } else {
+                throw new ClientError('Invalid Link');
+            }
+        })
+        .catch(err => {
+            throw new ClientError('Server Error, Please Contact Support', err);
+        });
+};
 
 // always returns a promise
 const register = (username, password, confirmPass, additionalFields = {}) => {
@@ -95,6 +102,7 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
     // because both should be unique, otherwise just find by username
     const query = email ? { $or: [{ email }, { username }] } : { username };
     if (password === confirmPass) {
+        // returning a Promise here -- so register.then.catch will work
         return Users.find(query).then(docArray => {
             if (!docArray[0]) {
                 return bcrypt
@@ -106,10 +114,12 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
                             // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
                             ...BASE_USER,
                             ...additionalFields
-                        }).then(userDoc => {
-                            const { _id } = userDoc;
-                            sendEmailVerification(email, _id);
-                        }).catch(err => console.log(err))
+                        })
+                            .then(userDoc => {
+                                const { _id } = userDoc;
+                                sendEmailVerification(email, _id);
+                            })
+                            .catch(err => console.log(err))
                     )
                     .catch(err => console.log(err));
             }
@@ -117,10 +127,13 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
             throw new ClientError('Username or E-mail already exists');
         });
     }
-
+    // must return a Promise.reject here so the .catch works properly (just throwing won't get caught in a .catch)
     return Promise.reject(new ClientError('Passwords do not match'));
 };
 
+/**
+ * always returns a promise -- expects to have .catch used on it
+ */
 const registerTemporary = (username, additionalFields = {}) =>
     Users.findByUsername({ username }).then(doc => {
         if (!doc) {
@@ -128,7 +141,7 @@ const registerTemporary = (username, additionalFields = {}) =>
                 username,
                 ...additionalFields,
                 temporary: true
-            }).catch(err => console.log(err));
+            });
         }
         throw new ClientError('Username already exists');
     });
