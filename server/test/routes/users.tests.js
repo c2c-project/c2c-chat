@@ -142,27 +142,23 @@ describe('users', function() {
             Users.findByEmail('admin@example.com')
                 .then(doc => {
                     const { _id } = doc;
-                    JWT.sign(
-                        { _id },
-                        process.env.JWT_SECRET,
-                        { expiresIn: '2m' },
-                        (err, token) => {
-                            chai.request(server)
-                                .post('/api/users/resetpassword')
-                                .send({
-                                    token,
-                                    form: {
-                                        password: '1',
-                                        confirmPassword: '1'
-                                    }
-                                })
-                                .end(function(innerErr, res) {
-                                    if (innerErr) {
-                                        console.error(innerErr);
-                                    }
-                                    res.should.have.status(200);
-                                    done();
-                                });
+                    JWT.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '2m' }, (err, token) => {
+                        chai.request(server)
+                            .post('/api/users/resetpassword')
+                            .send({
+                                token,
+                                form: {
+                                    password: '1',
+                                    confirmPassword: '1'
+                                }
+                            })
+                            .end(function(innerErr, res) {
+                                if (innerErr) {
+                                    console.error(innerErr);
+                                }
+                                res.should.have.status(200);
+                                done();
+                            });
                         }
                     );
                 })
@@ -186,33 +182,45 @@ describe('users', function() {
                     done();
                 });
         });
-        // it('should reject expired token', function(done) {
-        //     Users.findByEmail('admin@example.com').then(doc => {
-        //         jwt.sign(doc._id, process.env.JWT_SECRET, { expiresIn: '1s'}, (err, token) => {
-        //             setTimeout(function() {
-        //                 return chai.request(server)
-        //                     .post('/api/users/resetpassword')
-        //                     .send({ token: token, password: '1', confirmPassword: '1'})
-        //                     .end(function(err, res) {
-        //                         res.should.have.status(400);
-        //                         done();
-        //                     });
-        //             }, 2000);
-        //         });
-        //     });
-        // });
-        // it('should reject mismatching password', function(done) {
-        //     Users.findByEmail('admin@example.com').then(doc => {
-        //         jwt.sign(doc._id, process.env.JWT_SECRET, { expiresIn: '1h'}, (err, token) => {
-        //             chai.request(server)
-        //                 .post('/api/users/resetpassword')
-        //                 .send({ token: token, password: '1', confirmPassword: '2'})
-        //                 .end(function(err, res) {
-        //                     res.should.have.status(400);
-        //                     done();
-        //                 });
-        //         });
-        //     });
-        // })
+        it('should reject expired token', function(done) {
+            Users.findByEmail('admin@example.com').then(doc => {
+                const { _id } = doc;
+                JWT.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '1s'}, (err, token) => {
+                    setTimeout(function() {
+                        return chai
+                            .request(server)
+                            .post('/api/users/resetpassword')
+                            .send({
+                                token,
+                                form: {
+                                    password: '1',
+                                    confirmPassword: '1'
+                                }
+                            })
+                            .end(function(innerErr, res) {
+                                if (innerErr) {
+                                    console.error(innerErr);
+                                }
+                                res.should.have.status(400);
+                                done();
+                            });
+                    }, 1500);
+                });
+            });
+        });
+        it('should reject mismatching password', function(done) {
+            Users.findByEmail('admin@example.com').then(doc => {
+                const { _id } = doc;
+                JWT.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '2m'}, (err, token) => {
+                    chai.request(server)
+                        .post('/api/users/resetpassword')
+                        .send({ token, form: { password: '1', confirmPassword: '2' }})
+                        .end(function(err, res) {
+                            res.should.have.status(400);
+                            done();
+                        });
+                });
+            });
+        })
     });
 });

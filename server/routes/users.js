@@ -116,7 +116,7 @@ router.post(
 //Call to update to new password
 router.post(
     '/resetpassword', (req, res) => {
-        if(req.body.token !== undefined || req.body.form.password !== undefined) {
+        if(req.body.token !== undefined && req.body.form.password !== undefined && req.body.form.confirmPassword !== undefined) {
             const { token, form } = req.body;
             Accounts.resetPassword(token, form.password, form.confirmPassword).then(() => {
                 res.status(200).send('Password Reset');
@@ -130,8 +130,10 @@ router.post(
             if(req.body.token === undefined) {
                 res.statusText = 'Token Missing';
                 res.status(400).send();
-            } else if(req.body.form.password === undefined) {
-                res.statusText = 'Password Missing';
+            } else if(req.body.form.password === undefined || req.body.form.confirmPassword === undefined) {
+                res.statusText = 'Invalid Password';
+                res.status(400).send();
+            } else {
                 res.status(400).send();
             }
         }
