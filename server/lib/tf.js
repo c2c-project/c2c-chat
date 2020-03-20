@@ -6,12 +6,61 @@ import Chat from '../db/collections/chat';
 import Questions from '../db/collections/questions';
 import Similarity from '../db/collections/similarity';
 import ioInterface from './socket-io';
+
 const dataset = []; // Similarity storage
 const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sensitive.
 const similarityThreshold = 0.5; // Will be change if the similarity test is too sensitive.
 const toxicityLoad = toxicity.load(toxicityThreshold);// load toxicity 
 const useLoad = use.load(); // Load universal sentence encoder
 let similarityClusterCounter = 0; // Global variable to store similarity cluster number
+let loadMemory = false;
+
+function resumeMemory() {
+    Questions
+        .findAllQuestions()
+        .then(docs => {
+            const clusterQueue = [];
+            for (let i = 1; i < docs.length; i += 1) {
+                let clusterflag = false;
+                const {_id, question, sessionId,  sentenceCode, relaventWeight, clusterNumber} = docs[i];
+                for (let j = 0; j < clusterQueue.length && !clusterflag; j += 1) {
+                    if (clusterNumber === clusterQueue[j] && clusterNumber !== 0) {
+                        clusterflag = true;
+                        dataset[j].push({
+                            'string' : question, 
+                            '_id': _id,
+                            'sessionId': sessionId,
+                            'value': sentenceCode,
+                            'weight': relaventWeight,
+                            'similarityCluster': clusterNumber
+                        });
+                    }
+                }
+                if (!clusterflag) {
+                    clusterQueue.push(clusterNumber);
+                    if (clusterNumber > similarityClusterCounter) { similarityClusterCounter = clusterNumber }
+                    dataset.push([{
+                        'string' : question, 
+                        '_id': _id,
+                        'sessionId': sessionId,
+                        'value': sentenceCode,
+                        'weight': relaventWeight,
+                        'similarityCluster': clusterNumber
+                    }]);
+                }
+            }
+            // eslint-disable-next-line no-console
+            // console.log('Final dataset:');
+            // eslint-disable-next-line no-console
+            // console.log(dataset);
+        });
+}
+
+// Load memory only once.
+if(!loadMemory){
+    resumeMemory()
+    loadMemory = true;
+}
 
 function checkTfToxicity(question) {
     return new Promise(function(resolve) {
@@ -154,6 +203,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
             dataset[i].push({
                 'string' : questionDoc.question, 
                 '_id': questionDoc._id,
+                'sessionId': sessionId,
                 'value': questionCode,
                 'weight': questionWeight,
                 'similarityCluster': clusterNumber
@@ -272,6 +322,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                 dataset.push([{
                     'string' : questionDoc.question, 
                     '_id': questionDoc._id,
+                    'sessionId': sessionId,
                     'value': questionCode,
                     'weight': 0,
                     'similarityCluster': 0

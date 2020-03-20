@@ -18,6 +18,14 @@ const findBySession = ({ sessionId }) =>
             .toArray()
     );
 
+const findAllQuestions = () =>
+    mongo.then(db =>
+        db
+            .collection('questions')
+            .find()
+            .toArray()
+    );
+
 const createQuestion = ({
     question,
     sessionId,
@@ -124,6 +132,7 @@ export default {
     findById,
     createQuestion,
     findBySession,
+    findAllQuestions,
     removeQuestion,
     updateQuestionToxicity,
     updateQuestionSentenceCode,
