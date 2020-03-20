@@ -3,6 +3,7 @@ import mailgun from 'mailgun-js';
 import jwt from 'jsonwebtoken';
 import Users from '../db/collections/users';
 import { ClientError } from './errors';
+import Emails from './email';
 
 const SALT_ROUNDS = 10;
 const BASE_USER = {
@@ -55,46 +56,6 @@ const verifyPassword = (textPw, hash, cb) => {
     bcrypt.compare(textPw, hash, cb);
 };
 
-const sendEmailVerification = (email, _id) => {
-    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
-    const url = `${process.env.ORIGIN}/verification/${_id}`;
-    const data = {
-        from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
-        to: email,
-        subject: 'Email Verificaiton',
-        text: 'Please click the link to confirm your email',
-        html: `
-        <h3>Please click the lik to confirm your email</h3>
-        <a href="${url}">${url}</a>`
-    };
-    mg.messages().send(data, (error, body) => {
-        if (error) {
-            console.error(error);
-        }
-        console.log(body);
-    });
-}
-
-const sendPasswordResetEmail = (email, token) => {
-    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
-    const url = `${process.env.ORIGIN}/resetpassword/${token}`;
-    const data = {
-        from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
-        to: email,
-        subject: 'Password Reset',
-        text: 'Please click the link to reset your password',
-        html: `
-        <h3>Please click the link to reset your password</h3>
-        <a href="${url}">${url}</a>`
-    };
-    mg.messages().send(data, (error, body) => {
-        if (error) {
-            console.error(error);
-        }
-        console.log(body);
-    });
-}
-
 const verifyUser = (userId) => {
     return Users.findByUserId(userId).then(doc => {
         if(doc) {
@@ -127,7 +88,7 @@ const passwordReset = (email) => {
                 if(err) {
                     return Promise.reject(new ClientError('Invalid Email'));
                 } else {
-                    sendPasswordResetEmail(email, token);
+                    Emails.sendPasswordResetEmail(email, token);
                 }
             });
         } else {
@@ -197,7 +158,7 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
                             ...additionalFields
                         }).then(userDoc => {
                             const { _id } = userDoc;
-                            sendEmailVerification(email, _id);
+                            Emails.sendEmailVerification(email, _id);
                         }).catch(err => console.log(err))
                     )
                     .catch(err => console.log(err));
@@ -224,7 +185,7 @@ const registerTemporary = (username, additionalFields = {}) =>
 
 /**
  *  use whitelist method instead of blacklist
- * */
+ */
 
 const filterSensitiveData = userDoc => {
     // okay fields to send to client via jwt or any given time
@@ -251,7 +212,6 @@ export default {
     isAllowed,
     filterSensitiveData,
     isOwner,
-    sendEmailVerification,
     verifyUser,
     passwordReset,
     resetPassword
