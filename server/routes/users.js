@@ -108,7 +108,8 @@ router.post(
                 res.status(400).send();
             })
         } else {
-            res.status(400).send('Email Missing');
+            res.statusText = 'Email Missing';
+            res.status(400).send();
         }
     }
 );
