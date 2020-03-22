@@ -193,7 +193,6 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
                         }
                     }, [])
         }
-        return messagelist
     }
     
     React.useEffect(() => {
@@ -314,7 +313,7 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
                                             {toxicity === true ? ' (toxic) ' : ''}
                                         </Typography>   
                                         <Tooltip
-                                            title={QToolTipContent(message,center.date,  _id, asked, toxicity)}
+                                            title={QToolTipContent(message, date,  _id, asked, toxicity)}
                                             placement="top"
                                             arrow
                                             TransitionComponent={Zoom}
