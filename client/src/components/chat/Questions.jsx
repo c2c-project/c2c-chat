@@ -13,6 +13,20 @@ import QuestionActions from './QuestionActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
 
+import IconButton from '@material-ui/core/IconButton';
+import Zoom from '@material-ui/core/Zoom';
+import Tooltip from '@material-ui/core/Tooltip';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+const msPerMinute = 60 * 1000;
+const msPerHour = msPerMinute * 60;
+const msPerDay = msPerHour * 24;
+const msPerMonth = msPerDay * 30;
+const msPerYear = msPerDay * 365;
 
 const useStyles = makeStyles({
     root: {
@@ -25,6 +39,12 @@ const useStyles = makeStyles({
     },
     maxHeight: {
         height: '100%'
+    },
+    tipWidth: {
+        maxWidth: 100,
+    },
+    buttonWidth: {
+        maxWidth: 10,
     }
 });
 
@@ -35,7 +55,7 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
-function Question({ messages, variant, currentQuestion }) {
+function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const [jwt] = useJwt();
@@ -48,6 +68,133 @@ function Question({ messages, variant, currentQuestion }) {
         });
     };
     
+    const isCurrent = (_id) => {
+        return currentQuestion._id === _id
+    }
+    
+    const questionListContainsAsked = (sub, center) => {
+        return sub.reduce((result, q) => {
+            if(currentQuestion._id ===q._id){
+                result = true
+            }
+            return result
+        }, currentQuestion._id === center._id)
+    }
+
+    const setCurrentAction = (event, _id, message, username) => {
+            event.stopPropagation()
+            if (isModerator) {
+                if(currentQuestion && currentQuestion._id !== _id){
+                    setTargetMsg({
+                        _id,
+                        message,
+                        username
+                    });
+                }
+            }
+    }
+    const generateTimeElapsed = (date) => {
+        const dateTime = Date.now();
+        const timestamp = Math.floor(dateTime);
+        //---for timestamp use
+        
+        let relative = ""
+        let elapsed = timestamp- Math.floor(new Date(date));
+        console.log(Math.floor(new Date(date)))
+        if (elapsed < msPerMinute) {
+            relative=Math.round(elapsed/1000) + ' seconds ago';   
+        }
+    
+        else if (elapsed < msPerHour) {
+            relative = Math.round(elapsed/msPerMinute) + ' minutes ago';   
+        }
+    
+        else if (elapsed < msPerDay ) {
+            relative=Math.round(elapsed/msPerHour ) + ' hours ago';   
+        }
+    
+        else if (elapsed < msPerMonth) {
+            relative='approximately ' + Math.round(elapsed/msPerDay) + ' days ago';   
+        }
+    
+        else if (elapsed < msPerYear) {
+            relative= 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';   
+        }
+    
+        else {
+            relative = 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';   
+        }
+        console.log(relative)
+        return relative
+    }
+    const QToolTipContent = (question,time, _id, asked, toxicity) => {
+        let q = ''
+        if(question === 'hello everyone! I love my final!')
+            console.log(time)
+        if(asked === true){
+            q = 'Asked ' + q
+        }
+        if(isCurrent(_id) === true) {
+            q = 'Current ' + q
+        }
+        if(toxicity === true) {
+            q = 'Toxic ' + q
+        }
+        if(q.length > 0){
+            return(
+                <React.Fragment>
+                    <p>{q} </p> 
+                    <p>{generateTimeElapsed(time)}</p>
+                    <p>{question}</p>
+                </React.Fragment>
+                )
+        }
+        return(
+            <React.Fragment>
+                <p>{generateTimeElapsed(time)}</p>
+                <p>{question}</p>
+            </React.Fragment>
+            )
+    }
+    const QuestionOrder = () => {
+        let messagelist = messages;
+        switch(sortBy){
+            case 'time: low to high':
+                return (messages.sort(function(a, b){
+                    if(a.date > b.date) return 1;
+                    if(a.date < b.date) return -1;
+                    else return 1;
+                    })).reduce((messagelist, message)=>{
+                        messagelist.push([message])
+                        return messagelist
+                    }, [])
+            case 'time: high to low':
+                return (messages.sort(function(b, a){
+                    if(a.date > b.date) return 1;
+                    if(a.date < b.date) return -1;
+                    else return 1;
+                    })).reduce((messagelist, message)=>{
+                        messagelist.push([message])
+                        return messagelist
+                    }, [])
+            default:
+               return (messages.sort(function(a, b){
+                    if(a.clusterNumber > b.clusterNumber) return 1;
+                    if(a.clusterNumber < b.clusterNumber) return -1;
+                    if(a.isCenter) return -1;
+                    else return 1;
+                    })).reduce((messagelist, message)=>{
+                        if(message.isCenter === true || messagelist.length === 0) {
+                            messagelist.push([message])
+                            return messagelist
+                        }else{
+                            messagelist[messagelist.length - 1].push(message)
+                            return messagelist
+                        }
+                    }, [])
+        }
+        return messagelist
+    }
     
     React.useEffect(() => {
         let isMounted = true;
@@ -73,69 +220,125 @@ function Question({ messages, variant, currentQuestion }) {
 
     return (
         <div className={classes.root}>
-            <List dense>
-                {messages.sort(function(a, b){
-                    if(a.clusterNumber > b.clusterNumber) return 1;
-                    if(a.clusterNumber < b.clusterNumber) return -1;
-                    if(a.isCenter) return -1;
-                    else return 1;
-                }).map(
-                    ({
-                        username = 'author',
-                        message = 'message',
-                        _id,
-                        toxicity = 'toxicity',
-                        asked = 'asked',
-                        isCenter = 'isCenter',
-                        clusterNumber = 'clusterNumber'
-                    } = {}) => (
-                        <ListItem
-                            button={isModerator}
-                            onClick={() => {
-                                if (isModerator) {
-                                    if(currentQuestion && currentQuestion._id !== _id){
-                                        setTargetMsg({
-                                            _id,
-                                            message,
-                                            username
-                                        });
-                                    }
-                                }
-                            }}
-                            style={isCenter === true ? {backgroundColor: asked ? 'rgb(230,230,230)':'lightyellow' , margin : '5px'}: {backgroundColor: asked?'rgb(230,230,230)':'white' ,margin : '5px'}}
-                            key={_id}
-                            className={classes.message}
-                        >
-                            <Grid container style={{ marginLeft: isCenter === true ?'0':'30px'}}>
-                                <Grid item xs='auto' >
-                                    <Bold >{`${username}:`}</Bold>
-                                </Grid>
-                                <Grid item xs='auto'>
-                                    <Typography
-                                        color='textSecondary'
-                                        variant='body1'
+            {QuestionOrder().map(
+                    ([center, ...sub] = []) => (
+                        <ExpansionPanel>
+                            <ExpansionPanelSummary
+                                button={isModerator}
+                                key={center._id}
+                                className={classes.message}
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-label="Expand"
+                                aria-controls="additional-actions1-content"
+                                id="center.clusterNumber"
+                            >
+                                <Tooltip 
+                                    title={isCurrent(center._id) ? "Is a Current": "Not a Current. Press me to set Current"} 
+                                    placement="top"
+                                    arrow
+                                    TransitionComponent={Zoom}
+                                >
+                                    <IconButton
+                                        onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
+                                        onFocus={event => event.stopPropagation()}
+                                        size="small"
                                     >
-                                        {toxicity === true ? ' (toxic) ' : ''}
-                                    </Typography>   
-                                </Grid>
-                                <Grid item xs='auto'>
+                                        <QuestionAnswerIcon 
+                                            fontSize="small"
+                                            color={questionListContainsAsked(sub, center)? "secondary": "primary"} 
+                                        />
+                                    </IconButton>
+                                </Tooltip>
+                                {showsUserName === true ? (<Bold >{`${center.username}:`}</Bold>) : <div></div>}
+                                <Typography
+                                    color='textSecondary'
+                                    variant='body1'
+                                    onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
+                                    onFocus={event => event.stopPropagation()}
+                                >
+                                    {center.toxicity === true ? ' (toxic) ' : ''}
+                                </Typography>   
+                                <Tooltip
+                                    title={QToolTipContent(center.question, center.date, center._id, center.asked, center.toxicity)}
+                                    placement="top"
+                                    arrow
+                                    TransitionComponent={Zoom}
+                                >
                                     <Typography
                                         color={
                                             // eslint-disable-next-line no-nested-ternary
-                                            currentQuestion._id === _id? 'error'
+                                            currentQuestion._id === center._id? 'error'
                                                 :
-                                                asked? 'textSecondary':'textPrimary'
+                                                center.asked? 'textSecondary':'textPrimary'
                                         }
                                         variant='body1'
+                                        onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
+                                        onFocus={event => event.stopPropagation()}
                                     >
-                                        {message}
+                                        {center.question}
                                     </Typography>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
+                                </Tooltip>
+                            </ExpansionPanelSummary>
+                            {sub.map(
+                                    ({
+                                        username ,
+                                        message ,
+                                        date,
+                                        _id,
+                                        toxicity,
+                                        asked,
+                                    } = {}) => (
+                                    <ExpansionPanelDetails>
+                                        <Tooltip 
+                                            title={isCurrent(_id) ? "Is a Current": "Not a Current. Press me to set Current"} 
+                                            placement="top"
+                                            arrow
+                                            TransitionComponent={Zoom}
+                                        >
+                                            <IconButton
+                                                onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
+                                                onFocus={event => event.stopPropagation()}
+                                                size="small"
+                                            >
+                                                <QuestionAnswerIcon 
+                                                    fontSize="small"
+                                                    color={isCurrent(_id)? "secondary": "primary"} 
+                                                />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {showsUserName === true ? (<Bold>{`${center.username}:`}</Bold>) : <div></div>}
+                                        <Typography
+                                            color='textSecondary'
+                                            variant='body1'
+                                        >
+                                            {toxicity === true ? ' (toxic) ' : ''}
+                                        </Typography>   
+                                        <Tooltip
+                                            title={QToolTipContent(message,center.date,  _id, asked, toxicity)}
+                                            placement="top"
+                                            arrow
+                                            TransitionComponent={Zoom}
+                                        >
+                                            <Typography
+                                                color={
+                                                    // eslint-disable-next-line no-nested-ternary
+                                                    currentQuestion._id === _id? 'error'
+                                                        :
+                                                        asked? 'textSecondary':'textPrimary'
+                                                }
+                                                variant='body1'
+                                                onClick={event => setCurrentAction(event, _id, message, username)}
+                                            >
+                                                {message}
+                                            </Typography>
+                                        </Tooltip>
+                                    </ExpansionPanelDetails>
+                                
+                                
+                            ))}
+                        </ExpansionPanel>
                     )
                 )}
-            </List>
             <div ref={lastMessageRef} />
             <Dialog
                 open={Boolean(targetMsg)}
@@ -170,7 +373,9 @@ Question.defaultProps = {
 Question.propTypes = {
     messages: PropTypes.array,
     variant: PropTypes.oneOf(['questions', 'messages']).isRequired,
-    currentQuestion: PropTypes.oneOf(['message', '_id']).isRequired
+    currentQuestion: PropTypes.oneOf(['message', '_id']).isRequired,
+    showsUserName: PropTypes.bool,
+    sortBy: PropTypes.string,
 };
 
 export default Question;

@@ -48,6 +48,34 @@ function useQuestions(roomId = 'session') {
                 );
             }
         });
+        question.on('moderateQuestion', function(messageId) {
+            console.log('asked')
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.moderated= true
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
+        question.on('cancelModerateQuestion', function(messageId) {
+            console.log('asked')
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.moderated= false
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
         question.on('asked', function(messageId) {
             console.log('asked')
             if (isMounted) {
