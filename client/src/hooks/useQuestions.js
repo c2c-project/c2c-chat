@@ -23,6 +23,7 @@ function useQuestions(roomId = 'session') {
         // or just have a loading screen
         // console.log('not connected');
     });
+    
     React.useEffect(() => {
         let isMounted = true;
         // SOCKET IO

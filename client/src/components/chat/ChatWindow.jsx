@@ -5,14 +5,6 @@ import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Chatbar from './Chatbar';
-import Messages from './Messages';
-import Questions from './Questions';
-import useMessages from '../../hooks/useMessages';
-import useQuestions from '../../hooks/useQuestions';
-
-import IconNotCluster from '@material-ui/icons/FormatAlignJustify';
-import IconCluster from '@material-ui/icons/FormatAlignJustify';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Zoom from '@material-ui/core/Zoom';
@@ -25,6 +17,11 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Collapse from '@material-ui/core/Collapse';
 import Checkbox from '@material-ui/core/Checkbox';
+import useQuestions from '../../hooks/useQuestions';
+import useMessages from '../../hooks/useMessages';
+import Questions from './Questions';
+import Messages from './Messages';
+import Chatbar from './Chatbar';
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -47,12 +44,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function QuestionWindow({ roomId, title }) {
-    const [questions, sendQuestion, currentQuestion] = useQuestions(roomId);
+    const [questions, , currentQuestion] = useQuestions(roomId);
     const classes = useStyles();
     const [showFilter, setShowFilter] = React.useState(false);
     const [sortBy, setSortBy] = React.useState('clusterNumber');
 
-    const handleClickFilterIcon = event => {
+    const handleClickFilterIcon = () => {
         setShowFilter(!showFilter);
     };
 
@@ -68,13 +65,15 @@ export function QuestionWindow({ roomId, title }) {
             ...question,
             message: question.question
         }))
-        for (var fil in filter) {
-            if(filter[fil] === false) {
+        Object.entries(filter).forEach(entry => {
+            const key = entry[0];
+            const value = entry[1];
+            if(value === false) {
                 questionList = questionList.filter(question => {
-                    return question[fil] === false
+                    return question[key] === false
                 })
             }
-        }
+        });
         return questionList
     }
 
@@ -85,46 +84,46 @@ export function QuestionWindow({ roomId, title }) {
     return (
         <Paper className={classes.paper}>
             <Grid container direction='column' spacing={2}>
-                <Grid container direction='row' spacing={2} justify="center">
+                <Grid container direction='row' spacing={2} justify='center'>
                     <Grid item xs='5'>
                         <Typography variant='h4'>{title}</Typography>
                     </Grid>
-                    <Grid item xs='3' >
+                    <Grid item xs='3'>
                         <IconButton
-                            onClick = {handleClickFilterIcon} 
+                            onClick={handleClickFilterIcon} 
                         >
                             <Tooltip 
-                                title={showFilter? "Close Filter": 'Show Filter'}
-                                placement="top"
+                                title={showFilter? 'Close Filter': 'Show Filter'}
+                                placement='top'
                                 TransitionComponent={Zoom}
                             >
-                                <FilterList/>
+                                <FilterList />
                             </Tooltip>
                         </IconButton>
                         <Collapse
                             in={showFilter}
                         >
-                            <FormControl component="fieldset" className={classes.formControl}>
-                                <FormLabel component="legend">Filter Question List</FormLabel>
+                            <FormControl component='fieldset' className={classes.formControl}>
+                                <FormLabel component='legend'>Filter Question List</FormLabel>
                                 <FormGroup>
-                                <FormControlLabel
-                                    control={<Checkbox checked={filter.asked} onChange={handleChange} name="asked" />}
-                                    label="Asked Questions"
-                                />
-                                <FormControlLabel
-                                    control={<Checkbox checked={filter.toxicity} onChange={handleChange} name="toxicity" />}
-                                    label="Toxic Questions"
-                                />
-                                <FormControlLabel
-                                    control={<Checkbox checked={showsUserName} onChange={(e) => setShowUserName(e.target.checked)} />}
-                                    label="Show User Name"
-                                />
+                                    <FormControlLabel
+                                        control={<Checkbox checked={filter.asked} onChange={handleChange} name='asked' />}
+                                        label='Asked Questions'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox checked={filter.toxicity} onChange={handleChange} name='toxicity' />}
+                                        label='Toxic Questions'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox checked={showsUserName} onChange={(e) => setShowUserName(e.target.checked)} />}
+                                        label='Show User Name'
+                                    />
                                 </FormGroup>
                             </FormControl>
                         </Collapse>
                     </Grid>
-                    <Grid item xs='3' >
-                        <InputLabel htmlFor="age-native-simple">Sort by</InputLabel>
+                    <Grid item xs='3'>
+                        <InputLabel htmlFor='age-native-simple'>Sort by</InputLabel>
                         <Select
                             native
                             value={sortBy}
@@ -134,9 +133,9 @@ export function QuestionWindow({ roomId, title }) {
                                 id: 'sort-by',
                             }}
                         >
-                        <option value={'clusterNumber'}>cluster number</option>
-                        <option value={'time: low to high'}>time: late to current</option>
-                        <option value={'time: high to low'}>time: current to late</option>
+                            <option value='clusterNumber'>cluster number</option>
+                            <option value='time: low to high'>time: late to current</option>
+                            <option value='time: high to low'>time: current to late</option>
                         </Select>
                     </Grid>
                 </Grid>

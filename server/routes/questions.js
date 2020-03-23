@@ -76,7 +76,7 @@ router.post(
                 requiredAny: ['moderator', 'admin']
             })
         ) {
-            Questions.updateQuestionAsked({questionId: question._id, asked: true}).then(r =>{
+            Questions.updateQuestionAsked({questionId: question._id, asked: true}).then(() =>{
                 ioInterface
                     .io()
                     .of('/questions')
@@ -87,7 +87,5 @@ router.post(
         }
     }
 );
-
-
 
 module.exports = router;

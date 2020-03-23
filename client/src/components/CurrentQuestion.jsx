@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CurrentQuestion({ roomId }) {
     const classes = useStyles();
-    const [questions, sendQuestion, currentQuestion] = useQuestions(roomId);
+    const [, , currentQuestion] = useQuestions(roomId);
     return (
         <div className={classes.root}>
             <Grid container>

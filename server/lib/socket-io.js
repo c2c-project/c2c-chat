@@ -38,13 +38,7 @@ export default (function socketioInterface() {
                                     io.of('/chat')
                                         .to(roomId)
                                         .emit('message', messageDoc);
-                                    // TODO: 193
                                     tf.tfToxicityMessage(messageDoc, io, roomId);
-                                    /**
-                                     * @messageDoc is the message json
-                                     * Ideally, you'd just take the messageDoc
-                                     * and feed that into the text toxicity
-                                     */
                                 });
                             }
                         }
@@ -68,10 +62,3 @@ export default (function socketioInterface() {
         io: () => io
     };
 })();
-
-// TODO: 193 
-/**
- * Here is where you'd create the new socketio event
- * maybe name the event 'classification' it'd be something like 
- * io.of('/chat').to(roomId).emit('classification', yourDataHere), where roomId is the sessionId
- */

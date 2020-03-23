@@ -1,18 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import useJwt from '../../hooks/useJwt';
-import MessageActions from './MessageActions';
-import QuestionActions from './QuestionActions';
-import Dialog from '../Dialoag';
-import Bold from '../Bold';
-
 import IconButton from '@material-ui/core/IconButton';
 import Zoom from '@material-ui/core/Zoom';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -21,6 +12,11 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Bold from '../Bold';
+import Dialog from '../Dialoag';
+import QuestionActions from './QuestionActions';
+import MessageActions from './MessageActions';
+import useJwt from '../../hooks/useJwt';
 
 const msPerMinute = 60 * 1000;
 const msPerHour = msPerMinute * 60;
@@ -48,12 +44,6 @@ const useStyles = makeStyles({
     }
 });
 
-// eslint-disable-next-line
-const SystemMessages = ({ children }) => (
-    <Typography color='textSecondary' component='div'>
-        <Box fontWeight='fontWeightBold'>{children}</Box>
-    </Typography>
-);
 
 function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) {
     const classes = useStyles();
@@ -61,7 +51,9 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
     const [jwt] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
+
     const Actions = variant === 'questions' ? QuestionActions : MessageActions;
+
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
             behavior: 'smooth'
@@ -73,125 +65,123 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
     }
     
     const questionListContainsAsked = (sub, center) => {
-        return sub.reduce((result, q) => {
-            if(currentQuestion._id ===q._id){
-                result = true
-            }
-            return result
-        }, currentQuestion._id === center._id)
+        if(currentQuestion._id === center._id){
+            return true
+        }
+        return sub.find((q) =>{
+            return currentQuestion._id ===q._id;
+        })
     }
 
     const setCurrentAction = (event, _id, message, username) => {
-            event.stopPropagation()
-            if (isModerator) {
-                if(currentQuestion && currentQuestion._id !== _id){
-                    setTargetMsg({
-                        _id,
-                        message,
-                        username
-                    });
-                }
+        event.stopPropagation()
+        if (isModerator) {
+            if(currentQuestion && currentQuestion._id !== _id){
+                setTargetMsg({
+                    _id,
+                    message,
+                    username
+                });
             }
+        }
     }
+
     const generateTimeElapsed = (date) => {
         const dateTime = Date.now();
         const timestamp = Math.floor(dateTime);
-        //---for timestamp use
-        
-        let relative = ""
-        let elapsed = timestamp- Math.floor(new Date(date));
-        console.log(Math.floor(new Date(date)))
+        let relative = ''
+        const elapsed = timestamp- Math.floor(new Date(date));
         if (elapsed < msPerMinute) {
-            relative=Math.round(elapsed/1000) + ' seconds ago';   
+            relative=`${Math.round(elapsed/1000)  } seconds ago`;   
         }
     
         else if (elapsed < msPerHour) {
-            relative = Math.round(elapsed/msPerMinute) + ' minutes ago';   
+            relative = `${Math.round(elapsed/msPerMinute)  } minutes ago`;   
         }
     
         else if (elapsed < msPerDay ) {
-            relative=Math.round(elapsed/msPerHour ) + ' hours ago';   
+            relative=`${Math.round(elapsed/msPerHour )  } hours ago`;   
         }
     
         else if (elapsed < msPerMonth) {
-            relative='approximately ' + Math.round(elapsed/msPerDay) + ' days ago';   
+            relative=`approximately ${  Math.round(elapsed/msPerDay)  } days ago`;   
         }
     
         else if (elapsed < msPerYear) {
-            relative= 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';   
+            relative= `approximately ${  Math.round(elapsed/msPerMonth)  } months ago`;   
         }
     
         else {
-            relative = 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';   
+            relative = `approximately ${  Math.round(elapsed/msPerYear )  } years ago`;   
         }
-        console.log(relative)
         return relative
     }
+
     const QToolTipContent = (question,time, _id, asked, toxicity) => {
         let q = ''
-        if(question === 'hello everyone! I love my final!')
-            console.log(time)
         if(asked === true){
-            q = 'Asked ' + q
+            q = `Asked ${  q}`
         }
         if(isCurrent(_id) === true) {
-            q = 'Current ' + q
+            q = `Current ${  q}`
         }
         if(toxicity === true) {
-            q = 'Toxic ' + q
+            q = `Toxic ${  q}`
         }
         if(q.length > 0){
             return(
-                <React.Fragment>
-                    <p>{q} </p> 
+                <>
+                    <p>
+                        {q}
+                        {' '}
+                    </p> 
                     <p>{generateTimeElapsed(time)}</p>
                     <p>{question}</p>
-                </React.Fragment>
-                )
+                </>
+            )
         }
         return(
-            <React.Fragment>
+            <>
                 <p>{generateTimeElapsed(time)}</p>
                 <p>{question}</p>
-            </React.Fragment>
-            )
+            </>
+        )
     }
+
     const QuestionOrder = () => {
-        let messagelist = messages;
         switch(sortBy){
             case 'time: low to high':
                 return (messages.sort(function(a, b){
                     if(a.date > b.date) return 1;
                     if(a.date < b.date) return -1;
-                    else return 1;
-                    })).reduce((messagelist, message)=>{
-                        messagelist.push([message])
-                        return messagelist
-                    }, [])
+                    return 1;
+                })).reduce((messagelist, message)=>{
+                    messagelist.push([message])
+                    return messagelist
+                }, [])
             case 'time: high to low':
                 return (messages.sort(function(b, a){
                     if(a.date > b.date) return 1;
                     if(a.date < b.date) return -1;
-                    else return 1;
-                    })).reduce((messagelist, message)=>{
-                        messagelist.push([message])
-                        return messagelist
-                    }, [])
+                    return 1;
+                })).reduce((messagelist, message)=>{
+                    messagelist.push([message])
+                    return messagelist
+                }, [])
             default:
-               return (messages.sort(function(a, b){
+                return (messages.sort(function(a, b){
                     if(a.clusterNumber > b.clusterNumber) return 1;
                     if(a.clusterNumber < b.clusterNumber) return -1;
                     if(a.isCenter) return -1;
-                    else return 1;
-                    })).reduce((messagelist, message)=>{
-                        if(message.isCenter === true || messagelist.length === 0) {
-                            messagelist.push([message])
-                            return messagelist
-                        }else{
-                            messagelist[messagelist.length - 1].push(message)
-                            return messagelist
-                        }
-                    }, [])
+                    return 1;
+                })).reduce((messagelist, message)=>{
+                    if(message.isCenter === true || messagelist.length === 0) {
+                        messagelist.push([message])
+                        return messagelist
+                    }
+                    messagelist[messagelist.length - 1].push(message)
+                    return messagelist
+                }, [])
         }
     }
     
@@ -220,124 +210,122 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
     return (
         <div className={classes.root}>
             {QuestionOrder().map(
-                    ([center, ...sub] = []) => (
-                        <ExpansionPanel>
-                            <ExpansionPanelSummary
-                                button={isModerator}
-                                key={center._id}
-                                className={classes.message}
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-label="Expand"
-                                aria-controls="additional-actions1-content"
-                                id="center.clusterNumber"
+                ([center, ...sub] = []) => (
+                    <ExpansionPanel>
+                        <ExpansionPanelSummary
+                            button={isModerator}
+                            key={center._id}
+                            className={classes.message}
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-label='Expand'
+                            aria-controls='additional-actions1-content'
+                            id='center.clusterNumber'
+                        >
+                            <Tooltip 
+                                title={isCurrent(center._id) ? 'Is a Current': 'Not a Current. Press me to set Current'} 
+                                placement='top'
+                                arrow
+                                TransitionComponent={Zoom}
                             >
-                                <Tooltip 
-                                    title={isCurrent(center._id) ? "Is a Current": "Not a Current. Press me to set Current"} 
-                                    placement="top"
-                                    arrow
-                                    TransitionComponent={Zoom}
+                                <IconButton
+                                    onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
+                                    onFocus={event => event.stopPropagation()}
+                                    size='small'
                                 >
-                                    <IconButton
-                                        onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
-                                        onFocus={event => event.stopPropagation()}
-                                        size="small"
-                                    >
-                                        <QuestionAnswerIcon 
-                                            fontSize="small"
-                                            color={questionListContainsAsked(sub, center)? "secondary": "primary"} 
-                                        />
-                                    </IconButton>
-                                </Tooltip>
-                                {showsUserName === true ? (<Bold >{`${center.username}:`}</Bold>) : <div></div>}
+                                    <QuestionAnswerIcon 
+                                        fontSize='small'
+                                        color={questionListContainsAsked(sub, center)? 'secondary': 'primary'} 
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                            {showsUserName === true ? (<Bold>{`${center.username}:`}</Bold>) : <div />}
+                            <Typography
+                                color='textSecondary'
+                                variant='body1'
+                                onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
+                                onFocus={event => event.stopPropagation()}
+                            >
+                                {center.toxicity === true ? ' (toxic) ' : ''}
+                            </Typography>   
+                            <Tooltip
+                                title={QToolTipContent(center.question, center.date, center._id, center.asked, center.toxicity)}
+                                placement='top'
+                                arrow
+                                TransitionComponent={Zoom}
+                            >
                                 <Typography
-                                    color='textSecondary'
+                                    color={
+                                        // eslint-disable-next-line no-nested-ternary
+                                        currentQuestion._id === center._id? 'error'
+                                            :
+                                            center.asked? 'textSecondary':'textPrimary'
+                                    }
                                     variant='body1'
                                     onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
                                     onFocus={event => event.stopPropagation()}
                                 >
-                                    {center.toxicity === true ? ' (toxic) ' : ''}
-                                </Typography>   
-                                <Tooltip
-                                    title={QToolTipContent(center.question, center.date, center._id, center.asked, center.toxicity)}
-                                    placement="top"
-                                    arrow
-                                    TransitionComponent={Zoom}
-                                >
-                                    <Typography
-                                        color={
-                                            // eslint-disable-next-line no-nested-ternary
-                                            currentQuestion._id === center._id? 'error'
-                                                :
-                                                center.asked? 'textSecondary':'textPrimary'
-                                        }
-                                        variant='body1'
-                                        onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
-                                        onFocus={event => event.stopPropagation()}
+                                    {center.question}
+                                </Typography>
+                            </Tooltip>
+                        </ExpansionPanelSummary>
+                        {sub.map(
+                            ({
+                                username ,
+                                message ,
+                                date,
+                                _id,
+                                toxicity,
+                                asked,
+                            } = {}) => (
+                                <ExpansionPanelDetails>
+                                    <Tooltip 
+                                        title={isCurrent(_id) ? 'Is a Current': 'Not a Current. Press me to set Current'} 
+                                        placement='top'
+                                        arrow
+                                        TransitionComponent={Zoom}
                                     >
-                                        {center.question}
-                                    </Typography>
-                                </Tooltip>
-                            </ExpansionPanelSummary>
-                            {sub.map(
-                                    ({
-                                        username ,
-                                        message ,
-                                        date,
-                                        _id,
-                                        toxicity,
-                                        asked,
-                                    } = {}) => (
-                                    <ExpansionPanelDetails>
-                                        <Tooltip 
-                                            title={isCurrent(_id) ? "Is a Current": "Not a Current. Press me to set Current"} 
-                                            placement="top"
-                                            arrow
-                                            TransitionComponent={Zoom}
+                                        <IconButton
+                                            onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
+                                            onFocus={event => event.stopPropagation()}
+                                            size='small'
                                         >
-                                            <IconButton
-                                                onClick={event => setCurrentAction(event, center._id, center.question, center.username)}
-                                                onFocus={event => event.stopPropagation()}
-                                                size="small"
-                                            >
-                                                <QuestionAnswerIcon 
-                                                    fontSize="small"
-                                                    color={isCurrent(_id)? "secondary": "primary"} 
-                                                />
-                                            </IconButton>
-                                        </Tooltip>
-                                        {showsUserName === true ? (<Bold>{`${center.username}:`}</Bold>) : <div></div>}
+                                            <QuestionAnswerIcon 
+                                                fontSize='small'
+                                                color={isCurrent(_id)? 'secondary': 'primary'} 
+                                            />
+                                        </IconButton>
+                                    </Tooltip>
+                                    {showsUserName === true ? (<Bold>{`${center.username}:`}</Bold>) : <div />}
+                                    <Typography
+                                        color='textSecondary'
+                                        variant='body1'
+                                    >
+                                        {toxicity === true ? ' (toxic) ' : ''}
+                                    </Typography>   
+                                    <Tooltip
+                                        title={QToolTipContent(message, date,  _id, asked, toxicity)}
+                                        placement='top'
+                                        arrow
+                                        TransitionComponent={Zoom}
+                                    >
                                         <Typography
-                                            color='textSecondary'
+                                            color={
+                                                // eslint-disable-next-line no-nested-ternary
+                                                currentQuestion._id === _id? 'error'
+                                                    :
+                                                    asked? 'textSecondary':'textPrimary'
+                                            }
                                             variant='body1'
+                                            onClick={event => setCurrentAction(event, _id, message, username)}
                                         >
-                                            {toxicity === true ? ' (toxic) ' : ''}
-                                        </Typography>   
-                                        <Tooltip
-                                            title={QToolTipContent(message, date,  _id, asked, toxicity)}
-                                            placement="top"
-                                            arrow
-                                            TransitionComponent={Zoom}
-                                        >
-                                            <Typography
-                                                color={
-                                                    // eslint-disable-next-line no-nested-ternary
-                                                    currentQuestion._id === _id? 'error'
-                                                        :
-                                                        asked? 'textSecondary':'textPrimary'
-                                                }
-                                                variant='body1'
-                                                onClick={event => setCurrentAction(event, _id, message, username)}
-                                            >
-                                                {message}
-                                            </Typography>
-                                        </Tooltip>
-                                    </ExpansionPanelDetails>
-                                
-                                
+                                            {message}
+                                        </Typography>
+                                    </Tooltip>
+                                </ExpansionPanelDetails>
                             ))}
-                        </ExpansionPanel>
-                    )
-                )}
+                    </ExpansionPanel>
+                )
+            )}
             <div ref={lastMessageRef} />
             <Dialog
                 open={Boolean(targetMsg)}
@@ -373,8 +361,8 @@ Question.propTypes = {
     messages: PropTypes.array,
     variant: PropTypes.oneOf(['questions', 'messages']).isRequired,
     currentQuestion: PropTypes.oneOf(['message', '_id']).isRequired,
-    showsUserName: PropTypes.bool,
-    sortBy: PropTypes.string,
+    showsUserName: PropTypes.bool.isRequired,
+    sortBy: PropTypes.string.isRequired,
 };
 
 export default Question;

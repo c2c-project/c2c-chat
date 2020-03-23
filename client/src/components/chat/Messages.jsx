@@ -13,7 +13,6 @@ import QuestionActions from './QuestionActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
 
-
 const useStyles = makeStyles({
     root: {
         height: '100%',
