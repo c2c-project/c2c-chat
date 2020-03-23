@@ -15,13 +15,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function CurrentQuestion({ roomId }) {
     const classes = useStyles();
-    const [, , currentQuestion] = useQuestions(roomId);
+    const [questions, sendQuestion, currentQuestion] = useQuestions(roomId);
     return (
         <div className={classes.root}>
             <Grid container>
                 <Grid item xs={12} className={classes.item}>
                     <Typography align='center' variant='h5'>
-                        Current Question
+                        Upcoming Question
                     </Typography>
                     <Divider />
                 </Grid>

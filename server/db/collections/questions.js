@@ -1,5 +1,7 @@
 import { ObjectID } from 'mongodb';
 import { mongo } from '..';
+import Accounts from '../../lib/accounts';
+import { ClientError } from '../../lib/errors';
 
 const findById = id =>
     mongo.then(db =>
@@ -122,11 +124,6 @@ const updateClusterNumber = ({ questionId, clusterNumber}) =>
         );
         // close();
     });
-
-// TODO: 193
-/**
- * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
- */
 
 export default {
     findById,

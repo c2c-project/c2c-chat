@@ -10,6 +10,7 @@
         "serve": "node dist/bin/www.js"
     },
     "dependencies": {
+        "@babel/runtime": "^7.8.4",
         "@tensorflow-models/toxicity": "^1.2.2",
         "@tensorflow-models/universal-sentence-encoder": "^1.2.2",
         "@tensorflow/tfjs-node": "^1.5.2",
@@ -23,6 +24,7 @@
         "http-errors": "^1.7.3",
         "jsonwebtoken": "^8.5.1",
         "mathjs": "^6.6.0",
+        "mailgun-js": "^0.22.0",
         "mongodb": "^3.3.5",
         "morgan": "~1.9.1",
         "nodemon": "^1.19.1",
@@ -35,6 +37,7 @@
         "@babel/cli": "^7.8.3",
         "@babel/core": "^7.7.2",
         "@babel/node": "^7.7.0",
+        "@babel/plugin-transform-runtime": "^7.8.3",
         "@babel/preset-env": "^7.7.1",
         "@babel/register": "^7.7.7",
         "chai": "^4.2.0",

@@ -9,7 +9,6 @@ function connect(roomId = 'chat') {
 
 function useQuestions(roomId = 'session') {
     const session = JSON.parse(localStorage.getItem('session'));
-    console.log(session);
     const initialQuestion =
         session && session.questionHistory
             ? session.questionHistory[session.questionHistory.length - 1]
@@ -99,7 +98,6 @@ function useQuestions(roomId = 'session') {
         question.on('disconnect', () => console.log('disconnected'));
         question.on('error', err => console.log(err));
         question.on('set-question', q => {
-            console.log('set question');
             setCurrent(q);
         });
         question.on('updateIsCenter', function(messageId, isCenter) {
@@ -153,6 +151,7 @@ function useQuestions(roomId = 'session') {
             }
         }).then(r => {
             r.json().then(history => {
+                console.log(history);
                 if (isMounted) {
                     setQuestions(history.filter(m => !m.moderated));
                 }

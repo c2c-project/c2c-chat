@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 
 export default function ModSession({ pages }) {
     const [currTab, setTab] = React.useState(0);
-    const [dir, setDir] = React.useState('right');
+    const [dir, setDir] = React.useState('left');
     const classes = useStyles();
     const setTabs = React.useContext(TabContext);
     React.useEffect(() => {
@@ -44,6 +44,7 @@ export default function ModSession({ pages }) {
             </Tabs>
         );
         return () => setTabs(null);
+        // eslint-disable-next-line
     }, [dir, currTab, pages]);
     return (
         <Grid container direction='column' className={classes.root}>
@@ -54,7 +55,11 @@ export default function ModSession({ pages }) {
                         hidden={currTab !== idx}
                         key={label}
                     >
-                        <Slide in={currTab === idx} direction={dir}>
+                        <Slide
+                            in={currTab === idx}
+                            direction={dir}
+                            timeout={350}
+                        >
                             {component}
                         </Slide>
                     </div>

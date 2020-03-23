@@ -44,7 +44,6 @@
         ]
     },
     "devDependencies": {
-        "@storybook/react": "^5.2.8",
-        "storybook-react-router": "^1.0.8"
+        "@storybook/react": "^5.2.8"
     }
 }

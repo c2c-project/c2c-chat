@@ -36,10 +36,10 @@ export default function Lane({ title, roomId }) {
         }
     });
     const [addNewCard, setAddNewCard] = React.useState(false);
-    const [cards, setCards] = React.useState([]);
+    // const [cards, setCards] = React.useState([]);
     const ref = React.useRef();
     const classes = useStyles();
-    // const [questions, updateQuestions] = useQuestions(roomId, title);
+    const [questions, updateQuestions] = useQuestions(roomId, title);
     React.useEffect(() => {
         if (addNewCard) {
             ref.current.focus();
@@ -49,7 +49,7 @@ export default function Lane({ title, roomId }) {
         <Paper ref={drop} className={classes.root}>
             <LaneTitle title={title} className={classes.title} />
             <Grid container spacing={2}>
-                {cards.map(card => (
+                {questions.map(card => (
                     <Grid item xs={12} key={card}>
                         <QuestionCard question={card} />
                     </Grid>
@@ -70,8 +70,7 @@ export default function Lane({ title, roomId }) {
                                 const question = e.target.question.value;
                                 setAddNewCard(false);
                                 // TODO: make this an api call to add the card for everyone
-                                console.log(question);
-                                setCards(current => [...current, question]);
+                                updateQuestions(current => [...current, question]);
                             }}
                         >
                             <TextField

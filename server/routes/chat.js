@@ -1,39 +1,35 @@
 import express from 'express';
 import passport from 'passport';
-import Chat from '../db/collections/chat';
-import ioInterface from '../lib/socket-io';
+import Messages from '../db/collections/messsages';
+import { moderate } from '../lib/socket-io';
 
 const router = express.Router();
 
+// NOTE: only care if the user is logged in to see chat messages
 router.get(
     '/:roomId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { roomId } = req.params;
-        Chat.findMessages({ sessionId: roomId }).then(r => res.json(r));
+        Messages.findMessages({ sessionId: roomId })
+            .then(r => res.json(r))
+            .catch(next);
     }
 );
 
 router.post(
     '/remove-message/:roomId/:messageId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
         const { messageId, roomId } = req.params;
-        const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
+        const removeMessage = Messages.privilegedActions('REMOVE_MESSAGE', user);
         removeMessage(messageId)
             .then(() => {
-                ioInterface
-                    .io()
-                    .of('/chat')
-                    .to(roomId)
-                    .emit('moderate', messageId);
-                res.send({ success: true });
+                moderate(roomId, messageId);
+                res.status(200).send();
             })
-            .catch(err => {
-                console.log(err);
-                res.send({ success: false });
-            });
+            .catch(next);
     }
 );
 

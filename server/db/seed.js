@@ -115,9 +115,9 @@ function seedSessions() {
 }
 
 function seedMessages() {
-    console.log('messages');
+    console.log('chat');
     return mongo.then(db =>
-        db.collection('messages').insertMany(messages, (err, r) => {
+        db.collection('chat').insertMany(messages, (err, r) => {
             assert.equal(null, err);
             assert.equal(1, r.insertedCount);
             // close();
@@ -128,7 +128,9 @@ function seedMessages() {
 function seedUsers() {
     console.log('users');
     const promises = users.map(({ username, password, ...rest }) =>
-        Accounts.register(username, password, rest)
+        Accounts.register(username, password, password, rest).catch(e =>
+            console.log(e)
+        )
     );
     return Promise.all(promises);
 }

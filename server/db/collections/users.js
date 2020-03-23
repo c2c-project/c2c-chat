@@ -14,24 +14,49 @@ const addUser = userDoc =>
             .then(r => r.ops[0])
             .catch(e => console.log('TODO: addUser error checking', e))
     );
-const updateUser = () => {};
+
+const updateUser = (doc, addition) => 
+    mongo.then(db => 
+        db
+            .collection('users')
+            .updateOne(doc, addition)
+            .catch(e => console.log(e))
+    );
+
 const removeUser = () => {};
 const findByUsername = ({ username }) =>
     mongo.then(db =>
         db
             .collection('users')
-            .find({ email: username })
+            .find({ username })
             .toArray()
             .then(r => r[0])
     );
 
-const findByUserId = _id =>
+const findByUserId = userId =>
     mongo.then(db =>
         db
             .collection('users')
-            .find({ _id: new ObjectID(_id) })
+            .find({ _id: new ObjectID(userId) })
             .toArray()
             .then(r => r[0])
+    );
+
+const findByEmail = email =>
+    mongo.then(db =>
+        db
+            .collection('users')
+            .find({ email })
+            .toArray()
+            .then(r => r[0])
+    );
+
+const find = (...args) =>
+    mongo.then(db =>
+        db
+            .collection('users')
+            .find(...args)
+            .toArray()
     );
 
 export default {
@@ -39,5 +64,7 @@ export default {
     updateUser,
     removeUser,
     findByUsername,
-    findByUserId
+    findByUserId,
+    findByEmail,
+    find
 };
