@@ -125,6 +125,26 @@ const updateClusterNumber = ({ questionId, clusterNumber}) =>
         // close();
     });
 
+const privilegedActions = (action, userDoc) => {
+    const { roles } = userDoc;
+    switch (action) {
+        case 'QUESTION_HISTORY': {
+            const requiredAny = ['moderator', 'admin'];
+            return sessionId => {
+                if (Accounts.isAllowed(roles, { requiredAny })) {
+                    return findBySession({ sessionId });
+                }
+                return Promise.reject(
+                    new ClientError('Missing permissions to do that.')
+                );
+            };
+        }
+        default: {
+            throw new TypeError('Invalid Action');
+        }
+    }
+};
+
 export default {
     findById,
     createQuestion,
@@ -136,5 +156,6 @@ export default {
     updateQuestionRelaventWeight,
     updateQuestionAsked,
     updateIsCenter,
-    updateClusterNumber
+    updateClusterNumber,
+    privilegedActions
 };

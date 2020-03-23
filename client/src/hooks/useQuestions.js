@@ -35,7 +35,6 @@ function useQuestions(roomId = 'session') {
             }
         });
         question.on('updateToxicity', function(messageId) {
-            console.log('It is toxic question')
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -49,7 +48,6 @@ function useQuestions(roomId = 'session') {
             }
         });
         question.on('moderateQuestion', function(messageId) {
-            console.log('asked')
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -63,7 +61,6 @@ function useQuestions(roomId = 'session') {
             }
         });
         question.on('cancelModerateQuestion', function(messageId) {
-            console.log('asked')
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -77,7 +74,6 @@ function useQuestions(roomId = 'session') {
             }
         });
         question.on('asked', function(messageId) {
-            console.log('asked')
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -101,9 +97,6 @@ function useQuestions(roomId = 'session') {
             setCurrent(q);
         });
         question.on('updateIsCenter', function(messageId, isCenter) {
-            console.log('updateIsCenter')
-            console.log(messageId)
-            console.log(isCenter)
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -117,9 +110,6 @@ function useQuestions(roomId = 'session') {
             }
         });
         question.on('updateClusterNumber', function(messageId, clusterNumber) {
-            console.log('updateClusterNumber')
-            console.log(messageId)
-            console.log(clusterNumber)
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -151,7 +141,6 @@ function useQuestions(roomId = 'session') {
             }
         }).then(r => {
             r.json().then(history => {
-                console.log(history);
                 if (isMounted) {
                     setQuestions(history.filter(m => !m.moderated));
                 }

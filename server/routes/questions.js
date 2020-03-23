@@ -1,8 +1,9 @@
 import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
-import Toxicity from '../lib/tf';
-import io from '../lib/socket-io';
+import Accounts from '../lib/accounts';
+import ioInterface from '../lib/socket-io';
+import TensorFlow from '../lib/tf';
 
 const router = express.Router();
 
@@ -28,7 +29,8 @@ router.post(
         })
             .then(r => {
                 const questionDoc = r.ops[0];
-                io.of('/questions')
+                ioInterface
+                    .of('/questions')
                     .to(sessionId)
                     .emit('question', questionDoc);
                 res.send({ success: true });
