@@ -75,7 +75,6 @@ router.post(
         ) {
             Questions.updateQuestionAsked({questionId: question._id, asked: true}).then(() =>{
                 ioInterface
-                    .io()
                     .of('/questions')
                     .to(roomId)
                     .emit('asked', question._id);

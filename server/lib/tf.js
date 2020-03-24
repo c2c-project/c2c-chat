@@ -8,7 +8,7 @@ import ioInterface from './socket-io';
 
 const dataset = []; // Similarity storage
 const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sensitive.
-const similarityThreshold = 0.85; // Will be change if the similarity test is too sensitive.
+const similarityThreshold = 0.85; // Will be change if the similarity test is too sensitive, recommend 0.5 for testing and 0.85 for using.
 const toxicityLoad = toxicity.load(toxicityThreshold);// load toxicity 
 const useLoad = use.load(); // Load universal sentence encoder
 const similarityClusterCounter = []; // Global variable to store similarity cluster number
@@ -140,7 +140,6 @@ function tfToxicityQuestion(questionDoc,sessionId ) {
                 });
             if(tfToxicityResult.toxicity){
                 ioInterface
-                    .io()
                     .of('/questions')
                     .to(sessionId)
                     .emit('updateToxicity', questionDoc._id);   
@@ -247,7 +246,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                         clusterNumber
                     })
                     ioInterface
-                        .io()
                         .of('/questions')
                         .to(sessionId)
                         .emit('updateClusterNumber', centerQuestionId,clusterNumber)  
@@ -256,7 +254,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                         clusterNumber
                     })
                     ioInterface
-                        .io()
                         .of('/questions')
                         .to(sessionId)
                         .emit('updateClusterNumber', dataset[relaventSessionId][i][0]._id,clusterNumber)  
@@ -265,7 +262,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                         'isCenter': true
                     })
                     ioInterface
-                        .io()
                         .of('/questions')
                         .to(sessionId)
                         .emit('updateIsCenter', centerQuestionId,true)
@@ -274,7 +270,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                         'isCenter': false
                     })    
                     ioInterface
-                        .io()
                         .of('/questions')
                         .to(sessionId)
                         .emit('updateIsCenter',dataset[relaventSessionId][i][0]._id, false);  
@@ -294,7 +289,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                         clusterNumber
                     })
                     ioInterface
-                        .io()
                         .of('/questions')
                         .to(sessionId)
                         .emit('updateClusterNumber', questionDoc._id,clusterNumber)
@@ -303,7 +297,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                         'isCenter': false
                     })
                     ioInterface
-                        .io()
                         .of('/questions')
                         .to(sessionId)
                         .emit('updateIsCenter',dataset[relaventSessionId][i][0]._id,false)
@@ -317,7 +310,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                         'isCenter': true
                     })
                     ioInterface
-                        .io()
                         .of('/questions')
                         .to(sessionId)
                         .emit('updateIsCenter',centerQuestionId,true)
@@ -342,7 +334,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
                 'isCenter': true
             })
             ioInterface
-                .io()
                 .of('/questions')
                 .to(sessionId)
                 .emit('updateIsCenter', questionDoc._id,true)  
@@ -362,7 +353,6 @@ async function tfUseQuestion(questionDoc,sessionId) {
             'isCenter': true
         })
         ioInterface
-            .io()
             .of('/questions')
             .to(sessionId)
             .emit('updateIsCenter', questionDoc._id,true) 
