@@ -145,6 +145,7 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
     // because both should be unique, otherwise just find by username
     const query = email ? { $or: [{ email }, { username }] } : { username };
     if (password === confirmPass) {
+        // returning a Promise here -- so register.then.catch will work
         return Users.find(query).then(docArray => {
             if (!docArray[0]) {
                 return bcrypt
@@ -156,10 +157,12 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
                             // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
                             ...BASE_USER,
                             ...additionalFields
-                        }).then(userDoc => {
-                            const { _id } = userDoc;
-                            Emails.sendEmailVerification(email, _id);
-                        }).catch(err => console.log(err))
+                        })
+                            .then(userDoc => {
+                                const { _id } = userDoc;
+                                sendEmailVerification(email, _id);
+                            })
+                            .catch(err => console.log(err))
                     )
                     .catch(err => console.log(err));
             }
@@ -167,10 +170,13 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
             throw new ClientError('Username or E-mail already exists');
         });
     }
-
+    // must return a Promise.reject here so the .catch works properly (just throwing won't get caught in a .catch)
     return Promise.reject(new ClientError('Passwords do not match'));
 };
 
+/**
+ * always returns a promise -- expects to have .catch used on it
+ */
 const registerTemporary = (username, additionalFields = {}) =>
     Users.findByUsername({ username }).then(doc => {
         if (!doc) {
@@ -178,7 +184,7 @@ const registerTemporary = (username, additionalFields = {}) =>
                 username,
                 ...additionalFields,
                 temporary: true
-            }).catch(err => console.log(err));
+            });
         }
         throw new ClientError('Username already exists');
     });

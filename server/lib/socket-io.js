@@ -1,6 +1,6 @@
 import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
-import Chat from '../db/collections/chat';
+import Messages from '../db/collections/messsages';
 import tf from './tf';
 
 /**
@@ -35,7 +35,7 @@ io.of('/chat').on('connection', socket => {
                 // TODO: how could this error? if so what do I do? idk atm
                 if (!err) {
                     const { username, _id } = decodedJwt;
-                    Chat.createMessage({
+                    Messages.createMessage({
                         message,
                         username,
                         userId: _id,

@@ -33,11 +33,11 @@ const findByUsername = ({ username }) =>
             .then(r => r[0])
     );
 
-const findByUserId = _id =>
+const findByUserId = userId =>
     mongo.then(db =>
         db
             .collection('users')
-            .find({ _id: new ObjectID(_id) })
+            .find({ _id: new ObjectID(userId) })
             .toArray()
             .then(r => r[0])
     );
