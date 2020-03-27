@@ -12,7 +12,7 @@ export default function QuestionActions({ targetMsg, onClick, currentQuestion })
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
-    const handleSetAsked = () => {
+    const handleSetCurrent = () => {
         fetch(`/api/questions/set-asked/${roomId}`, {
             method: 'POST',
             body: JSON.stringify({ question: currentQuestion }),
@@ -21,17 +21,10 @@ export default function QuestionActions({ targetMsg, onClick, currentQuestion })
                 'Content-Type': 'application/json'
             }
         }).then(res => {
-            res.json().then(r => {
-                if (r.success) {
-                    snack('Successfully set the asked question', 'success');
-                } else {
-                    snack('Something went wrong, please try again', 'error');
-                }
-            });
+            if (res.status !== 200) {
+                console.log('the used question set to asked failed')
+            }
         });
-    }
-    const handleSetCurrent = () => {
-        handleSetAsked()
         fetch(`/api/sessions/set-question/${roomId}`, {
             method: 'POST',
             body: JSON.stringify({ question: targetMsg }),

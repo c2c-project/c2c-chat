@@ -101,7 +101,7 @@ router.post(
         const { user } = req;
         const { sessionId } = req.params;
         const { question } = req.body;
-        const setQuestion = Sessions.privilegedActions('asdf', user);
+        const setQuestion = Sessions.privilegedActions('SET_QUESTION', user);
         setQuestion(sessionId, question)
             .then(() => {
                 setCurrentQuestion(sessionId, question);

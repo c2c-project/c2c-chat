@@ -142,7 +142,7 @@ function tfToxicityQuestion(questionDoc,sessionId ) {
                 ioInterface
                     .of('/questions')
                     .to(sessionId)
-                    .emit('updateToxicity', questionDoc._id);   
+                    .emit('update-toxicity', questionDoc._id);   
             }
         });
     }
@@ -248,7 +248,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     ioInterface
                         .of('/questions')
                         .to(sessionId)
-                        .emit('updateClusterNumber', centerQuestionId,clusterNumber)  
+                        .emit('update-cluster-number', centerQuestionId,clusterNumber)  
                     Questions.updateClusterNumber({
                         'questionId': dataset[relaventSessionId][i][0]._id,
                         clusterNumber
@@ -256,7 +256,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     ioInterface
                         .of('/questions')
                         .to(sessionId)
-                        .emit('updateClusterNumber', dataset[relaventSessionId][i][0]._id,clusterNumber)  
+                        .emit('update-cluster-number', dataset[relaventSessionId][i][0]._id,clusterNumber)  
                     Questions.updateIsCenter({
                         'questionId': centerQuestionId,
                         'isCenter': true
@@ -264,7 +264,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     ioInterface
                         .of('/questions')
                         .to(sessionId)
-                        .emit('updateIsCenter', centerQuestionId,true)
+                        .emit('update-is-center', centerQuestionId,true)
                     Questions.updateIsCenter({
                         'questionId': dataset[relaventSessionId][i][0]._id,
                         'isCenter': false
@@ -272,7 +272,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     ioInterface
                         .of('/questions')
                         .to(sessionId)
-                        .emit('updateIsCenter',dataset[relaventSessionId][i][0]._id, false);  
+                        .emit('update-is-center',dataset[relaventSessionId][i][0]._id, false);  
                     // change memory dataset
                     dataset[relaventSessionId][i][0].similarityCluster = clusterNumber;
                     dataset[relaventSessionId][i][1].similarityCluster = clusterNumber;
@@ -291,7 +291,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     ioInterface
                         .of('/questions')
                         .to(sessionId)
-                        .emit('updateClusterNumber', questionDoc._id,clusterNumber)
+                        .emit('update-cluster-number', questionDoc._id,clusterNumber)
                     Questions.updateIsCenter({
                         'questionId': dataset[relaventSessionId][i][0]._id,
                         'isCenter': false
@@ -299,7 +299,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     ioInterface
                         .of('/questions')
                         .to(sessionId)
-                        .emit('updateIsCenter',dataset[relaventSessionId][i][0]._id,false)
+                        .emit('update-is-center',dataset[relaventSessionId][i][0]._id,false)
                     // sort the questions by weight from high to low
                     dataset[relaventSessionId][i].sort(function(first, second){
                         return second.weight - first.weight;
@@ -312,7 +312,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
                     ioInterface
                         .of('/questions')
                         .to(sessionId)
-                        .emit('updateIsCenter',centerQuestionId,true)
+                        .emit('update-is-center',centerQuestionId,true)
                     for (let j = 1; j < dataset[relaventSessionId][i].length; j += 1) {
                         subId.push(dataset[relaventSessionId][i][j]._id);
                     }
@@ -336,7 +336,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
             ioInterface
                 .of('/questions')
                 .to(sessionId)
-                .emit('updateIsCenter', questionDoc._id,true)  
+                .emit('update-is-center', questionDoc._id,true)  
         }
     } else {
         similarityClusterCounter.push(0);
@@ -355,7 +355,7 @@ async function tfUseQuestion(questionDoc,sessionId) {
         ioInterface
             .of('/questions')
             .to(sessionId)
-            .emit('updateIsCenter', questionDoc._id,true) 
+            .emit('update-is-center', questionDoc._id,true) 
     }
 }
 

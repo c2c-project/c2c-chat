@@ -15,7 +15,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Bold from '../Bold';
 import Dialog from '../Dialoag';
 import QuestionActions from './QuestionActions';
-import MessageActions from './MessageActions';
+import MessageActions from '../chat/MessageActions';
 import useJwt from '../../hooks/useJwt';
 
 const msPerMinute = 60 * 1000;
@@ -222,7 +222,7 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
                             id='center.clusterNumber'
                         >
                             <Tooltip 
-                                title={isCurrent(center._id) ? 'Is a Current': 'Not a Current. Press me to set Current'} 
+                                title={isCurrent(center._id) ? 'Is a Current': 'Click to set as current question'} 
                                 placement='top'
                                 arrow
                                 TransitionComponent={Zoom}

@@ -34,7 +34,7 @@ function useQuestions(roomId = 'session') {
                 setFunc(question);
             }
         });
-        question.on('updateToxicity', function(messageId) {
+        question.on('update-toxicity', function(messageId) {
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -47,7 +47,7 @@ function useQuestions(roomId = 'session') {
                 );
             }
         });
-        question.on('moderateQuestion', function(messageId) {
+        question.on('moderate-question', function(messageId) {
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -60,7 +60,7 @@ function useQuestions(roomId = 'session') {
                 );
             }
         });
-        question.on('cancelModerateQuestion', function(messageId) {
+        question.on('cancel-moderate-question', function(messageId) {
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -96,7 +96,7 @@ function useQuestions(roomId = 'session') {
         question.on('set-question', q => {
             setCurrent(q);
         });
-        question.on('updateIsCenter', function(messageId, isCenter) {
+        question.on('update-is-center', function(messageId, isCenter) {
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {
@@ -109,7 +109,7 @@ function useQuestions(roomId = 'session') {
                 );
             }
         });
-        question.on('updateClusterNumber', function(messageId, clusterNumber) {
+        question.on('update-cluster-number', function(messageId, clusterNumber) {
             if (isMounted) {
                 setQuestions(curQuestions =>
                     curQuestions.map(element => {

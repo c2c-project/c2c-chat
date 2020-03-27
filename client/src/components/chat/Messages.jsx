@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import useJwt from '../../hooks/useJwt';
 import MessageActions from './MessageActions';
-import QuestionActions from './QuestionActions';
+import QuestionActions from '../question/QuestionActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
 
