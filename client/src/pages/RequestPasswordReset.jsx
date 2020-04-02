@@ -38,7 +38,7 @@ export default function PasswordResetPage() {
 
 	const handleSubmit = e => {
 		e.preventDefault();
-		fetch('/api/users/passwordreset', {
+		fetch('/api/users/request-password-reset', {
 				method: 'POST',
 				body: JSON.stringify({ form }),
 				headers: {

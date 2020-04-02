@@ -78,7 +78,7 @@ const verifyUser = (userId) => {
  * Function to send reset password link to user's email using jwt based on user's doc
  * @param {string} email -- user's email to send reset password link to
 */
-const passwordReset = (email) => {
+const sendPasswordResetEmail = (email) => {
     return Users.findByEmail(email).then(doc => {
         if(doc) {
             //Filter doc
@@ -110,7 +110,7 @@ const passwordReset = (email) => {
  * @param {string} password -- new password
  * @param {string} confirmPassword -- new password confirmation
  */
-const resetPassword = async (token, password, confirmPassword) => {
+const updatePassword = async (token, password, confirmPassword) => {
     return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if(err) {
             if(err.message === 'jwt expired') {
@@ -219,6 +219,6 @@ export default {
     filterSensitiveData,
     isOwner,
     verifyUser,
-    passwordReset,
-    resetPassword
+    sendPasswordResetEmail,
+    updatePassword
 };

@@ -99,10 +99,10 @@ describe('users', function() {
             });
         });
     });
-    describe('#passwordreset', function() {
+    describe('#request-password-reset', function() {
         it('should accept valid email', function(done) {
             chai.request(server)
-                .post('/api/users/passwordreset')
+                .post('/api/users/request-password-reset')
                 .send({ form: { email: 'admin@example.com' } })
                 .end(function(err, res) {
                     if (err) {
@@ -114,7 +114,7 @@ describe('users', function() {
         });
         it('should reject undefined email', function(done) {
             chai.request(server)
-                .post('/api/users/passwordreset')
+                .post('/api/users/request-password-reset')
                 .send({ form: { email: undefined } })
                 .end(function(err, res) {
                     if (err) {
@@ -126,7 +126,7 @@ describe('users', function() {
         });
         it('should reject invalid email', function(done) {
             chai.request(server)
-                .post('/api/users/passwordreset')
+                .post('/api/users/request-password-reset')
                 .send({ form: { email: 'invalidEmail' } })
                 .end(function(err, res) {
                     if (err) {
@@ -137,14 +137,14 @@ describe('users', function() {
                 });
         });
     });
-    describe('#resetpassword', function() {
+    describe('#consume-password-reset-token', function() {
         it('should accept valid token', function(done) {
             Users.findByEmail('admin@example.com')
                 .then(doc => {
                     const { _id } = doc;
                     JWT.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '2m' }, (err, token) => {
                         chai.request(server)
-                            .post('/api/users/resetpassword')
+                            .post('/api/users/consume-password-reset-token')
                             .send({
                                 token,
                                 form: {
@@ -168,7 +168,7 @@ describe('users', function() {
         });
         it('should reject invalid token', function(done) {
             chai.request(server)
-                .post('/api/users/resetpassword')
+                .post('/api/users/consume-password-reset-token')
                 .send({
                     form: { password: '1', confirmPassword: '1' }
                 })
@@ -189,7 +189,7 @@ describe('users', function() {
                     setTimeout(function() {
                         return chai
                             .request(server)
-                            .post('/api/users/resetpassword')
+                            .post('/api/users/consume-password-reset-token')
                             .send({
                                 token,
                                 form: {
@@ -213,7 +213,7 @@ describe('users', function() {
                 const { _id } = doc;
                 JWT.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '2m'}, (err, token) => {
                     chai.request(server)
-                        .post('/api/users/resetpassword')
+                        .post('/api/users/consume-password-reset-token')
                         .send({ token, form: { password: '1', confirmPassword: '2' }})
                         .end(function(err, res) {
                             res.should.have.status(400);

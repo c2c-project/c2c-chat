@@ -39,7 +39,7 @@ export default function ResetPasswordPage() {
 
 	const handleSubmit = e => {
 		e.preventDefault();
-		fetch('/api/users/resetpassword', {
+		fetch('/api/users/consume-password-reset-token', {
 				method: 'POST',
 				body: JSON.stringify({ form, token }),
 				headers: {
