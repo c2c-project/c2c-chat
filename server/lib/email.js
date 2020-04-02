@@ -1,10 +1,20 @@
 import mailgun from 'mailgun-js';
 
-const sendEmailVerification = (email, _id) => {
-    const mg = mailgun({
-        apiKey: process.env.MAILGUN_API_KEY,
-        domain: process.env.MAILGUN_DOMAIN
+const mg = mailgun({
+    apiKey: process.env.MAILGUN_API_KEY,
+    domain: process.env.MAILGUN_DOMAIN
+});
+
+const sendEmail = (data) => {
+    mg.messages().send(data, (error, body) => {
+        if (error) {
+            console.error("Mailgun Error: ", error);
+        }
+        console.log("Mailgun: ", body);
     });
+}
+
+const sendEmailVerification = (email, _id) => {
     const url = `${process.env.ORIGIN}/verification/${_id}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
@@ -15,19 +25,12 @@ const sendEmailVerification = (email, _id) => {
         <h3>Please click the lik to confirm your email</h3>
         <a href="${url}">${url}</a>`
     };
-    mg.messages().send(data, (error, body) => {
-        if (error) {
-            console.error(error);
-        }
-        console.log(body);
-    });
+    sendEmail(data);
 };
 
 const sendPasswordResetEmail = (email, token) => {
-    const mg = mailgun({
-        apiKey: process.env.MAILGUN_API_KEY,
-        domain: process.env.MAILGUN_DOMAIN
-    });
+    console.log(email);
+    
     const url = `${process.env.ORIGIN}/resetpassword/${token}`;
     const data = {
         from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
@@ -38,12 +41,7 @@ const sendPasswordResetEmail = (email, token) => {
         <h3>Please click the link to reset your password</h3>
         <a href="${url}">${url}</a>`
     };
-    mg.messages().send(data, (error, body) => {
-        if (error) {
-            console.error(error);
-        }
-        console.log(body);
-    });
+    sendEmail(data);
 };
 
 export default {
