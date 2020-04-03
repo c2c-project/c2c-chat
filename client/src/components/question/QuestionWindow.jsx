@@ -19,7 +19,6 @@ import Collapse from '@material-ui/core/Collapse';
 import Checkbox from '@material-ui/core/Checkbox';
 import useQuestions from '../../hooks/useQuestions';
 import Questions from './Questions';
-import Question from './Questions';
 
 const useStyles = makeStyles(theme => ({
     paper: {

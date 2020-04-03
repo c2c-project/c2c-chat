@@ -7,6 +7,24 @@ function connect(roomId = 'chat') {
     return io.connect(url, { query: `roomId=${roomId}` });
 }
 
+function isModerator(jwt){
+    return new Promise(function(resolve) { 
+        fetch('/api/users/authenticate', {
+            method: 'POST',
+            body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(r => {
+            r.json().then(result => {
+
+                    resolve(result.allowed)
+            });
+        });
+    })
+}
+
 function useMessages(roomId = 'session') {
     const [messages, setMessages] = React.useState([]);
     const [jwt] = useJwt();
@@ -38,10 +56,46 @@ function useMessages(roomId = 'session') {
         chat.on('moderate', messageId => {
             if (isMounted) {
                 setMessages(curMessages =>
-                    curMessages.filter(msg => msg._id !== messageId)
+                    {
+                        if (isModerator(jwt)) {
+                            return curMessages.map(msg => {
+                                if (msg._id === messageId) {
+                                    msg.moderated = true
+                                }
+                                return msg
+                            })
+                        }else{
+                            return curMessages.filter(msg => msg._id !== messageId)
+                        }
+                    }
                 );
             }
         });
+
+        chat.on('unmoderate', message => {
+            if (isMounted) {
+                setMessages(curMessages =>
+                    {
+                        if (isModerator(jwt)) {
+                            console.log('is mod')
+                            console.log(message)
+                            return curMessages.map(msg => {
+                                if (msg._id === message._id) {
+                                    msg.moderated = false;
+                                }
+                                return msg
+                            })
+                        }else{
+                            curMessages.push(message)
+                            return curMessages.sort(function(a, b) {
+                                return a.sentOn - b.sendOn;
+                            })
+                        }
+                    }
+                );
+            }
+        });
+        
         // FETCH
         fetch(`/api/chat/${roomId}`, {
             headers: {
@@ -50,7 +104,8 @@ function useMessages(roomId = 'session') {
         }).then(r => {
             r.json().then(history => {
                 if (isMounted) {
-                    setMessages(history.filter(m => !m.moderated));
+                    setMessages(history);
+                    // setMessages(history.filter(m => !m.moderated));
                 }
             });
         });

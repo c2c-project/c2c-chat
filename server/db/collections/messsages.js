@@ -19,7 +19,8 @@ const createMessage = ({
                 username,
                 sessionId: session,
                 toxicity,
-                toxicityReason
+                toxicityReason,
+                sendOn: new Date(),
             })
         // close();
     );
@@ -32,6 +33,18 @@ const removeMessage = ({ messageId, reason }) =>
                     _id: new ObjectID(messageId)
                 },
                 { $set: { moderated: true, reason } }
+            )
+        // close();
+    );
+
+const recoverMessage = ({ messageId, reason }) =>
+    mongo.then(
+        db =>
+            db.collection('messages').updateOne(
+                {
+                    _id: new ObjectID(messageId)
+                },
+                { $set: { moderated: false, reason } }
             )
         // close();
     );
@@ -51,6 +64,14 @@ const findMessages = ({ sessionId }) =>
             .collection('messages')
             .find({ sessionId })
             .toArray()
+    );
+
+
+const findMessage = ({ messageId }) =>
+    mongo.then(db =>
+           db.collection('messages').findOne(
+            { _id: new ObjectID(messageId) }
+        )
     );
 
 const updateMessageToxicity = ({ messageId, result, toxicityReason }) => {
@@ -88,6 +109,19 @@ const privilegedActions = (action, userDoc) => {
                 return Promise.reject(Error('Not allowed'));
             };
         }
+        case 'RECOVER_MESSAGE': {
+            const requiredAny = ['admin', 'moderator'];
+            return messageId => {
+                if (Accounts.isAllowed(roles, { requiredAny })) {
+                    return recoverMessage({
+                        messageId,
+                        reason: 'Recovered by moderator'
+                    });
+                }
+                console.log('TODO:  not allowed but trying to unmoderate');
+                return Promise.reject(Error('Not allowed'));
+            };
+        }
 
         case 'AUTO_REMOVE_MESSAGE': {
             return messageId => {
@@ -108,6 +142,7 @@ export default {
     removeMessage,
     updateMessage,
     findMessages,
+    findMessage,
     updateMessageToxicity,
     privilegedActions
 };

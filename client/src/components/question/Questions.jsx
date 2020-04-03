@@ -279,7 +279,7 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
                             } = {}) => (
                                 <ExpansionPanelDetails>
                                     <Tooltip 
-                                        title={isCurrent(_id) ? 'Is a Current': 'Not a Current. Press me to set Current'} 
+                                        title={isCurrent(_id) ? 'Is the Current': 'Not the Current. Press me to set Current'} 
                                         placement='top'
                                         arrow
                                         TransitionComponent={Zoom}

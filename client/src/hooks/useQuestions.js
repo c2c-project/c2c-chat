@@ -144,7 +144,7 @@ function useQuestions(roomId = 'session') {
                 if (isMounted) {
                     setQuestions(history.filter(m => !m.moderated));
                 }
-            });
+            }).catch((exception) => console.log( exception));
         });
 
         // SOCKET IO CLEANUP
