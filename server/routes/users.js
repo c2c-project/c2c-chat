@@ -94,7 +94,7 @@ router.post(
     '/consume-password-reset-token', (req, res, next) => {
         if(req.body.token !== undefined && req.body.form.password !== undefined && req.body.form.confirmPassword !== undefined) {
             const { token, form } = req.body;
-            Accounts.resetPassword(token, form.password, form.confirmPassword).then(() => {
+            Accounts.updatePassword(token, form.password, form.confirmPassword).then(() => {
                 res.status(200).send('Password Reset');
             }).catch(next)
         } else {
