@@ -75,4 +75,40 @@ router.post('/verification', (req, res, next) => {
         .catch(next);
 });
 
+//Call to send password reset email
+router.post(
+    '/request-password-reset', (req, res, next) => {
+        if(req.body.form.email !== undefined) {
+            Accounts.sendPasswordResetEmail(req.body.form.email).then(() => {
+                res.status(200).send();
+            }).catch(next)
+        } else {
+            res.statusText = 'Email Missing';
+            res.status(400).send();
+        }
+    }
+);
+
+//Call to update to new password
+router.post(
+    '/consume-password-reset-token', (req, res, next) => {
+        if(req.body.token !== undefined && req.body.form.password !== undefined && req.body.form.confirmPassword !== undefined) {
+            const { token, form } = req.body;
+            Accounts.updatePassword(token, form.password, form.confirmPassword).then(() => {
+                res.status(200).send('Password Reset');
+            }).catch(next)
+        } else {
+            if(req.body.token === undefined) {
+                res.statusText = 'Token Missing';
+                res.status(400).send();
+            } else if(req.body.form.password === undefined || req.body.form.confirmPassword === undefined) {
+                res.statusText = 'Invalid Password';
+                res.status(400).send();
+            } else {
+                res.status(400).send();
+            }
+        }
+    }
+);
+
 module.exports = router;

@@ -9,6 +9,8 @@ import LoggedIn from '../components/LoggedIn';
 import LoginTemp from './LoginTemp';
 import Register from './Register';
 import Verification from './Verification';
+import RequestPasswordReset from './RequestPasswordReset';
+import UpdatePassword from './UpdatePassword';
 
 export default function Routes() {
     return (
@@ -37,8 +39,14 @@ export default function Routes() {
             <Route exact path='/logout'>
                 <Logout />
             </Route>
-            <Route path='/verification/:userId' >
+            <Route path='/verification/:userId'>
                 <Verification />
+            </Route>
+            <Route path='/forgot-password'>
+                <RequestPasswordReset />
+            </Route>
+            <Route path='/resetpassword/:token'>
+                <UpdatePassword />
             </Route>
             <Route path='/'>
                 <Redirect to='/login' />
