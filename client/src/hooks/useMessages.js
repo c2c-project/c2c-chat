@@ -18,7 +18,6 @@ function isModerator(jwt){
             }
         }).then(r => {
             r.json().then(result => {
-
                     resolve(result.allowed)
             });
         });
@@ -57,16 +56,21 @@ function useMessages(roomId = 'session') {
             if (isMounted) {
                 setMessages(curMessages =>
                     {
-                        if (isModerator(jwt)) {
-                            return curMessages.map(msg => {
-                                if (msg._id === messageId) {
-                                    msg.moderated = true
-                                }
-                                return msg
-                            })
-                        }else{
-                            return curMessages.filter(msg => msg._id !== messageId)
-                        }
+                        let message = curMessages
+                        isModerator(jwt).then((value) => {
+                            if(value === true) {
+                                message = curMessages.map(msg => {
+                                    let copy = {...msg}
+                                    if (copy._id === messageId) {
+                                        copy.moderated = true
+                                    }
+                                    return copy
+                                })
+                            }else{
+                                message = curMessages.filter(msg => msg._id !== messageId)
+                            }
+                        })
+                        return message
                     }
                 );
             }

@@ -76,7 +76,8 @@ function Question({ messages, variant, currentQuestion, showsUserName,sortBy }) 
     const setCurrentAction = (event, _id, message, username) => {
         event.stopPropagation()
         if (isModerator) {
-            if(currentQuestion && currentQuestion._id !== _id){
+            if((currentQuestion && currentQuestion._id !== _id) || (!currentQuestion)){
+                console.log('click set current action')
                 setTargetMsg({
                     _id,
                     message,
