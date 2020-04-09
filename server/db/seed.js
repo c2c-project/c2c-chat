@@ -100,6 +100,13 @@ const messages = [
            Will you take the time now to affirm your support for the First\
             Order and the empire as a whole?',
         sentOn: new Date()
+    },
+    {
+        _id: new ObjectID(),
+        sessionId: sessionIds[0],
+        message:'I made a boo boo',
+        userId: String(userIds[3]),
+        username: users[3].username
     }
 ];
 
@@ -119,7 +126,7 @@ function seedMessages() {
     return mongo.then(db =>
         db.collection('messages').insertMany(messages, (err, r) => {
             assert.equal(null, err);
-            assert.equal(1, r.insertedCount);
+            assert.equal(2, r.insertedCount);
             // close();
         })
     );

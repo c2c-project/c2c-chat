@@ -117,6 +117,7 @@ const filterSensitiveData = userDoc => {
  * doc.userId field is of type string while userId is type object. For the comparison to work userId has to be converted to a string
  */
 const isOwner = (userId, doc) => {
+    console.log(doc.userId === String(userId));
     return doc.userId === String(userId);
 };
 
