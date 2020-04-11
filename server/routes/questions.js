@@ -27,15 +27,15 @@ router.post(
             clusterNumber: 0,
             asked: false,
         })
-            .then(r => {
+            .then((r) => {
                 const questionDoc = r.ops[0];
                 ioInterface
                     .of('/questions')
                     .to(sessionId)
                     .emit('question', questionDoc);
-                res.send({ success: true });
-                TensorFlow.tfToxicityQuestion(questionDoc,sessionId);
-                TensorFlow.tfUseQuestion(questionDoc,sessionId);
+                res.status(200).send();
+                TensorFlow.tfToxicityQuestion(questionDoc, sessionId);
+                TensorFlow.tfUseQuestion(questionDoc, sessionId);
             })
             .catch(next);
     }
@@ -52,34 +52,38 @@ router.get(
             user
         );
         questionHistory(roomId)
-            .then(docs => {
+            .then((docs) => {
                 res.status(200).json(docs);
             })
             .catch(next);
     }
 );
 
-
 router.post(
     '/set-asked/:roomId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
         const { roomId } = req.params;
         const { question } = req.body;
         // TODO: move this to the privileged actions code
         if (
             Accounts.isAllowed(user.roles, {
-                requiredAny: ['moderator', 'admin']
+                requiredAny: ['moderator', 'admin'],
             })
         ) {
-            Questions.updateQuestionAsked({questionId: question._id, asked: true}).then(() =>{
-                ioInterface
-                    .of('/questions')
-                    .to(roomId)
-                    .emit('asked', question._id);
-                res.send({ success: true });
+            Questions.updateQuestionAsked({
+                questionId: question._id,
+                asked: true,
             })
+                .then(() => {
+                    ioInterface
+                        .of('/questions')
+                        .to(roomId)
+                        .emit('asked', question._id);
+                    res.status(200).send();
+                })
+                .catch(next);
         }
     }
 );
