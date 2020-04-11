@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import dotenv from 'dotenv';
 import passport from 'passport';
+import mongoose from 'mongoose';
 import usersRouter from './routes/users';
 import chatRouter from './routes/chat';
 import sessionRouter from './routes/sessions';
@@ -23,6 +24,17 @@ app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(passport.initialize());
+
+
+mongoose.connect(
+    `${process.env.DB_URL  }:${  process.env.DB_PORT}`,
+    { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
+);
+
+const { connection } = mongoose;
+connection.once('open', () => {
+    console.log('MongoDB database connection established successfully');
+});
 
 app.use('/api/users', usersRouter);
 app.use('/api/chat', chatRouter);
