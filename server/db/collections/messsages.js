@@ -9,10 +9,10 @@ const createMessage = ({
     username,
     session,
     toxicity,
-    toxicityReason
+    toxicityReason,
 }) =>
     mongo.then(
-        db =>
+        (db) =>
             db.collection('messages').insertOne({
                 message,
                 userId,
@@ -27,10 +27,10 @@ const createMessage = ({
 
 const removeMessage = ({ messageId, reason }) =>
     mongo.then(
-        db =>
+        (db) =>
             db.collection('messages').updateOne(
                 {
-                    _id: new ObjectID(messageId)
+                    _id: new ObjectID(messageId),
                 },
                 { $set: { moderated: true, reason } }
             )
@@ -39,10 +39,10 @@ const removeMessage = ({ messageId, reason }) =>
 
 const recoverMessage = ({ messageId, reason }) =>
     mongo.then(
-        db =>
+        (db) =>
             db.collection('messages').updateOne(
                 {
-                    _id: new ObjectID(messageId)
+                    _id: new ObjectID(messageId),
                 },
                 { $set: { moderated: false, reason } }
             )
@@ -50,7 +50,7 @@ const recoverMessage = ({ messageId, reason }) =>
     );
 
 const updateMessage = ({ messageId, message }) =>
-    mongo.then(db => {
+    mongo.then((db) => {
         db.collection('messages').updateOne(
             { _id: messageId },
             { $set: message }
@@ -59,23 +59,20 @@ const updateMessage = ({ messageId, message }) =>
     });
 
 const findMessages = ({ sessionId }) =>
-    mongo.then(db =>
-        db
-            .collection('messages')
-            .find({ sessionId })
-            .toArray()
-    );
-
+    mongo.then((db) => db.collection('messages').find({ sessionId }).toArray());
 
 const findMessage = ({ messageId }) =>
-    mongo.then(db =>
-           db.collection('messages').findOne(
-            { _id: new ObjectID(messageId) }
-        )
+    mongo.then((db) =>
+        db.collection('messages').findOne({ _id: new ObjectID(messageId) })
+    );
+
+const countMessagesBySession = (sessionId) =>
+    mongo.then((db) =>
+        db.collection('messages').find({ sessionId: sessionId }).count()
     );
 
 const updateMessageToxicity = ({ messageId, result, toxicityReason }) => {
-    mongo.then(db => {
+    mongo.then((db) => {
         db.collection('messages').updateOne(
             { _id: messageId },
             { $set: { toxicity: result, toxicityReason } }
@@ -98,11 +95,11 @@ const privilegedActions = (action, userDoc) => {
     switch (action) {
         case 'REMOVE_MESSAGE': {
             const requiredAny = ['admin', 'moderator'];
-            return messageId => {
+            return (messageId) => {
                 if (Accounts.isAllowed(roles, { requiredAny })) {
                     return removeMessage({
                         messageId,
-                        reason: 'Removed by moderator'
+                        reason: 'Removed by moderator',
                     });
                 }
                 console.log('TODO:  not allowed but trying to moderate');
@@ -111,11 +108,11 @@ const privilegedActions = (action, userDoc) => {
         }
         case 'RECOVER_MESSAGE': {
             const requiredAny = ['admin', 'moderator'];
-            return messageId => {
+            return (messageId) => {
                 if (Accounts.isAllowed(roles, { requiredAny })) {
                     return recoverMessage({
                         messageId,
-                        reason: 'Recovered by moderator'
+                        reason: 'Recovered by moderator',
                     });
                 }
                 console.log('TODO:  not allowed but trying to unmoderate');
@@ -124,10 +121,10 @@ const privilegedActions = (action, userDoc) => {
         }
 
         case 'AUTO_REMOVE_MESSAGE': {
-            return messageId => {
+            return (messageId) => {
                 return removeMessage({
                     messageId,
-                    reason: 'Auto removed'
+                    reason: 'Auto removed',
                 });
             };
         }
@@ -144,5 +141,6 @@ export default {
     findMessages,
     findMessage,
     updateMessageToxicity,
-    privilegedActions
+    privilegedActions,
+    countMessagesBySession,
 };
