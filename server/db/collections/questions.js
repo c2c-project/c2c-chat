@@ -51,6 +51,16 @@ const removeQuestion = ({ questionId, reason }) =>
             )
         // close();
     );
+
+const countQuestionsBySession = sessionId =>
+    mongo.then(db =>
+        db
+            .collection('questions')
+            .find({ 'sessionId': sessionId }).count(function (err, docs) {
+                console.log("session ", docs);    // returns the amount of questions per sessionId
+            })
+    );
+
 const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
@@ -60,6 +70,14 @@ const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
         // close();
     });
 
+<<<<<<< HEAD
+
+// TODO create an aggregate
+// TODO: 193
+/**
+ * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
+ */
+=======
 const privilegedActions = (action, userDoc) => {
     const { roles } = userDoc;
     switch (action) {
@@ -79,11 +97,13 @@ const privilegedActions = (action, userDoc) => {
         }
     }
 };
+>>>>>>> dev
 
 export default {
     findById,
     createQuestion,
     findBySession,
+    countQuestionsBySession,
     removeQuestion,
     updateQuestionToxicity,
     privilegedActions

@@ -1,8 +1,12 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 
-export default function TimeLineItem({ data, onClickPlay, onClickEdit }) {
+export default function TimeLineItem({ data, onClickPlay, onClickEdit, onClickDelete }) {
     return (
         // wrapper
         <div className='timeline-item'>
@@ -13,16 +17,17 @@ export default function TimeLineItem({ data, onClickPlay, onClickEdit }) {
                 >
                     {data.category.tag}
                 </span>
-                <time>{data.start}</time>
+                <time>{`${data.start } to ${data.end}`}</time>
                 <p>{data.question}</p>
                 {/* <a href={data.link.url}>
                     {data.link.text}
                 </a> */}
                 {/* <Button onClick={clipEvent}> Click Here</Button> */}
-                <Button onClick={onClickPlay}>Click Here</Button>
-                <Button onClick={onClickEdit} className='timeline-item-edit'>
-                    Edit
-                </Button>
+                <Grid container>
+                    <Button onClick={onClickPlay}><PlayArrowIcon /></Button>
+                    <Button onClick={onClickEdit} className='timeline-item-edit'><EditIcon /></Button>
+                    <Button onClick={onClickDelete}><DeleteIcon /></Button>
+                </Grid>
                 <span className='circle' />
             </div>
         </div>
@@ -46,4 +51,5 @@ TimeLineItem.propTypes = {
     }).isRequired,
     onClickPlay: PropTypes.func.isRequired,
     onClickEdit: PropTypes.func.isRequired,
+    onClickDelete: PropTypes.func.isRequired,
 }

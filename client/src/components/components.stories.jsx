@@ -2,6 +2,7 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import CurrentQuestionComponent from './CurrentQuestion';
+import Stats from './Stats';
 import TimeLine from './clipper/TimeLine';
 
 export default { title: 'components' };
@@ -50,3 +51,8 @@ export const Clips = () => {
     );
 };
 
+export const Statistics = () => {
+    return(
+        <Stats />
+    )
+}

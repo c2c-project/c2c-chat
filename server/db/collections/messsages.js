@@ -53,6 +53,16 @@ const findMessages = ({ sessionId }) =>
             .toArray()
     );
 
+
+const countMessagesBySession =  sessionId  =>
+    mongo.then(db =>
+        db
+            .collection('messages')
+            .find({ 'sessionId': sessionId })
+            .count()
+
+    );
+
 const updateMessageToxicity = ({ messageId, result, toxicityReason }) => {
     mongo.then(db => {
         db.collection('messages').updateOne(
@@ -108,6 +118,7 @@ export default {
     removeMessage,
     updateMessage,
     findMessages,
-    updateMessageToxicity,
-    privilegedActions
+    privilegedActions,
+    countMessagesBySession,
+    updateMessageToxicity
 };
