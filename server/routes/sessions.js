@@ -41,7 +41,7 @@ router.get(
 );
 
 router.get(
-    '/findSummary/:sessionId',
+    '/find-summary/:sessionId',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         const { sessionId } = req.params;

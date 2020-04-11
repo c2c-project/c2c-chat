@@ -58,9 +58,8 @@ const countMessagesBySession =  sessionId  =>
     mongo.then(db =>
         db
             .collection('messages')
-            .find({ 'sessionId': sessionId }).count(function (err, docs) {
-                console.log('chat ', docs);    // returns the amount of questions per sessionId
-            })
+            .find({ 'sessionId': sessionId })
+            .count()
 
     );
 

@@ -49,23 +49,6 @@ const removeQuestion = ({ questionId, reason }) =>
             )
         // close();
     );
-/*   
-// Attempt to get aggregate to work...
-const countQuestionsBySession = sessionId =>
-    mongo.then(db =>
-        db
-            .collection('questions')
-            .aggregate([
-                {
-                    "$group": {
-                        "_id": sessionId,
-                        "count": { "$sum": 1 }
-                    }
-                }
-            ]).toArray(function (err, docs) {
-                console.log(docs);
-            })
-    );*/
 
 const countQuestionsBySession = sessionId =>
     mongo.then(db =>

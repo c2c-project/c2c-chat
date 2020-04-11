@@ -10,12 +10,6 @@ const findAllSessions = () =>
             .toArray()
     );
 
-// TODO: joseph
-/**
- * I think you should only need to use this to get basic session data
- * such as speaker, date & time, and I will eventually be storing duration in the session document too
- * if that changes I will let you know
- */
 const findSessionById = id =>
     mongo.then(db =>
         db

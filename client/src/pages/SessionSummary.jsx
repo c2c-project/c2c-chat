@@ -34,6 +34,7 @@ export default function SessionSummary() {
     const history = useHistory();
     const [target, setTarget] = React.useState(null);
     const [data, setData] = React.useState([]);
+    const [tdata, tsetData] = React.useState([]);
     const [force, refetch] = React.useReducer(x => x + 1, 0);
     const [jwt] = useJwt();
 
@@ -45,17 +46,14 @@ export default function SessionSummary() {
             'session',
             JSON.stringify(data.find(session => sessionId === session._id))
         );
-        fetch(`/api/sessions/findSummary/${sessionId}`, {
+        fetch(`/api/analytics/session-summary/${sessionId}`, {
             headers: {
                 Authorization: `bearer ${jwt}`
             }
+        }).then(res => {
+            
+            res.json().then(r => console.log(r));
         });
-        fetch(`/api/chat/findMessages/${sessionId}`, {
-            headers: {
-                Authorization: `bearer ${jwt}`
-            }
-        });
-
         history.push({
             pathname: `/app/sessions/${sessionId}/session-summary`,
             state: {
@@ -63,8 +61,9 @@ export default function SessionSummary() {
                 sent: messages.sent,
                 asked: messages.asked,
                 unanswered: messages.unanswered,
-                duration,
-                speaker
+                duration: duration,
+                speaker: speaker,
+                tdata:tdata
             }
         });
     };

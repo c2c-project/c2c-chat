@@ -10,6 +10,7 @@ import usersRouter from './routes/users';
 import chatRouter from './routes/chat';
 import sessionRouter from './routes/sessions';
 import questionRouter from './routes/questions';
+import analyticsRouter from './routes/analytics';
 import './lib/passport';
 
 dotenv.config();
@@ -38,6 +39,7 @@ connection.once('open', () => {
 app.use('/api/users', usersRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/sessions', sessionRouter);
+app.use('/api/analytics', analyticsRouter);
 app.use('/api/questions', questionRouter);
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'client/build')));
