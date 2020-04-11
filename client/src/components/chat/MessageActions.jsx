@@ -20,16 +20,15 @@ export default function MessageActions({ targetMsg, onClick }) {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({moderateAction: !targetMsg.moderated}),
+            body: JSON.stringify({ moderateAction: !targetMsg.moderated }),
         })
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
-                    if(targetMsg.moderated)
-                    {
+                    if (targetMsg.moderated) {
                         snack('Successfully unmoderated messsage', 'success');
-                    }else{
+                    } else {
                         snack('Successfully moderated messsage', 'success');
                     }
                     onClick();
@@ -37,12 +36,12 @@ export default function MessageActions({ targetMsg, onClick }) {
                     snack('Something went wrong! Try again.', 'error');
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 snack('Something went wrong! Try again.', 'error');
             });
     };
-    
+
     // const handleSetCurrent = () => {
     // fetch(`/api/sessions/set-question/:${roomId}`, {
     //     method: 'POST',
@@ -97,7 +96,9 @@ export default function MessageActions({ targetMsg, onClick }) {
                     fullWidth
                     onClick={handleAction}
                 >
-                    {targetMsg.moderated? "Cancel-Moderate/Show":"Moderate/Hide" }
+                    {targetMsg.moderated
+                        ? 'Cancel-Moderate/Show'
+                        : 'Moderate/Hide'}
                 </Button>
             </Grid>
         </Grid>
@@ -105,7 +106,7 @@ export default function MessageActions({ targetMsg, onClick }) {
 }
 
 MessageActions.defaultProps = {
-    onClick: () => {}
+    onClick: () => {},
 };
 
 MessageActions.propTypes = {
@@ -113,7 +114,7 @@ MessageActions.propTypes = {
         _id: PropTypes.string.isRequired,
         message: PropTypes.string.isRequired,
         username: PropTypes.string.isRequired,
-        moderated:PropTypes.bool.isRequired,
+        moderated: PropTypes.bool.isRequired,
     }).isRequired,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
 };

@@ -82,10 +82,10 @@ export function QuestionWindow({ roomId, title }) {
         <Paper className={classes.paper}>
             <Grid container direction='column' spacing={2}>
                 <Grid container direction='row' spacing={2} justify='center'>
-                    <Grid item xs='5'>
+                    <Grid item xs={5}>
                         <Typography variant='h4'>{title}</Typography>
                     </Grid>
-                    <Grid item xs='3'>
+                    <Grid item xs={3}>
                         <IconButton
                             onClick={handleClickFilterIcon} 
                         >
@@ -119,7 +119,7 @@ export function QuestionWindow({ roomId, title }) {
                             </FormControl>
                         </Collapse>
                     </Grid>
-                    <Grid item xs='3'>
+                    <Grid item xs={3}>
                         <InputLabel>Sort by</InputLabel>
                         <Select
                             native
