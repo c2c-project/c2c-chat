@@ -15,11 +15,11 @@ router.get(
 );
 
 router.get(
-    '/findMessages/:sessionId',
+    '/find-messages/:sessionId',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         const { sessionId } = req.params;
-        Chat.countMessagesBySession(sessionId);
+        Chat.countMessagesBySession(sessionId).then(r => res.json(r));
     }
 
 );

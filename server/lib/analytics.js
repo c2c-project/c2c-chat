@@ -1,11 +1,26 @@
 import { Sessions, Questions, Chat } from '../db/collections';
 
-const countToxicMessages = () => {};
+const countMessagesBySession = (sessionId) => {
+    return Chat.countMessagesBySession(sessionId).then(doc =>
+        doc
+    );
+};
+const findQuestionsBySession = (sessionId) => {
+    return Questions.findBySession({sessionId}).then(doc =>
+        doc
+    );
+};
 
 const summarizeSession = sessionId => {
     // 1. find all Questions related to the particular session
     // 2. find all chat messages related to the particular session
     // 3. loop through to figure out wanted aggregate data
+    //Questions.findBySession(sessionId);
+    return Promise.all([findQuestionsBySession(sessionId)]).then(doc =>
+            doc
+        );
+    
+
 };
 
 const summarizeSessionsByTopic = topic => {
@@ -15,5 +30,6 @@ const summarizeSessionsByTopic = topic => {
 };
 
 export default {
-    summarizeSession
+    summarizeSession,
+    summarizeSessionsByTopic
 };

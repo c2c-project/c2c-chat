@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
    }
 }));
 
-function Stats({ sent, asked, unanswered, duration, speaker }) {
+function Stats({ sent, asked, unanswered, duration, speaker },tdata) {
    const classes = useStyles();
 
    const data =
@@ -85,7 +85,7 @@ function Stats({ sent, asked, unanswered, duration, speaker }) {
          <Grid
             container
             spacing={2}
-         >
+         >{console.log(tdata)}
             <Grid item xs={4}>
                <Paper className={classes.paperSpacing} elevation={3}>
                   <Grid

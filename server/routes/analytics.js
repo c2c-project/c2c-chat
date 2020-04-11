@@ -11,6 +11,8 @@ router.get(
         const { sessionId } = req.params;
         // aggregate data and 
         Analytics.summarizeSession(sessionId).then(summaryDetails => {
+            console.log(summaryDetails);
+            res.json(summaryDetails);
             // send details to client
         });
     }
