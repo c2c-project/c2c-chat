@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Messages from '../db/collections/messsages';
-import { moderate } from '../lib/socket-io';
+import { moderate, unmoderate } from '../lib/socket-io';
 
 const router = express.Router();
 
@@ -17,20 +17,50 @@ router.get(
     }
 );
 
+router.get(
+    '/find-messages/:sessionId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { sessionId } = req.params;
+        Chat.countMessagesBySession(sessionId).then(r => res.json(r));
+    }
+
+);
+
 router.post(
-    '/remove-message/:roomId/:messageId',
+    '/message-action/:roomId/:messageId',
     passport.authenticate('jwt', { session: false }),
     (req, res, next) => {
         const { user } = req;
+        const { moderateAction } = req.body;
         const { messageId, roomId } = req.params;
-        const removeMessage = Messages.privilegedActions('REMOVE_MESSAGE', user);
-        removeMessage(messageId)
+        const MessageAction = moderateAction === true ? Messages.privilegedActions('REMOVE_MESSAGE', user) : Messages.privilegedActions('RECOVER_MESSAGE', user);
+        const message = Messages.findMessage({messageId});
+        MessageAction(messageId)
             .then(() => {
+                if (moderateAction === true) 
+                {
+                    moderate(roomId, messageId);
+                    res.status(200).send(); 
+                }else {
+                    message.then(r => {
+                        if(r != null){
+                            unmoderate(roomId, r)
+                        }else {
+                            console.log("Couldn't find the target message")
+                            res.status(404).send();
+                        }
+                    })
+                    .catch(next)
+                }
                 moderate(roomId, messageId);
-                res.status(200).send();
+                res.status(200).send(); 
             })
             .catch(next);
+        res.status(200).send(); 
     }
 );
+
+// Will get to this get request once chat is implemented
 
 module.exports = router;

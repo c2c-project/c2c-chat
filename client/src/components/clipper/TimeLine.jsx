@@ -1,77 +1,87 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import PropTypes from 'prop-types';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import TimeLineItem from './TimeLineItem';
 import ClipDialog from './ClipDialog';
 import Fab from '../Fab';
 import './TimeLineItem.css';
+import useJwt from '../../hooks/useJwt';
 
 export default function TimeLine({ url }) {
     const player = useRef();
+    const location = useLocation();
     const quickScroll = React.useRef(null);
+    const [jwt] = useJwt();
+    const [currUrl, setUrl] = useState(url);
     const [playVideo, setPlayVideo] = useState(true);
-
-    const [timeFrame, setTimeFrame] = useState({
-        start: 0,
-        end: Number.MAX_SAFE_INTEGER
-    });
-    useEffect(() => {
-        quickScroll.current.scrollIntoView({
-            behavior: 'smooth'
-        });
-        player.current.seekTo(timeFrame.start, 'seconds');
-        setPlayVideo(true);
-    }, [timeFrame]);
-
     const [addMode, setAddMode] = useState(false);
-    useEffect(() => {
-        // console.log(`add Mode On: ${addMode}`);
-    }, [addMode]);
-
     const [editMode, setEditMode] = useState(false);
-    useEffect(() => {
-        // console.log(`edit Mode On: ${editMode}`);
-    }, [editMode]);
-
     const [currClip, setCurrClip] = React.useState({
         question: '',
         start: 0,
         end: 0
     });
-    useEffect(() => {
-        // if (currClip === null) {
-        //     console.log('Current item is null');
-        // } else if (
-        //     currClip.question !== '' &&
-        //     currClip.start !== 0 &&
-        //     currClip.end !== 0
-        // ) {
-        //     console.log(
-        //         `Current item: ${currClip.question} ${currClip.start} ${currClip.end}`
-        //     );
-        // }
-    }, [currClip]);
-
     const [clips, setClipState] = useState([]);
+    useEffect(() => {
+        // initialize our set of clips
+        fetch(`/api/sessions/find/${location.state.id}`, {
+            headers: {
+                Authorization: `bearer ${jwt}`
+            }
+        }).then(res => {
+            res.json().then(r => {
+                console.log(r);
+                if (r.clips !== undefined) {
+                    setClipState(r.clips);
+                }
+                if (r.url !== undefined) {
+                    setUrl(r.url);
+                }
+            });
+        });
+    }, []);
+
+    const postData = newClips => {
+        console.log(newClips);
+        fetch('/api/sessions/updateClips', {
+            method: 'POST',
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                sessionId: location.state.id,
+                changes: [...newClips]
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Success:', data);
+                setClipState(newClips);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    };
 
     const addToClips = () => {
-        setClipState([...clips, { ...currClip, id: clips.length }]);
+        const newClips = [...clips, { ...currClip, id: clips.length }];
+        postData(newClips);
     };
 
     function handleTimeStamp({ playedSeconds }) {
-        if (playedSeconds >= timeFrame.end) {
-            // setPlayVideo(false);
-            player.current.seekTo(timeFrame.start, 'seconds');
-        }
         document.getElementById('header').innerHTML = playedSeconds;
     }
 
     function editClips() {
         const newClips = [...clips];
         newClips[currClip.id] = currClip;
-        setClipState(newClips);
-        // setCurrClip(null);
+        postData(newClips);
     }
+
     function editCurrentClip(item) {
         setCurrClip(item);
     }
@@ -81,14 +91,28 @@ export default function TimeLine({ url }) {
             <div ref={quickScroll} />
             <ReactPlayer
                 ref={player}
-                url={url}
+                url={currUrl}
                 playing={playVideo}
                 width='100%'
                 playsinline
                 onProgress={handleTimeStamp}
             />
-            <h1 id='header'>Another TimeLine</h1>
-
+            <Grid container>
+                
+                <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={() => {
+                        const [beforeUrl] = currUrl.split('?');
+                        setUrl(beforeUrl);
+                        setPlayVideo(true);
+                    }}
+                >
+                Reset Video
+                </Button>
+                <h1 id='header'>CurrentTime</h1>
+            </Grid>
+            
             <Fab
                 onClick={() => {
                     // create new initial clip.
@@ -137,14 +161,29 @@ export default function TimeLine({ url }) {
                         key={index}
                         onClickPlay={() => {
                             // console.log(`TimeFrame: ${x.start} ${x.end}`);
-                            setTimeFrame({
-                                start: x.start,
-                                end: x.end
+                            const [beforeUrl] = currUrl.split('?');
+                            setUrl(
+                                `${beforeUrl}?start=${x.start}&end=${x.end}`
+                            );
+                            setPlayVideo(true);
+                            quickScroll.current.scrollIntoView({
+                                behavior: 'smooth'
                             });
                         }}
                         onClickEdit={() => {
                             setCurrClip({ ...x });
                             setEditMode(true);
+                        }}
+                        onClickDelete={() => {
+                            console.log(`Deleting Clip ${x.question}`);
+                            const temp = [];
+                            for (let i = 0; i < clips.length; i += 1) {
+                                if (i !== index) {
+                                    temp.push(clips[i]);
+                                }
+                            }
+                            postData(temp);
+                            // setClipState(temp);
                         }}
                     />
                 ))}
