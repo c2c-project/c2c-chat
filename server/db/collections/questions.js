@@ -1,5 +1,7 @@
 import { ObjectID } from 'mongodb';
 import { mongo } from '..';
+import Accounts from '../../lib/accounts';
+import { ClientError } from '../../lib/errors';
 
 const findById = id =>
     mongo.then(db =>
@@ -68,12 +70,34 @@ const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
         // close();
     });
 
+<<<<<<< HEAD
 
 // TODO create an aggregate
 // TODO: 193
 /**
  * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
  */
+=======
+const privilegedActions = (action, userDoc) => {
+    const { roles } = userDoc;
+    switch (action) {
+        case 'QUESTION_HISTORY': {
+            const requiredAny = ['moderator', 'admin'];
+            return sessionId => {
+                if (Accounts.isAllowed(roles, { requiredAny })) {
+                    return findBySession({ sessionId });
+                }
+                return Promise.reject(
+                    new ClientError('Missing permissions to do that.')
+                );
+            };
+        }
+        default: {
+            throw new TypeError('Invalid Action');
+        }
+    }
+};
+>>>>>>> dev
 
 export default {
     findById,
@@ -81,5 +105,6 @@ export default {
     findBySession,
     countQuestionsBySession,
     removeQuestion,
-    updateQuestionToxicity
+    updateQuestionToxicity,
+    privilegedActions
 };

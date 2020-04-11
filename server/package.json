@@ -25,6 +25,8 @@
         "googleapis": "^46.0.0",
         "http-errors": "^1.7.3",
         "jsonwebtoken": "^8.5.1",
+        "mathjs": "^6.6.0",
+        "mailgun-js": "^0.22.0",
         "mongodb": "^3.3.5",
         "mongoose": "^5.9.2",
         "morgan": "~1.9.1",

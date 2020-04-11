@@ -1,7 +1,6 @@
 import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
-import Accounts from '../lib/accounts';
 import Toxicity from '../lib/tf';
 import io from '../lib/socket-io';
 
@@ -10,7 +9,7 @@ const router = express.Router();
 router.post(
     '/submit-question',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
         const { form, sessionId } = req.body;
         // anyone can ask a question as long as they're logged in, so no need for additional checks atm
@@ -29,34 +28,26 @@ router.post(
                     .emit('question', questionDoc);
                 res.send({ success: true });
                 Toxicity.tfToxicityQuestion(questionDoc);
-                // TODO: 193
-                /**
-                 * @questionDoc is the question json
-                 * Ideally, you'd just take the questionDoc
-                 * and feed that into the text toxicity
-                 */
             })
-            .catch(console.error);
+            .catch(next);
     }
 );
 
 router.get(
     '/:roomId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
         const { roomId } = req.params;
-
-        // TODO: move this to the privileged actions code
-        if (
-            Accounts.isAllowed(user.roles, {
-                requiredAny: ['moderator', 'admin']
+        const questionHistory = Questions.privilegedActions(
+            'QUESTION_HISTORY',
+            user
+        );
+        questionHistory(roomId)
+            .then(docs => {
+                res.status(200).json(docs);
             })
-        ) {
-            Questions.findBySession({ sessionId: roomId }).then(docs => {
-                res.json(docs);
-            });
-        }
+            .catch(next);
     }
 );
 

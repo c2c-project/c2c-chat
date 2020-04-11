@@ -23,15 +23,13 @@ export default function MessageActions({ targetMsg, onClick }) {
                 'Content-Type': 'application/json'
             }
         })
-            .then(r => {
-                r.json().then(res => {
-                    if (res.success) {
-                        snack('Successfully moderated messsage', 'success');
-                        onClick();
-                    } else {
-                        snack('Something went wrong! Try again.', 'error');
-                    }
-                });
+            .then(res => {
+                if (res.status === 200) {
+                    snack('Successfully moderated messsage', 'success');
+                    onClick();
+                } else {
+                    snack('Something went wrong! Try again.', 'error');
+                }
             })
             .catch(err => {
                 console.log(err);

@@ -13,7 +13,7 @@
 
 import '@tensorflow/tfjs-node';
 import * as toxicity from '@tensorflow-models/toxicity';
-import Chat from '../db/collections/chat';
+import Messages from '../db/collections/messsages';
 import Questions from '../db/collections/questions';
 
 const threshold = 0.9; // Will be change if the toxicity test is too sensitive.
@@ -53,12 +53,12 @@ async function checkTfToxicity(question) {
 }
 
 async function AutoRemoveMessage(result, reason, messageId, io, roomId) {
-    await Chat.updateMessageToxicity({
+    await Messages.updateMessageToxicity({
         messageId,
         result,
         toxicityReason: reason
     });
-    const removeMessage = Chat.privilegedActions('AUTO_REMOVE_MESSAGE', '');
+    const removeMessage = Messages.privilegedActions('AUTO_REMOVE_MESSAGE', '');
     removeMessage(messageId).then(() => {
         io.of('/chat')
             .to(roomId)
