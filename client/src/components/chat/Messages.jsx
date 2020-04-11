@@ -9,7 +9,6 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import useJwt from '../../hooks/useJwt';
 import MessageActions from './MessageActions';
-import QuestionActions from './QuestionActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
 
@@ -34,20 +33,34 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
-function Messages({ messages, variant }) {
+function Messages({ messages, filter}) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const [jwt] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
-    const Actions = variant === 'questions' ? QuestionActions : MessageActions;
+    const Actions = MessageActions;
     const firstRender = React.useRef(true);
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
             behavior: firstRender.current ? 'smooth' : 'auto'
         });
         firstRender.current = !messages.length;
-    };
+    }
+    const filterQuestions = () => {
+        if (isModerator) {
+            return messages.filter(m => {
+                if (filter.moderated && m.moderated) { //show message that m.moderated === true
+                    return true;
+                }
+                if (filter.normal && !m.moderated){
+                    return true;
+                }
+            })
+        }else{
+            return messages.filter(m => !m.moderated)
+        }
+    }
 
     React.useEffect(() => {
         let isMounted = true;
@@ -71,14 +84,14 @@ function Messages({ messages, variant }) {
     }, [jwt]);
 
     React.useEffect(scrollToBottom, [messages]);
-
     return (
         <div className={classes.root}>
             <List dense>
-                {messages.map(
+                {filterQuestions().map(
                     ({
                         username = 'author',
                         message = 'message',
+                        moderated = 'moderated',
                         _id
                     } = {}) => (
                         <ListItem
@@ -88,7 +101,8 @@ function Messages({ messages, variant }) {
                                     setTargetMsg({
                                         _id,
                                         message,
-                                        username
+                                        username,
+                                        moderated,
                                     });
                                 }
                             }}
@@ -101,7 +115,7 @@ function Messages({ messages, variant }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color='textPrimary'
+                                        color={moderated === true? 'textSecondary':'textPrimary'}
                                         variant='body1'
                                     >
                                         {message}
@@ -139,12 +153,16 @@ function Messages({ messages, variant }) {
 }
 
 Messages.defaultProps = {
-    messages: []
+    messages: [],
+    filter: {
+        moderated: false,
+        normal: true
+    }
 };
 
 Messages.propTypes = {
     messages: PropTypes.array,
-    variant: PropTypes.oneOf(['questions', 'messages']).isRequired
+    filter: PropTypes.object.isRequired,
 };
 
 export default Messages;

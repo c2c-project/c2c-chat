@@ -39,7 +39,9 @@ io.of('/chat').on('connection', socket => {
                         message,
                         username,
                         userId: _id,
-                        session: roomId
+                        session: roomId,
+                        toxicity: false,
+                        toxicityReason : [],
                     })
                         .then(r => {
                             // r is just the general object returned by the mongo driver when mongodb finishes
@@ -63,6 +65,12 @@ export function moderate(roomId, messageId) {
     io.of('/chat')
         .to(roomId)
         .emit('moderate', messageId);
+}
+
+export function unmoderate(roomId, message) {
+    io.of('/chat')
+        .to(roomId)
+        .emit('unmoderate', message);
 }
 
 /**

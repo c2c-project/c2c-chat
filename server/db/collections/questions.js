@@ -20,13 +20,26 @@ const findBySession = ({ sessionId }) =>
             .toArray()
     );
 
+const findAllQuestions = () =>
+    mongo.then(db =>
+        db
+            .collection('questions')
+            .find()
+            .toArray()
+    );
+
 const createQuestion = ({
     question,
     sessionId,
     username,
     userId,
     toxicity,
-    toxicityReason
+    toxicityReason,
+    sentenceCode,
+    relaventWeight,
+    isCenter,
+    clusterNumber,
+    asked, 
 }) =>
     mongo.then(db =>
         db.collection('questions').insertOne({
@@ -35,7 +48,13 @@ const createQuestion = ({
             username,
             userId,
             toxicity,
-            toxicityReason
+            toxicityReason,
+            sentenceCode,
+            relaventWeight,
+            isCenter,
+            clusterNumber, 
+            asked,
+            date: Date.now(),
         })
     );
 // 193
@@ -70,14 +89,51 @@ const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
         // close();
     });
 
-<<<<<<< HEAD
+const updateQuestionSentenceCode = ({ questionId, sentenceCode }) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: questionId },
+            { $set: { sentenceCode } }
+        );
+        // close();
+    });
 
-// TODO create an aggregate
-// TODO: 193
-/**
- * Read the comment in chat.js first; I haven't created privileged actions for questions.js yet.
- */
-=======
+const updateQuestionRelaventWeight = ({ questionId, relaventWeight }) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: questionId },
+            { $set: { relaventWeight } }
+        );
+        // close();
+    });
+
+const updateQuestionAsked = ({ questionId, asked}) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: new ObjectID(questionId) },
+            { $set: { asked} }
+        );
+        // close();
+    });
+
+const updateIsCenter = ({ questionId, isCenter}) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: new ObjectID(questionId) },
+            { $set: { isCenter} }
+        );
+        // close();
+    });
+
+const updateClusterNumber = ({ questionId, clusterNumber}) =>
+    mongo.then(db => {
+        db.collection('questions').updateOne(
+            { _id: new ObjectID(questionId) },
+            { $set: { clusterNumber} }
+        );
+        // close();
+    });
+
 const privilegedActions = (action, userDoc) => {
     const { roles } = userDoc;
     switch (action) {
@@ -97,14 +153,19 @@ const privilegedActions = (action, userDoc) => {
         }
     }
 };
->>>>>>> dev
 
 export default {
     findById,
     createQuestion,
     findBySession,
+    findAllQuestions,
     countQuestionsBySession,
     removeQuestion,
     updateQuestionToxicity,
+    updateQuestionSentenceCode,
+    updateQuestionRelaventWeight,
+    updateQuestionAsked,
+    updateIsCenter,
+    updateClusterNumber,
     privilegedActions
 };

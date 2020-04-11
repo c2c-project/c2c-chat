@@ -5,11 +5,13 @@ import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Chatbar from './Chatbar';
-import Messages from './Messages';
 import useMessages from '../../hooks/useMessages';
-import useQuestions from '../../hooks/useQuestions';
-
+import Messages from './Messages';
+import Chatbar from './Chatbar';
+import useJwt from '../../hooks/useJwt';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 const useStyles = makeStyles(theme => ({
     paper: {
         padding: theme.spacing(2),
@@ -30,53 +32,77 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export function QuestionWindow({ roomId, title }) {
-    const [questions] = useQuestions(roomId);
-    const classes = useStyles();
-
-    return (
-        <Paper className={classes.paper}>
-            <Grid container direction='column' spacing={2}>
-                <Grid item xs='auto'>
-                    <Typography variant='h4'>{title}</Typography>
-                </Grid>
-                <Divider className={classes.divider} />
-                <Grid item xs={12} className={classes.messages}>
-                    <Messages
-                        messages={questions.map(question => ({
-                            ...question,
-                            message: question.question
-                        }))}
-                        variant='questions'
-                    />
-                </Grid>
-                {/* <Divider className={classes.divider} /> */}
-                {/* <Grid item xs={12} className={classes.chatbar}>
-                    <Chatbar onMessageSend={sendMsg} />
-                </Grid> */}
-            </Grid>
-        </Paper>
-    );
-}
-
-QuestionWindow.propTypes = {
-    roomId: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired
-};
-
-function ChatWindow({ roomId, title }) {
+function ChatWindow({ roomId, title}) {
     const [messages, sendMsg] = useMessages(roomId);
+    const [jwt] = useJwt();
+    const [isModerator, setModerator] = React.useState(false);
+    const [filter, setFilter] = React.useState({
+        moderated: true,
+        normal: true,
+    })
     const classes = useStyles();
-
+    const filterTable = () => {
+        if (isModerator){
+            return(
+                <FormGroup row>
+                    <FormControlLabel
+                        control={
+                        <Checkbox
+                            checked={filter.normal}
+                            onChange={()=>setFilter({...filter , normal: !filter.normal})}
+                            name="normal"
+                            color="primary"
+                        />
+                            }
+                            label="Normal"
+                    />
+                    <FormControlLabel
+                        control={
+                        <Checkbox
+                            checked={filter.moderated}
+                            onChange={()=>setFilter({...filter , moderated: !filter.moderated})}
+                            name="moderated"
+                            color="primary"
+                        />
+                            }
+                            label="Moderated"
+                    />
+                </FormGroup>
+            )
+        }
+    }
+    React.useEffect(() => {
+        let isMounted = true;
+        fetch('/api/users/authenticate', {
+            method: 'POST',
+            body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(r => {
+            r.json().then(result => {
+                if (isMounted) {
+                    setModerator(result.allowed);
+                }
+            });
+        });
+        return () => {
+            isMounted = false;
+        };
+    }, [jwt]);
     return (
         <Paper className={classes.paper}>
             <Grid container direction='column' spacing={2}>
                 <Grid item xs='auto'>
-                    <Typography variant='h4'>{title}</Typography>
+                    <FormGroup row>
+                        <Typography variant='h4'>{title}</Typography>
+                        {filterTable()}
+                    </FormGroup>
                 </Grid>
                 <Divider className={classes.divider} />
                 <Grid item xs={12} className={classes.messages}>
-                    <Messages messages={messages} variant='messages' />
+                    <Messages messages={messages} filter={filter}/>
                 </Grid>
                 <Divider className={classes.divider} />
                 <Grid item xs={12} className={classes.chatbar}>
@@ -89,7 +115,7 @@ function ChatWindow({ roomId, title }) {
 
 ChatWindow.propTypes = {
     roomId: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired
+    title: PropTypes.string.isRequired,
 };
 
 export default ChatWindow;
