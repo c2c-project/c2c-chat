@@ -9,17 +9,11 @@ const BASE_USER = {
     roles: ['user'],
 };
 
-// TODO: use this when I allow promotion
-// const makeModerator = user => ({
-//     ...user,
-//     roles: [...user.roles, 'moderator']
-// });
-// const makeAdmin = user => ({ ...user, roles: [...user.roles, 'admin'] });
-
 /**
- * Realistically, only one of the required's fields within the requirements object will be used at any given time
- * @arg userRoles -- the array of string codes corresponding to the user's assigned roles
- * @arg requirements -- the object containing different role requirements for what they are trying to access
+ * @description Realistically, only one of the required's fields within the requirements object will be used at any given time
+ * @arg userRoles the array of string codes corresponding to the user's assigned roles
+ * @arg requirements the object containing different role requirements for what they are trying to access
+ * @returns {Boolean}
  */
 const isAllowed = (
     userRoles,
@@ -51,66 +45,53 @@ const isAllowed = (
     return every && any && not;
 };
 
-const verifyPassword = (textPw, hash, cb) => {
-    bcrypt.compare(textPw, hash, cb);
-};
-
-const verifyUser = (userId) => {
-    return Users.findByUserId(userId)
-        .then((doc) => {
-            if (doc) {
-                const verified = { $set: { verified: true } };
-                return Users.updateUser(doc, verified);
-            }
-            return Promise.reject(new ClientError('Invalid Link'));
-        })
-        .catch((err) => {
-            console.error(err);
-            if (err.message === 'Invalid Link') {
-                return Promise.reject(new ClientError('Invalid Link'));
-            }
-            return Promise.reject(
-                new ClientError('Server Error, Please Contact Support')
-            );
-        });
-};
 
 /**
- * Function to send reset password link to user's email using jwt based on user's doc
- * @param {string} email -- user's email to send reset password link to
+ * @description verifies the user; expects catch in calling function
+ * @arg {string}userId _id of the user to verify
+ * @throws {ClientError} The user navigated to an invalid link
+ * @returns {Promise} MongoDB Cursor Promise
  */
-const sendPasswordResetEmail = (email) => {
-    return Users.findByEmail(email)
-        .then((doc) => {
-            if (doc) {
-                // Filter doc
-                const { _id } = doc;
-                // const filteredDoc = filterSensitiveData(doc);
-                return jwt.sign(
-                    { _id },
-                    process.env.JWT_SECRET,
-                    { expiresIn: '30m' },
-                    (err, token) => {
-                        if (err) {
-                            return Promise.reject(
-                                new ClientError('Invalid Email')
-                            );
-                        }
-                        Emails.sendPasswordResetEmail(email, token);
-                    }
-                );
+const verifyUser = async (userId) => {
+    const doc = await Users.findByUserId(userId);    
+
+    if (doc) {
+        const verified = { $set: { verified: true } };
+        return Users.updateUser(doc, verified);
+    }
+
+    throw new ClientError('Invalid Link');
+}
+    
+
+
+/**
+ * @description Function to send reset password link to user's email using jwt based on user's _id
+ * @param {string} email user's email to send reset password link to
+ * @returns {undefined}
+ * @throws {ClientError} Invalid Email or error with signing jwt
+ */
+const sendPasswordResetEmail = async (email) => {
+    const doc = await Users.findByEmail(email);
+    if (doc) {
+        // Filter doc
+        const { _id } = doc;
+
+        jwt.sign(
+            { _id },
+            process.env.JWT_SECRET,
+            { expiresIn: '30m' },
+            (err, token) => {
+                if (!err) {
+                    Emails.sendPasswordResetEmail(email, token);    
+                } else {
+                    throw new ClientError('Server Error, Please Contact Support');
+                }
             }
-            return Promise.reject(new ClientError('Invalid Email'));
-        })
-        .catch((err) => {
-            console.error(err);
-            if (err.message === 'Invalid Email') {
-                return Promise.reject(new ClientError('Invalid Email'));
-            }
-            return Promise.reject(
-                new ClientError('Server Error, Please Contact Support')
-            );
-        });
+        );
+    }
+
+    throw new ClientError('Invalid Email');
 };
 
 /**
@@ -236,7 +217,7 @@ const isOwner = (userId, doc) => {
 export default {
     register,
     registerTemporary,
-    verifyPassword,
+    verifyPassword: bcrypt.compare,
     isAllowed,
     filterSensitiveData,
     isOwner,
