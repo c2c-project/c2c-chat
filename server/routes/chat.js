@@ -22,7 +22,7 @@ router.get(
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
         const { sessionId } = req.params;
-        Chat.countMessagesBySession(sessionId).then(r => res.json(r));
+        Messages.countMessagesBySession(sessionId).then(r => res.json(r));
     }
 
 );

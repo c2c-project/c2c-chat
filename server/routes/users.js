@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import Accounts from '../lib/accounts';
+import Emails from '../lib/email';
 
 const router = express.Router();
 
@@ -9,7 +10,9 @@ router.post('/register', (req, res, next) => {
     const { form } = req.body;
     const { username, email, password, confirmPass } = form;
     Accounts.register(username, password, confirmPass, { email })
-        .then(() => {
+        .then((userDoc) => {
+            const { _id } = userDoc;
+            Emails.sendEmailVerification(email, _id);
             res.status(200).send();
         })
         .catch(next);
@@ -36,12 +39,11 @@ router.post(
 router.post('/login-temporary', (req, res, next) => {
     const { username } = req.body;
     Accounts.registerTemporary(username, { roles: ['user'] })
-        .then(userDoc => {
+        .then((userDoc) => {
             jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
                 if (!err) {
                     res.status(200).send({ jwt: token });
                 } else {
-                    console.log(err);
                     res.status(400).send();
                 }
             });
@@ -58,10 +60,10 @@ router.post(
         const allowed = Accounts.isAllowed(user.roles, {
             requiredAll,
             requiredAny,
-            requiredNot
+            requiredNot,
         });
         res.send({
-            allowed
+            allowed,
         });
     }
 );
@@ -75,40 +77,47 @@ router.post('/verification', (req, res, next) => {
         .catch(next);
 });
 
-//Call to send password reset email
-router.post(
-    '/request-password-reset', (req, res, next) => {
-        if(req.body.form.email !== undefined) {
-            Accounts.sendPasswordResetEmail(req.body.form.email).then(() => {
+// Call to send password reset email
+router.post('/request-password-reset', (req, res, next) => {
+    if (req.body.form.email !== undefined) {
+        Accounts.sendPasswordResetEmail(req.body.form.email)
+            .then(() => {
                 res.status(200).send();
-            }).catch(next)
+            })
+            .catch(next);
+    } else {
+        res.statusText = 'Email Missing';
+        res.status(400).send();
+    }
+});
+
+// Call to update to new password
+router.post('/consume-password-reset-token', (req, res, next) => {
+    if (
+        req.body.token !== undefined &&
+        req.body.form.password !== undefined &&
+        req.body.form.confirmPassword !== undefined
+    ) {
+        const { token, form } = req.body;
+        Accounts.updatePassword(token, form.password, form.confirmPassword)
+            .then(() => {
+                res.status(200).send('Password Reset');
+            })
+            .catch(next);
+    } else {
+        if (req.body.token === undefined) {
+            res.statusText = 'Token Missing';
+            res.status(400).send();
+        } else if (
+            req.body.form.password === undefined ||
+            req.body.form.confirmPassword === undefined
+        ) {
+            res.statusText = 'Invalid Password';
+            res.status(400).send();
         } else {
-            res.statusText = 'Email Missing';
             res.status(400).send();
         }
     }
-);
-
-//Call to update to new password
-router.post(
-    '/consume-password-reset-token', (req, res, next) => {
-        if(req.body.token !== undefined && req.body.form.password !== undefined && req.body.form.confirmPassword !== undefined) {
-            const { token, form } = req.body;
-            Accounts.updatePassword(token, form.password, form.confirmPassword).then(() => {
-                res.status(200).send('Password Reset');
-            }).catch(next)
-        } else {
-            if(req.body.token === undefined) {
-                res.statusText = 'Token Missing';
-                res.status(400).send();
-            } else if(req.body.form.password === undefined || req.body.form.confirmPassword === undefined) {
-                res.statusText = 'Invalid Password';
-                res.status(400).send();
-            } else {
-                res.status(400).send();
-            }
-        }
-    }
-);
+});
 
 module.exports = router;
