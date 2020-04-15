@@ -6,22 +6,88 @@ import Messages from '../db/collections/messsages';
 import Questions from '../db/collections/questions';
 import ioInterface from './socket-io';
 
-const dataset = []; // Similarity storage
-const toxicityThreshold = 0.9; // Will be change if the toxicity test is too sensitive.
-const similarityThreshold = 0.85; // Will be change if the similarity test is too sensitive, recommend 0.5 for testing and 0.85 for using.
-const toxicityLoad = toxicity.load(toxicityThreshold);// load toxicity 
-const useLoad = use.load(); // Load universal sentence encoder
-const similarityClusterCounter = []; // Global variable to store similarity cluster number
+/**
+ * A question
+ * @typedef {Object} Question
+ * @property {string} string -- content of question
+ * @property {ObjectId} _id -- question database id
+ * @property {number} sessionId -- sesstion id which question asked
+ * @property {array} value -- USE array value, 512 numbers
+ * @property {double} weight -- relavent weight in its cluster, center question has the most weight
+ * @property {integer} similarityCluster -- cluster number its belongs to
+ */
+
+/**
+ * Similarity dataset storage
+ * @type {Array.<Array.<Array.<Question>>>} -- 3D array, 1. array of sessions; 2. array of clusters; 3. array of 'Questions'
+ */
+const dataset = [];
+
+/**
+ * Default value is 0.9, will be change if the toxicity test is too sensitive.
+ * @type {number}
+ */
+const toxicityThreshold = 0.9;
+
+/**
+ * Default value is 0.85, will be change if the similarity test is too sensitive, recommend 0.5 when testing.
+ * @type {number}
+ */
+const similarityThreshold = 0.85; 
+
+/**
+ * Load toxicity when system start
+ * @type {Promise<toxicity.ToxicityClassifier>}
+ */
+const toxicityLoad = toxicity.load(toxicityThreshold);
+
+/**
+ * Load universal sentence encoder when system start
+ * @type {use.UniversalSentenceEncoder}
+ */
+const useLoad = use.load();
+
+/**
+ * Global variable to store similarity cluster number
+ * @type {Array.<number>}
+ */
+const similarityClusterCounter = [];
+
+/**
+ * A flag to load questions from database
+ * @type {boolean}
+ */
 let loadMemory = false;
 
+/**
+ * Reload questions form databse for identify similarity purpose
+ * @param {void}
+ * @returns {void}
+ */
 function resumeMemory() {
     Questions
         .findAllQuestions()
         .then(docs => {
+            /**
+             * a backlog of which cluster has been visited
+             * @type {Array.<number>}
+             */
             const clusterQueue = [];
             for (let i = 0; i < docs.length; i += 1) {
+                /**
+                 * default is false, if the cluster id not found, create a cluster
+                 * @type {boolean}
+                 */
                 let clusterflag = false;
+                /**
+                 * default is false, if the session id not found, create a session
+                 * @type {boolean}
+                 */
                 let sessionFlag = false;
+                /**
+                 * if the session id found, save the iterator as a variable and insert a question in it
+                 * @type {?number}
+                 */
                 let relaventSessionId = null;
                 const {_id, question, sessionId,  sentenceCode, relaventWeight, clusterNumber} = docs[i];
                 for (let k = 0; k < dataset.length && dataset.length !== 0; k += 1) {
@@ -75,16 +141,37 @@ function resumeMemory() {
         });
 }
 
-// Load memory only once.
+/**
+ * Load memory if flag is false.
+ * @param {boolean} loadMemory
+ * @returns {void}
+ */
 if(!loadMemory){
     resumeMemory()
     loadMemory = true;
 }
 
+/**
+ * Check the input question's toxicity
+ * @param {string} question -- the string will test toxicity
+ * @returns {boolean} boolean value tells the question is toxicity or not
+ * @returns {Array.<string>} array tells the toxicity reasons 
+ */
 function checkTfToxicity(question) {
     return new Promise(function(resolve) {
+        /**
+         * record the test result of tf API
+         * @type {Object.<string, boolean>}
+         */
         const toxicityResult = {};
+        /**
+         * if value is true, save it's key to an array as toxicity reason 
+         * @type {Array.<string>}
+         */
         const toxicityReason = [];
+        /**
+         * default is false, assigned to true if any toxicity reason is true
+         */
         let result = false;
         toxicityLoad
             .then(model => {
@@ -113,6 +200,15 @@ function checkTfToxicity(question) {
     });
 }
 
+/**
+ * the function called when message toxicity reauslt is true, auto remove message on user interface
+ * @param {boolean} result 
+ * @param {Array.<string>} reason 
+ * @param {number} messageId 
+ * @param {ioInterface} io 
+ * @param {number} roomId 
+ * @returns {void}
+ */
 function AutoRemoveMessage(result, reason, messageId, io, roomId) {
     Messages.updateMessageToxicity({
         messageId,
@@ -127,7 +223,13 @@ function AutoRemoveMessage(result, reason, messageId, io, roomId) {
     });
 }
 
-function tfToxicityQuestion(questionDoc,sessionId ) {
+/**
+ * The interface function to test the question toxicity
+ * @param {Object} questionDoc 
+ * @param {number} sessionId 
+ * @returns {void}
+ */
+function tfToxicityQuestion(questionDoc, sessionId) {
     if (questionDoc) {
         checkTfToxicity(
             questionDoc.question
@@ -148,6 +250,13 @@ function tfToxicityQuestion(questionDoc,sessionId ) {
     }
 }
 
+/**
+ * The interface function to test the message toxicity
+ * @param {Object} messageDoc 
+ * @param {ioInterface} io 
+ * @param {number} roomId 
+ * @returns {void}
+ */
 function tfToxicityMessage(messageDoc, io, roomId) {
     const messageId = messageDoc._id;
     if (messageDoc) {
@@ -165,6 +274,12 @@ function tfToxicityMessage(messageDoc, io, roomId) {
     }
 }
 
+
+/**
+ * generate a universal sentence encoder result by tf API
+ * @param {string} sentence 
+ * @returns {Array.<number>}
+ */
 function USEGenerater(sentence) {
     return new Promise( function(resolve) {
         let data = [];
@@ -185,10 +300,32 @@ function USEGenerater(sentence) {
     });
 }
 
+/**
+ * The interface function to test the question similarity
+ * @param {Object} questionDoc 
+ * @param {number} sessionId 
+ * @returns {void}
+ */
 async function tfUseQuestion(questionDoc,sessionId) {
+    /**
+     * default is false, if the question have a similar cluster, assigned to true
+     * @type {boolean}
+     */
     let insertedFlag = false;
+    /**
+     * default is false, if the session id not found, create a session
+     * @type {boolean}
+     */
     let sessionFlag = false;
+    /**
+     * if the session id found, save the iterator as a variable and insert a question in it
+     * @type {?number}
+     */
     let relaventSessionId = null;
+    /**
+     * an array of float numbers to represent the question content
+     * @type {Array.<number>}
+     */
     const questionCode = await USEGenerater(questionDoc.question);
     Questions.updateQuestionSentenceCode({
         questionId: questionDoc._id,
@@ -204,12 +341,32 @@ async function tfUseQuestion(questionDoc,sessionId) {
     if (sessionFlag) {
         for (let i = 0; i < dataset[relaventSessionId].length && insertedFlag === false; i += 1) { 
             // for each cluster, check similarity between each center question and incoming question
+            /**
+             * the similarity result of two sentences, in range [0, 1]
+             * @type {number}
+             */
             let productResult = math.dot(dataset[relaventSessionId][i][0].value,questionCode);
             if (productResult > similarityThreshold) {
                 insertedFlag = true; // set flag to jump out the loop
+                /**
+                 * default is 0, a sum of dot product with each question in the same cluster, the result is the weight of question
+                 * @type {number}
+                 */
                 let questionWeight = 0;
+                /**
+                 * default is 0, a number represent the question similarity cluster id
+                 * @type {number}
+                 */
                 let clusterNumber = 0;
+                /**
+                 * default is null, represent an id of the center question of a cluster
+                 * @type {?boolean}
+                 */
                 let centerQuestionId = null;
+                /**
+                 * record the id of the non-center questions of a cluster
+                 * @type {Array.<number>}
+                 */
                 let subId = [];
                 for (let j = 0; j < dataset[relaventSessionId][i].length; j += 1) { 
                     // for each sentence in the same cluster, renew the weight, then set self weight
