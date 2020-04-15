@@ -62,6 +62,7 @@ io.of('/chat').on('connection', socket => {
 });
 
 export function moderate(roomId, messageId) {
+    console.log(roomId, messageId);
     io.of('/chat')
         .to(roomId)
         .emit('moderate', messageId);

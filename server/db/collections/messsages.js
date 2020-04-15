@@ -69,7 +69,7 @@ const findMessages = ({ sessionId }) =>
 
 const findMessage = ({ messageId }) =>
     mongo.then(db =>
-           db.collection('messages').findOne(
+        db.collection('messages').findOne(
             { _id: new ObjectID(messageId) }
         )
     );

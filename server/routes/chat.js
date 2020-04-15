@@ -28,23 +28,21 @@ router.post(
         const message = Messages.findMessage({messageId});
         MessageAction(messageId)
             .then(() => {
+                console.log(moderateAction)
                 if (moderateAction === true) 
                 {
                     moderate(roomId, messageId);
-                    res.status(200).send(); 
-                }else {
-                    message.then(r => {
-                        if(r != null){
-                            unmoderate(roomId, r)
-                        }else {
-                            console.log("Couldn't find the target message")
-                            res.status(404).send();
-                        }
-                    })
-                    .catch(next)
+                    return res.status(200).send();
                 }
-                moderate(roomId, messageId);
-                res.status(200).send(); 
+                message.then(r => {
+                    if(r != null){
+                        unmoderate(roomId, r);
+                    }
+                    console.log("Couldn't find the target message")
+                    return res.status(404).send();
+                })
+                .catch(next)
+                console.log(message)
             })
             .catch(next);
         res.status(200).send(); 
