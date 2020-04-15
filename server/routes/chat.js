@@ -40,14 +40,15 @@ router.post(
     (req, res) => {
         const { user } = req;
         const {newMessage, message, roomId} = req.body;
-        console.log(newMessage, roomId);
-        console.log(user);
-        console.log(message);
+        // console.log(newMessage, roomId);
+        // console.log(user);
+        // console.log(message);
         if (Accounts.isOwner(user._id, message)){
-            console.log("Enter if branch");
+            // console.log("Enter if branch");
             Chat.updateMessage({ messageId: message._id , newMessage})
-                .then(() => {
-                    console.log("Enter promise");
+                .then((response) => {
+                    // console.log("Enter promise");
+                    console.log(response);
                     update(roomId, message._id, newMessage);
                     res.status(200).send({success: true});
                 })
@@ -71,7 +72,8 @@ router.post(
         const { message } = req.body;        
         if (Accounts.isOwner(user._id, message)){
             Chat.deleteMessage({ messageId: message._id })    
-                .then(() => {
+                .then((response) => {
+                    //console.log(response);
                     remove(roomId, message._id);
                     res.status(200).send({ success: true });
                 })

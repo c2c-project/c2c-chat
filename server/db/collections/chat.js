@@ -27,25 +27,26 @@ const createMessage = ({
 const removeMessage = ({ messageId, reason }) =>
     mongo.then(
         db =>
-            db.collection('messages').updateOne(
-                {
-                    _id: new ObjectID(messageId)
-                },
-                { $set: { moderated: true, reason } }
-            )
+            db
+                .collection('messages')
+                .updateOne(
+                    {
+                        _id: new ObjectID(messageId)
+                    },
+                    { $set: { moderated: true, reason } }
+                )
         // close();
     );
 
 const updateMessage = ({ messageId, newMessage }) =>
     mongo.then(
-        db =>{
+        db =>
             db
                 .collection('messages')
                 .updateOne(
                     { _id: new ObjectID(messageId) },
                     { $set: { message: newMessage } }
                 )
-        }
         // close();
     );
 
