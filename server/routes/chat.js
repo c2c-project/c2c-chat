@@ -57,7 +57,7 @@ router.post(
                 });
         }
         else {
-            res.status(400).send({ sucess: false });
+            res.status(400).send({ success: false });
         }
     }
 )
@@ -68,7 +68,7 @@ router.post(
     (req, res) => {
         const { user } = req;
         const { roomId } = req.params;
-        const { message } = req.body;
+        const { message } = req.body;        
         if (Accounts.isOwner(user._id, message)){
             Chat.deleteMessage({ messageId: message._id })    
                 .then(() => {
@@ -81,7 +81,7 @@ router.post(
                 });
         }
         else {
-            res.status(400).send({ sucess: false });
+            res.status(400).send({ success: false });
         }
     }
 );
