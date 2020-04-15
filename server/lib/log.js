@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const { NODE_NV } = process.env;
+const { NODE_ENV } = process.env;
 /**
  * @description Logger type return description
  * @typedef {Object} Log
@@ -11,19 +11,21 @@ const { NODE_NV } = process.env;
 /**
  * @returns {Log} functions accesssing the logger
  */
-export default function Log() {
+function Log() {
     const loggers = {
-        Production: {
+        production: {
             info: () => {},
             err: () => {},
             print: () => {},
         },
-        Development: {
+        development: {
             info: console.log,
             err: console.error,
             print: console.log,
         },
     };
-    const myLogger = loggers[NODE_NV];
+    const myLogger = loggers[NODE_ENV];
     return myLogger;
 }
+
+export default Log();

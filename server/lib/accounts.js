@@ -13,9 +13,9 @@ const BASE_USER = {
  * @description Realistically, only one of the required's fields within the requirements object will be used at any given time
  * @arg userRoles the array of string codes corresponding to the user's assigned roles
  * @arg requirements the object containing different role requirements for what they are trying to access
- * @returns {Boolean}
+ * @returns {Promise} evalutes to a boolean
  */
-const isAllowed = (
+const isAllowed = async (
     userRoles,
     { requiredAll = [], requiredAny = [], requiredNot = [] } = {}
 ) => {
@@ -88,42 +88,32 @@ const sendPasswordResetEmail = async (email) => {
                 }
             }
         );
+    } else {
+        throw new ClientError('Invalid Email');
     }
-
-    throw new ClientError('Invalid Email');
 };
 
 /**
  * @description Function to reset user's password in database
- * @param {string} token jwt token to be verified
+ * @param {string} decodedJwt user jwt that is decoded
  * @param {string} password new password
  * @param {string} confirmPassword new password confirmation
- * @returns {undefined}
+ * @returns {Promise} resolves to a MongoDB cursor on success
  * @throws {ClientError} Passwords do Not Match, Invalid Link, Expired Link
  */
-const updatePassword = async (token, password, confirmPassword) => {
-    const onVerified = async (err, decodedJwt) => {
-        if (err) {
-            if (err.message === 'jwt expired') {
-                throw new ClientError('Expired Link');
-            }
-            throw new ClientError('Invalid Link');
-        }
-
-        const { _id } = decodedJwt;
-        // Find user in database then hash and update with new password
-        if (password === confirmPassword) {
-            const doc = await Users.findByUserId(_id);
-            const encryptedPw = await bcrypt.hash(password, SALT_ROUNDS);
-            const updatedPassword = {
-                $set: { password: encryptedPw },
-            };
-            Users.updateUser(doc, updatedPassword);
-        }
-        // if they do not match, retun an error
-        throw new ClientError('Passwords do not match');
-    };
-    return jwt.verify(token, process.env.JWT_SECRET, onVerified);
+const updatePassword = async (decodedJwt, password, confirmPassword) => {
+    const { _id } = decodedJwt;
+    // Find user in database then hash and update with new password
+    if (password === confirmPassword) {
+        const doc = await Users.findByUserId(_id);
+        const encryptedPw = await bcrypt.hash(password, SALT_ROUNDS);
+        const updatedPassword = {
+            $set: { password: encryptedPw },
+        };
+        return Users.updateUser(doc, updatedPassword);
+    }
+    // if they do not match, throw an error
+    throw new ClientError('Passwords do not match');
 };
 
 /**
@@ -191,9 +181,9 @@ const registerTemporary = async (username, additionalFields = {}) => {
 /**
  * @description filters the sensitive data using whitelist methodology
  * @arg {Object} userDoc target to filter
- * @returns {Object} userDoc with ONLY whitelisted fields
+ * @returns {Promise} resolves to the userDoc with ONLY whitelisted fields
  */
-const filterSensitiveData = (userDoc) => {
+const filterSensitiveData = async (userDoc) => {
     // okay fields to send to client via jwt or any given time
     const okayFields = [
         '_id',

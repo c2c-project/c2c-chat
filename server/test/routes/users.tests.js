@@ -100,44 +100,44 @@ describe('users', function () {
             });
         });
     });
-    describe('#request-password-reset', function () {
-        it('should accept valid email', function (done) {
-            chai.request(server)
-                .post('/api/users/request-password-reset')
-                .send({ form: { email: 'admin@example.com' } })
-                .end(function (err, res) {
-                    if (err) {
-                        console.error(err);
-                    }
-                    res.should.have.status(200);
-                    done();
-                });
-        });
-        it('should reject undefined email', function (done) {
-            chai.request(server)
-                .post('/api/users/request-password-reset')
-                .send({ form: { email: undefined } })
-                .end(function (err, res) {
-                    if (err) {
-                        console.error(err);
-                    }
-                    res.should.have.status(400);
-                    done();
-                });
-        });
-        it('should reject invalid email', function (done) {
-            chai.request(server)
-                .post('/api/users/request-password-reset')
-                .send({ form: { email: 'invalidEmail' } })
-                .end(function (err, res) {
-                    if (err) {
-                        console.error(err);
-                    }
-                    res.should.have.status(400);
-                    done();
-                });
-        });
-    });
+    // describe('#request-password-reset', function () {
+    //     it('should accept valid email', function (done) {
+    //         chai.request(server)
+    //             .post('/api/users/request-password-reset')
+    //             .send({ form: { email: 'admin@example.com' } })
+    //             .end(function (err, res) {
+    //                 if (err) {
+    //                     console.error(err);
+    //                 }
+    //                 res.should.have.status(200);
+    //                 done();
+    //             });
+    //     });
+    //     it('should reject undefined email', function (done) {
+    //         chai.request(server)
+    //             .post('/api/users/request-password-reset')
+    //             .send({ form: { email: undefined } })
+    //             .end(function (err, res) {
+    //                 if (err) {
+    //                     console.error(err);
+    //                 }
+    //                 res.should.have.status(400);
+    //                 done();
+    //             });
+    //     });
+    //     it('should reject invalid email', function (done) {
+    //         chai.request(server)
+    //             .post('/api/users/request-password-reset')
+    //             .send({ form: { email: 'invalidEmail' } })
+    //             .end(function (err, res) {
+    //                 if (err) {
+    //                     console.error(err);
+    //                 }
+    //                 res.should.have.status(400);
+    //                 done();
+    //             });
+    //     });
+    // });
     describe('#consume-password-reset-token', function () {
         it('should accept valid token', function (done) {
             Users.findByEmail('admin@example.com')
