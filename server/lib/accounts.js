@@ -122,7 +122,7 @@ const updatePassword = async (decodedJwt, password, confirmPassword) => {
  * @arg {string} password
  * @arg {string} confirmpass
  * @arg {string} [additionalFields] optional argument with additional fields to register the user with
- * @returns {Promise} resolves to a MongoDB cursor
+ * @returns {Promise} userDoc with db _id field
  * @throws {ClientError} Username or email already exists, Passwords do not match
  */
 const register = async (

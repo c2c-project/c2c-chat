@@ -12,12 +12,23 @@ const mg = mailgun({
     domain: MAILGUN_DOMAIN,
 });
 
+/**
+ * @description internal function to use mg api to send email
+ * @arg {Object} data email data based on mg api docs
+ * @returns {Promise}
+ */
 const sendEmail = async (data) => {
     return mg.messages().send(data);
 };
 
-const sendEmailVerification = async (email, _id) => {
-    const url = `${ORIGIN}/verification/${_id}`;
+/**
+ * @description send a verification email
+ * @arg {String} email email to send to
+ * @arg {String} userId database id of the user
+ * @returns {Promise}
+ */
+const sendEmailVerification = async (email, userId) => {
+    const url = `${ORIGIN}/verification/${userId}`;
     const data = {
         from: `c2c <${MAILGUN_FROM_EMAIL}>`,
         to: email,
@@ -30,7 +41,13 @@ const sendEmailVerification = async (email, _id) => {
     return sendEmail(data);
 };
 
+/**
+ * @description send password reset email
+ * @arg {String} email target email
+ * @arg {String} token jwt
+ */
 const sendPasswordResetEmail = async (email, token) => {
+    // TODO: base64 url encode the token
     const url = `${ORIGIN}/resetpassword/${token}`;
     const data = {
         from: `c2c <${MAILGUN_FROM_EMAIL}>`,

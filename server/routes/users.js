@@ -10,12 +10,21 @@ const router = express.Router();
 router.post('/register', async (req, res, next) => {
     const { form } = req.body;
     const { username, email, password, confirmPass } = form;
-    const { _id } = await Accounts.register(username, password, confirmPass, {
-        email,
-    }).catch(next);
-    // TODO: provide option to re-send verification email
-    Emails.sendEmailVerification(email, _id);
-    res.status(200).send();
+    try {
+        const { _id } = await Accounts.register(
+            username,
+            password,
+            confirmPass,
+            {
+                email,
+            }
+        );
+        // TODO: provide option to re-send verification email
+        Emails.sendEmailVerification(email, _id);
+        res.status(200).send();
+    } catch (e) {
+        next(e);
+    }
 });
 
 router.post(
