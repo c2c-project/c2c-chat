@@ -31,3 +31,6 @@ build
 
 # build
 *.tar.gz
+
+# docs
+docs/code

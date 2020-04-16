@@ -10,7 +10,8 @@
         "client": "cd client && npm start",
         "server": "cd server && npm start",
         "start": "concurrently - k \"npm run server --scripts-prepend-node-path\" \"npm run client --scripts-prepend-node-path\"",
-        "serve": "node server/dist/bin/www.js"
+        "serve": "node server/dist/bin/www.js",
+        "jsdoc": "./node_modules/.bin/jsdoc -c ./.jsdoc.json"
     },
     "dependencies": {},
     "devDependencies": {
@@ -22,6 +23,7 @@
         "eslint-plugin-import": "^2.18.2",
         "eslint-plugin-jsx-a11y": "^6.2.3",
         "eslint-plugin-react": "^7.16.0",
-        "eslint-plugin-react-hooks": "^2.1.2"
+        "eslint-plugin-react-hooks": "^2.1.2",
+        "jsdoc": "^3.6.4"
     }
 }
