@@ -5,6 +5,7 @@ const {
     MAILGUN_DOMAIN,
     ORIGIN,
     MAILGUN_FROM_EMAIL,
+    NODE_ENV,
 } = process.env;
 
 const mg = mailgun({
@@ -18,6 +19,10 @@ const mg = mailgun({
  * @returns {Promise}
  */
 const sendEmail = async (data) => {
+    // in development mode, don't send an email, instead we will test this on the staging server
+    if (NODE_ENV === 'development') {
+        return new Promise((resolve) => resolve('success'));
+    }
     return mg.messages().send(data);
 };
 

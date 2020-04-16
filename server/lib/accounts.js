@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt from './jwt';
 import Users from '../db/collections/users';
 import { ClientError } from './errors';
 import Emails from './email';
@@ -65,7 +65,7 @@ const verifyUser = async (userId) => {
 /**
  * @description Function to send reset password link to user's email using jwt based on user's _id
  * @param {string} email user's email to send reset password link to
- * @returns {undefined}
+ * @returns {Promise} evaluates to the email sent
  * @throws {ClientError} Invalid Email or error with signing jwt
  */
 const sendPasswordResetEmail = async (email) => {
@@ -73,24 +73,12 @@ const sendPasswordResetEmail = async (email) => {
     if (doc) {
         // Filter doc
         const { _id } = doc;
-
-        jwt.sign(
-            { _id },
-            process.env.JWT_SECRET,
-            { expiresIn: '30m' },
-            (err, token) => {
-                if (!err) {
-                    Emails.sendPasswordResetEmail(email, token);
-                } else {
-                    throw new ClientError(
-                        'Server Error, Please Contact Support'
-                    );
-                }
-            }
-        );
-    } else {
-        throw new ClientError('Invalid Email');
+        const token = await jwt.sign({ _id }, process.env.JWT_SECRET, {
+            expiresIn: '30m',
+        });
+        return Emails.sendPasswordResetEmail(email, token);
     }
+    throw new ClientError('Invalid Email');
 };
 
 /**
