@@ -6,7 +6,7 @@
  */
 import debug from 'debug';
 import http from 'http';
-import socketio from '../lib/socket-io';
+import socketio from '../socket-io';
 import app from '../app';
 
 /**

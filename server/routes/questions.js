@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import Questions from '../db/collections/questions';
 import Accounts from '../lib/accounts';
-import ioInterface from '../lib/socket-io';
+import io from '../socket-io';
 import TensorFlow from '../lib/tf';
 
 const router = express.Router();
@@ -29,10 +29,7 @@ router.post(
         })
             .then((r) => {
                 const questionDoc = r.ops[0];
-                ioInterface
-                    .of('/questions')
-                    .to(sessionId)
-                    .emit('question', questionDoc);
+                io.of('/questions').to(sessionId).emit('question', questionDoc);
                 res.status(200).send();
                 TensorFlow.tfToxicityQuestion(questionDoc, sessionId);
                 TensorFlow.tfUseQuestion(questionDoc, sessionId);
@@ -77,10 +74,7 @@ router.post(
                 asked: true,
             })
                 .then(() => {
-                    ioInterface
-                        .of('/questions')
-                        .to(roomId)
-                        .emit('asked', question._id);
+                    io.of('/questions').to(roomId).emit('asked', question._id);
                     res.status(200).send();
                 })
                 .catch(next);

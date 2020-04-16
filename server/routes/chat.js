@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import Messages from '../db/collections/messsages';
-import { moderate, unmoderate } from '../lib/socket-io';
+import { moderate, unmoderate } from '../socket-io/chat';
 
 const router = express.Router();
 
