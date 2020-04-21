@@ -12,7 +12,9 @@
         "start": "concurrently - k \"npm run server --scripts-prepend-node-path\" \"npm run client --scripts-prepend-node-path\"",
         "serve": "node server/dist/bin/www.js"
     },
-    "dependencies": {},
+    "dependencies": {
+        "express-rate-limit": "^5.1.1"
+    },
     "devDependencies": {
         "concurrently": "^4.1.1",
         "eslint": "^6.5.1",
