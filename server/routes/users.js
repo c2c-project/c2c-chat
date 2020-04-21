@@ -47,7 +47,6 @@ router.post(
 );
 
 // NOTE: unprotected route here
-// TODO: rate limit this
 router.post('/login-temporary', async (req, res, next) => {
     const { username } = req.body;
     try {
