@@ -1,50 +1,72 @@
 import mailgun from 'mailgun-js';
 
+const {
+    MAILGUN_API_KEY,
+    MAILGUN_DOMAIN,
+    ORIGIN,
+    MAILGUN_FROM_EMAIL,
+    NODE_ENV,
+} = process.env;
+
 const mg = mailgun({
-    apiKey: process.env.MAILGUN_API_KEY,
-    domain: process.env.MAILGUN_DOMAIN
+    apiKey: MAILGUN_API_KEY,
+    domain: MAILGUN_DOMAIN,
 });
 
-const sendEmail = (data) => {
-    mg.messages().send(data, (error, body) => {
-        if (error) {
-            console.error("Mailgun Error: ", error);
-        }
-        console.log("Mailgun: ", body);
-    });
-}
+/**
+ * @description internal function to use mg api to send email
+ * @arg {Object} data email data based on mg api docs
+ * @returns {Promise}
+ */
+const sendEmail = async (data) => {
+    // in development mode, don't send an email, instead we will test this on the staging server
+    if (NODE_ENV === 'development') {
+        return new Promise((resolve) => resolve('success'));
+    }
+    return mg.messages().send(data);
+};
 
-const sendEmailVerification = (email, _id) => {
-    const url = `${process.env.ORIGIN}/verification/${_id}`;
+/**
+ * @description send a verification email
+ * @arg {String} email email to send to
+ * @arg {String} userId database id of the user
+ * @returns {Promise}
+ */
+const sendEmailVerification = async (email, userId) => {
+    const url = `${ORIGIN}/verification/${userId}`;
     const data = {
-        from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
+        from: `c2c <${MAILGUN_FROM_EMAIL}>`,
         to: email,
         subject: 'Email Verificaiton',
         text: 'Please click the link to confirm your email',
         html: `
         <h3>Please click the lik to confirm your email</h3>
-        <a href="${url}">${url}</a>`
+        <a href="${url}">${url}</a>`,
     };
-    sendEmail(data);
+    return sendEmail(data);
 };
 
-const sendPasswordResetEmail = (email, token) => {
-    console.log(email);
-    
-    const url = `${process.env.ORIGIN}/resetpassword/${token}`;
+/**
+ * @description send password reset email
+ * @arg {String} email target email
+ * @arg {String} token jwt
+ */
+const sendPasswordResetEmail = async (email, token) => {
+    // TODO: base64 url encode the token
+    const url = `${ORIGIN}/resetpassword/${token}`;
     const data = {
-        from: `c2c <${process.env.MAILGUN_FROM_EMAIL}>`,
+        from: `c2c <${MAILGUN_FROM_EMAIL}>`,
         to: email,
         subject: 'Password Reset',
         text: 'Please click the link to reset your password',
         html: `
         <h3>Please click the link to reset your password</h3>
-        <a href="${url}">${url}</a>`
+        <a href="${url}">${url}</a>`,
     };
-    sendEmail(data);
+    return sendEmail(data);
 };
 
 export default {
-	sendEmailVerification,
-	sendPasswordResetEmail
-}
+    sendEmailVerification,
+    sendPasswordResetEmail,
+};

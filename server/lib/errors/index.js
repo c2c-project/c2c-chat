@@ -1,4 +1,5 @@
 import ClientError from './client';
+import Log from '../log';
 
 export { default as ClientError } from './client';
 export { default as ServerError } from './server';
@@ -15,8 +16,8 @@ export const errorHandler = (err, req, res, next) => {
 
         // TODO: log internal error here
         if (process.env.NODE_ENV === 'development') {
-            console.error(`Client Message: ${err.message}`);
-            console.error(`Server Message: ${err.internalError}`);
+            Log.err(`Client Message: ${err.message}`);
+            Log.err(`Server Message: ${err.internalError}`);
         }
     } else {
         // TODO: proper logging here

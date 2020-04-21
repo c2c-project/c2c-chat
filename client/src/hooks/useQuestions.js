@@ -22,7 +22,7 @@ function useQuestions(roomId = 'session') {
         // or just have a loading screen
         // console.log('not connected');
     });
-
+    
     React.useEffect(() => {
         let isMounted = true;
         // SOCKET IO
@@ -32,6 +32,58 @@ function useQuestions(roomId = 'session') {
             // chat.emit('new-user');
             if (isMounted) {
                 setFunc(question);
+            }
+        });
+        question.on('update-toxicity', function(messageId) {
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.toxicity = true
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
+        question.on('moderate-question', function(messageId) {
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.moderated= true
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
+        question.on('cancel-moderate-question', function(messageId) {
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.moderated= false
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
+        question.on('asked', function(messageId) {
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.asked = true
+                        }
+                        return questionElement
+                    })
+                );
             }
         });
         question.on('question', function(message) {
@@ -44,6 +96,37 @@ function useQuestions(roomId = 'session') {
         question.on('set-question', q => {
             setCurrent(q);
         });
+        question.on('update-is-center', function(messageId, isCenter) {
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.isCenter = isCenter
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
+        question.on('update-cluster-number', function(messageId, clusterNumber) {
+            if (isMounted) {
+                setQuestions(curQuestions =>
+                    curQuestions.map(element => {
+                        const questionElement = element
+                        if (questionElement._id === messageId){
+                            questionElement.clusterNumber = clusterNumber
+                        }
+                        return questionElement
+                    })
+                );
+            }
+        });
+        // TODO: 193
+        /**
+         * here is where you'd add your listener for the 'classification' event on the client
+         * and update the state appropriately to trigger a re-render in react
+         */
         // question.on('moderate', messageId => {
         //     if (isMounted) {
         //         setQuestions(curMessages =>
@@ -58,11 +141,10 @@ function useQuestions(roomId = 'session') {
             }
         }).then(r => {
             r.json().then(history => {
-                console.log(history);
                 if (isMounted) {
                     setQuestions(history.filter(m => !m.moderated));
                 }
-            });
+            }).catch((exception) => console.log( exception));
         });
 
         // SOCKET IO CLEANUP

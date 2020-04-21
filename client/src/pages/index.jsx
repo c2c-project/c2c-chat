@@ -2,12 +2,15 @@ import React from 'react';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import Sessions from './Sessions';
 import Chat from './Chat';
+import SessionSummary from './SessionSummary';
+import SessionData from './SessionData';
 import Logout from './Logout';
 import Login from './Login';
 import Layout from '../layout';
 import LoggedIn from '../components/LoggedIn';
 import LoginTemp from './LoginTemp';
 import Register from './Register';
+import Timeline from '../components/clipper/TimeLine';
 import Verification from './Verification';
 import RequestPasswordReset from './RequestPasswordReset';
 import UpdatePassword from './UpdatePassword';
@@ -23,6 +26,13 @@ export default function Routes() {
                         </Route>
                         <Route path='/app/sessions/:roomId/live'>
                             <Chat />
+                        </Route>
+                        <Route path='/app/sessions/summary'>
+                            <SessionSummary />
+                        </Route>
+                        <Route path='/app/sessions/:sessionId/session-summary' component={SessionData} />
+                        <Route path='/app/sessions/:sessionId/clips'>
+                            <Timeline />
                         </Route>
                     </Layout>
                 </LoggedIn>

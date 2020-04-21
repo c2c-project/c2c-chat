@@ -15,27 +15,33 @@ export default function MessageActions({ targetMsg, onClick }) {
     const handleEdit = () => {
         console.log('TODO: handlEdit');
     };
-    const handleDelete = () => {
-        fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
+    const handleAction = () => {
+        fetch(`/api/chat/message-action/${roomId}/${targetMsg._id}`, {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ moderateAction: !targetMsg.moderated }),
         })
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
-                    snack('Successfully moderated messsage', 'success');
+                    if (targetMsg.moderated) {
+                        snack('Successfully unmoderated messsage', 'success');
+                    } else {
+                        snack('Successfully moderated messsage', 'success');
+                    }
                     onClick();
                 } else {
                     snack('Something went wrong! Try again.', 'error');
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 snack('Something went wrong! Try again.', 'error');
             });
     };
+
     // const handleSetCurrent = () => {
     // fetch(`/api/sessions/set-question/:${roomId}`, {
     //     method: 'POST',
@@ -88,9 +94,11 @@ export default function MessageActions({ targetMsg, onClick }) {
                     color='secondary'
                     variant='contained'
                     fullWidth
-                    onClick={handleDelete}
+                    onClick={handleAction}
                 >
-                    Moderate/Hide
+                    {targetMsg.moderated
+                        ? 'Cancel-Moderate/Show'
+                        : 'Moderate/Hide'}
                 </Button>
             </Grid>
         </Grid>
@@ -98,14 +106,15 @@ export default function MessageActions({ targetMsg, onClick }) {
 }
 
 MessageActions.defaultProps = {
-    onClick: () => {}
+    onClick: () => {},
 };
 
 MessageActions.propTypes = {
     targetMsg: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         message: PropTypes.string.isRequired,
-        username: PropTypes.string.isRequired
+        username: PropTypes.string.isRequired,
+        moderated: PropTypes.bool.isRequired,
     }).isRequired,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
 };
