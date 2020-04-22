@@ -3,7 +3,6 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import Accounts from './accounts';
 import Users from '../db/collections/users';
-import userConnection from '../db/collections/user-connection';
 
 passport.use(
     'login',
@@ -19,9 +18,8 @@ passport.use(
                     }
                     if (!res) {
                         done(null, false);
-                    } else {
-                        console.log('login success')
-                        userConnection.userConnect(user._id).catch(exception => console.log(exception));
+                    } else { 
+                        // login success
                         done(null, user);
                     }
                 });

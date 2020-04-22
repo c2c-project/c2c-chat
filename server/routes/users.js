@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import Accounts from '../lib/accounts';
-
+import userConnection from '../lib/user-connection';
 const router = express.Router();
 
 router.post('/register', (req, res, next) => {
@@ -26,6 +26,7 @@ router.post(
                 // NOTE: maybe throw a server error?
                 res.status(400).send();
             } else {
+                console.log(userConnection.connectingList.addUser(user));
                 res.status(200).send({ jwt: token });
             }
         });
@@ -39,6 +40,7 @@ router.post('/login-temporary', (req, res, next) => {
         .then(userDoc => {
             jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
                 if (!err) {
+                    userConnection.connectingList.addUser(userDoc);
                     res.status(200).send({ jwt: token });
                 } else {
                     console.log(err);

@@ -2,7 +2,6 @@ import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
 import Messages from '../db/collections/messsages';
 import tf from './tf';
-import userConnection from '../db/collections/user-connection';
 import passport from 'passport';
 /**
  * all socket io stuff happens here, note that the server is not attached until it is created in bin/www.js
@@ -17,6 +16,8 @@ io.on('connection', socket => {
     // eslint-disable-next-line
     socket.on('disconnect', data => {
         // TODO: decrement # of users here
+        console.log("disconnect data")
+        console.log(data)
         passport.authenticate('jwt', { session: false }),
         (req, res, next) => {
             const { user } = req;
