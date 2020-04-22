@@ -1,8 +1,8 @@
 import chai from 'chai';
 import chaihttp from 'chai-http';
+import { ObjectID } from 'mongodb';
 import server from '../../app';
 import { mongo, close } from '../../db/mongo';
-import { ObjectID } from 'mongodb';
 import Accounts from '../../lib/accounts';
 
 chai.should();
@@ -17,30 +17,30 @@ describe('chat', function () {
     // test documents
     const testUser = {
         _id: userId,
-        username: 'test_user@example.com',
-        email: 'test_user@example.com',
+        username: 'abcd@example.com',
+        email: 'abcd@example.com',
         roles: ['user'],
         password: '1',
         confirmPass: '1',
-        //name: {
+        // name: {
         //    first: 'Robert',
         //    last: 'Downey',
-        //},
+        // },
     };
 
     const testSession = {
         _id: sessionId,
-        //speaker: 'George Washington',
-        //moderator: 'Darth Vader',
+        // speaker: 'George Washington',
+        // moderator: 'Darth Vader',
         // attendees: {
         // unique: 20,
         // peak: 10
         // TODO: what other attendance data would we want?
-        //},
-        //messages: {
+        // },
+        // messages: {
         //  sent: 100,
-        //asked: 10
-        //}
+        // asked: 10
+        // }
     };
 
     const testMessage = {
@@ -52,7 +52,7 @@ describe('chat', function () {
     };
 
     // Before hook
-    before('Before hook running', async function (done) {
+    before('Before hook running', async function () {
         try {
             const db = await mongo;
             await db.collection('messages').insertOne(testMessage);
@@ -61,42 +61,41 @@ describe('chat', function () {
             await db.collection('sessions').insertOne(testSession);
             console.log('finish seeding session');
 
-            await Accounts.register(
+            return Accounts.register(
                 testUser.username,
                 testUser.password,
                 testUser.confirmPass
             );
-            console.log('finish registering account');
+            // console.log('finish registering account');
 
-            console.log('finish seeding db');
+            // console.log('finish seeding db');
         } catch (error) {
             console.log(error);
+            return Promise.reject();
         }
-        done();
     });
 
     // After hook
-    after('After hook running', async function (done) {
+    after('After hook running', async function () {
         try {
             const db = await mongo;
-            db.collection('messages').deleteOne({
+            const a = db.collection('messages').deleteOne({
                 _id: testMessage._id,
             });
 
-            db.collection('sessions').deleteOne({
+            const b = db.collection('sessions').deleteOne({
                 _id: testSession._id,
             });
 
-            db.collection('users').deleteOne({
+            const c = db.collection('users').deleteOne({
                 _id: testUser._id,
             });
+            return Promise.all([a, b, c]);
         } catch (error) {
             console.log(error);
+            return Promise.reject();
         }
-        done();
-        // call close here???
-        //close()
-        console.log('Hi after all the tests in this block ran');
+        // console.log('Hi after all the tests in this block ran');
     });
 
     // variable to store jason web token
