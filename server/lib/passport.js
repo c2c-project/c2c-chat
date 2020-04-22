@@ -3,6 +3,7 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import Accounts from './accounts';
 import Users from '../db/collections/users';
+import userConnection from '../db/collections/user-connection';
 
 passport.use(
     'login',
@@ -13,11 +14,14 @@ passport.use(
             } else {
                 Accounts.verifyPassword(password, user.password, (e, res) => {
                     if (e) {
+                        //adding the login succeed user in the user connection table
                         done(e);
                     }
                     if (!res) {
                         done(null, false);
                     } else {
+                        console.log('login success')
+                        userConnection.userConnect(user._id).catch(exception => console.log(exception));
                         done(null, user);
                     }
                 });

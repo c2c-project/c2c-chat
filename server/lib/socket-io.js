@@ -15,18 +15,12 @@ io.serveClient(false);
 io.on('connection', socket => {
     // TODO: increment # of users connected here
     // eslint-disable-next-line
-    passport.authenticate('jwt', { session: false }),
-    (req, res, next) => {
-        console.log('running')
-        const { user } = req;
-        userConnection.userConnect(user._id);
-    }
     socket.on('disconnect', data => {
         // TODO: decrement # of users here
         passport.authenticate('jwt', { session: false }),
         (req, res, next) => {
             const { user } = req;
-            userConnection.userDisConnect(user._id);
+            userConnection.userDisConnect(user._id).catch(e => console.log(e));
         }
     });
 });
