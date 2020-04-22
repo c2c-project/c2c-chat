@@ -54,21 +54,22 @@ describe('chat', function () {
     // Before hook
     before('Before hook running', async function (done) {
         try {
-            mongo.then((db) => {
-                await db.collection('messages').insertOne(testMessage);
+            await mongo.then((db) => {
+                db.collection('messages').insertOne(testMessage);
 
-                await db.collection('sessions').insertOne(testSession);
+                db.collection('sessions').insertOne(testSession);
 
-                await Accounts.register(
+                Accounts.register(
                     testUser.username,
                     testUser.password,
                     testUser.confirmPass
                 );
             });
-        }
-        catch(error){
+        } catch (error) {
             console.log(error);
         }
+
+        done();
         console.log('Hi before the tests in this block run');
     });
 
