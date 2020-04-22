@@ -1,22 +1,12 @@
 import chai from 'chai';
 import chaihttp from 'chai-http';
 import server from '../../app';
-import { ObjectID } from 'mongodb';
 import { mongo, close } from '../../db/mongo';
+import { ObjectID } from 'mongodb';
+import Accounts from '../../lib/accounts';
 
 chai.should();
 chai.use(chaihttp);
-
-// NOTE must be sed with the following for it to work porperly:
-// user@example.com w/ password 1
-// Messages from user@example.com
-
-// Issues: Ids are being hardcoded
-
-// Bad tests, id properties of the sent messages and rooms are not the same in all machines.
-
-// Possible Solutions:
-//   Seed the DB before the tests are ran using hooks. Add and Remove seeded values.
 
 describe('chat', function () {
     // Ids used in test documents
@@ -31,6 +21,7 @@ describe('chat', function () {
         email: 'test_user@example.com',
         roles: ['user'],
         password: '1',
+        confirmPass: '1',
         //name: {
         //    first: 'Robert',
         //    last: 'Downey',
@@ -61,23 +52,61 @@ describe('chat', function () {
     };
 
     // Before hook
-    before('Before hook running', function () {
-        mongo.then(async function (db) {
-            await db
-                .collection('messages')
-                .insertOne(testMessage)
-                .then(() => {
-                    console.log('finish seeding the database');
-                });
-            //close();
-        });
+    before('Before hook running', async function (done) {
+        try {
+            amongo.then((db) => {
+                await db.collection('messages').insertOne(testMessage);
+
+                await db.collection('sessions').insertOne(testSession);
+
+                await Accounts.register(
+                    testUser.username,
+                    testUser.password,
+                    testUser.confirmPass
+                );
+            });
+        }
+        catch(error){
+            console.log(error);
+        }
         console.log('Hi before the tests in this block run');
     });
 
     // After hook
-    after('After hook running', function () {
-        console.log('Hi after all the tests in this block ran');
-    });
+    // after('After hook running', async function () {
+    //     await mongo.then((db) => {
+    //         db.collection('messages')
+    //             .deleteOne({
+    //                 _id: testMessage._id,
+    //             })
+    //             .then(() => {
+    //                 console.log('finish deleting seeded message');
+    //             })
+    //             .catch((error) => console.log(error));
+
+    //         db.collection('sessions')
+    //             .deleteOne({
+    //                 _id: testSession._id,
+    //             })
+    //             .then(() => {
+    //                 console.log('finish deleting seeded session');
+    //             })
+    //             .catch((error) => console.log(error));
+
+    //         db.collection('users')
+    //             .deleteOne({
+    //                 _id: testUser._id,
+    //             })
+    //             .then(() => {
+    //                 console.log('finish deleting seeded user');
+    //             })
+    //             .catch((error) => console.log(error));
+    //     });
+
+    //     // call close here???
+    //     //close()
+    //     console.log('Hi after all the tests in this block ran');
+    // });
 
     // variable to store jason web token
     let jwt;
@@ -95,7 +124,10 @@ describe('chat', function () {
         it('should accept a valid username & password', function (done) {
             chai.request(server)
                 .post('/api/users/login')
-                .send({ username: 'user@example.com', password: '1' })
+                .send({
+                    username: testUser.username,
+                    password: testUser.password,
+                })
                 .end(function (err, res) {
                     res.should.have.status(200);
                     jwt = res.body.jwt;
@@ -117,8 +149,8 @@ describe('chat', function () {
                 .set('Authorization', `bearer ${jwt}`)
                 .send({
                     message: {
-                        _id: '1234566789',
-                        userId: '0987654321',
+                        _id: new ObjectID(),
+                        userId: new ObjectID(),
                     },
                 })
                 .end(function (err, res) {
@@ -133,8 +165,8 @@ describe('chat', function () {
                 .set('Authorization', `bearer ${jwt}`)
                 .send({
                     message: {
-                        _id: '5e8e849eb65bf53b64683e7b',
-                        userId: '5e8e849eb65bf53b64683e77',
+                        _id: testMessage._id,
+                        userId: testMessage.userId,
                     },
                     newMessage: 'boo boo got fixed again',
                 })
@@ -144,19 +176,18 @@ describe('chat', function () {
                     done();
                 });
         });
-        // Problem: This test receives status of 200 even though the message._id does not belong to any mesage document in the db
-        // From research: It seems like MongoDB does not throw an error if the document to be updated does not exist in the db
-        it('should reject update request since message does not exist', function (done) {
+        // Note: MongoDB does not throw an error if the document to be updated does not exist in the db
+        it('should accept update request even though message does not exist', function (done) {
             chai.request(server)
                 .post('/api/chat/update-message')
                 .set('Authorization', `bearer ${jwt}`)
                 .send({
                     message: {
-                        // No this id does not belong to any message document in the db
-                        _id: '5e6290837ec41351b24b57fc',
-                        userId: '5e8e849eb65bf53b64683e77',
+                        // Note this id does not belong to any message document in the db
+                        _id: new ObjectID(),
+                        userId: testMessage.userId,
                     },
-                    newMessage: 'boo boo got fixed again',
+                    newMessage: 'boo boo got fixed again oopsie',
                 })
                 .end(function (err, res) {
                     res.should.have.status(200);
@@ -166,10 +197,12 @@ describe('chat', function () {
     });
 
     describe('#delete-message', function () {
+        const deleteMessageEndpoint = `/api/chat/delete-message/${testSession._id}`;
+
         it('should reject request with no authentcation', function (done) {
             chai.request(server)
                 // Same problem: the room id gotten from the db is being hardcoded
-                .post('/api/chat/delete-message/5e8e849eb65bf53b64683e78')
+                .post(deleteMessageEndpoint)
                 .end(function (err, res) {
                     res.should.have.status(401);
                     done();
@@ -177,7 +210,7 @@ describe('chat', function () {
         });
         it('should get internal server error since no message object is provided', function (done) {
             chai.request(server)
-                .post('/api/chat/delete-message/5e8e849eb65bf53b64683e78')
+                .post(deleteMessageEndpoint)
                 .set('Authorization', `bearer ${jwt}`)
                 .end(function (err, res) {
                     res.should.have.status(500);
@@ -186,12 +219,12 @@ describe('chat', function () {
         });
         it('should reject delete request with user that is not owner of the message', function (done) {
             chai.request(server)
-                .post('/api/chat/delete-message/5e8e849eb65bf53b64683e78')
+                .post(deleteMessageEndpoint)
                 .set('Authorization', `bearer ${jwt}`)
                 .send({
                     message: {
-                        _id: '5e8e849eb65bf53b64683e7b',
-                        userId: '0987654321',
+                        _id: new ObjectID(),
+                        userId: new ObjectID(),
                     },
                 })
                 .end(function (err, res) {
@@ -202,12 +235,12 @@ describe('chat', function () {
         });
         it('should accept delete request with user that is owner of the message', function (done) {
             chai.request(server)
-                .post('/api/chat/delete-message/5e8e849eb65bf53b64683e78')
+                .post(deleteMessageEndpoint)
                 .set('Authorization', `bearer ${jwt}`)
                 .send({
                     message: {
-                        _id: '5e8e849eb65bf53b64683e7b',
-                        userId: '5e8e849eb65bf53b64683e77',
+                        _id: testMessage._id,
+                        userId: testMessage.userId,
                     },
                 })
                 .end(function (err, res) {
@@ -216,17 +249,16 @@ describe('chat', function () {
                     done();
                 });
         });
-        // Problem: This test receives status of 200 even though the message._id does not belong to any mesage document in the db
-        // From research: It seems like MongoDB does not throw an error if the document to be deleted does not exist in the db
+        // It seems like MongoDB does not throw an error when trying to delete a non-existing document
         it('should reject delete request since message does not exist', function (done) {
             chai.request(server)
-                .post('/api/chat/delete-message/5e8e849eb65bf53b64683e78')
+                .post(deleteMessageEndpoint)
                 .set('Authorization', `bearer ${jwt}`)
                 .send({
                     message: {
                         // No this id does not belong to any message document in the db
-                        _id: '5e6230237ec41351c24b57fc',
-                        userId: '5e8e849eb65bf53b64683e77',
+                        _id: new ObjectID(),
+                        userId: testMessage.userId,
                     },
                 })
                 .end(function (err, res) {
