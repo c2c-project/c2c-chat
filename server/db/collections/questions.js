@@ -71,6 +71,15 @@ const removeQuestion = ({ questionId, reason }) =>
         // close();
     );
 
+const countQuestionsBySession = sessionId =>
+    mongo.then(db =>
+        db
+            .collection('questions')
+            .find({ 'sessionId': sessionId }).count(function (err, docs) {
+                console.log("session ", docs);    // returns the amount of questions per sessionId
+            })
+    );
+
 const updateQuestionToxicity = ({ questionId, result, toxicityReason }) =>
     mongo.then(db => {
         db.collection('questions').updateOne(
@@ -150,6 +159,7 @@ export default {
     createQuestion,
     findBySession,
     findAllQuestions,
+    countQuestionsBySession,
     removeQuestion,
     updateQuestionToxicity,
     updateQuestionSentenceCode,
