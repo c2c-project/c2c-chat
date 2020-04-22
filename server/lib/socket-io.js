@@ -2,7 +2,8 @@ import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
 import Messages from '../db/collections/messsages';
 import tf from './tf';
-
+import userConnection from '../db/collections/user-connection';
+import passport from 'passport';
 /**
  * all socket io stuff happens here, note that the server is not attached until it is created in bin/www.js
  * NOTE: as this expands this may get broken up into diff files/folders, but it's < 100 lines at the time of this comment
@@ -14,8 +15,19 @@ io.serveClient(false);
 io.on('connection', socket => {
     // TODO: increment # of users connected here
     // eslint-disable-next-line
+    passport.authenticate('jwt', { session: false }),
+    (req, res, next) => {
+        console.log('running')
+        const { user } = req;
+        userConnection.userConnect(user._id);
+    }
     socket.on('disconnect', data => {
         // TODO: decrement # of users here
+        passport.authenticate('jwt', { session: false }),
+        (req, res, next) => {
+            const { user } = req;
+            userConnection.userDisConnect(user._id);
+        }
     });
 });
 
