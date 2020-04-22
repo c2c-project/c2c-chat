@@ -54,60 +54,50 @@ describe('chat', function () {
     // Before hook
     before('Before hook running', async function (done) {
         try {
-            await mongo.then((db) => {
-                db.collection('messages').insertOne(testMessage);
+            const db = await mongo;
+            await db.collection('messages').insertOne(testMessage);
+            console.log('finish seeding message');
 
-                db.collection('sessions').insertOne(testSession);
+            await db.collection('sessions').insertOne(testSession);
+            console.log('finish seeding session');
 
-                Accounts.register(
-                    testUser.username,
-                    testUser.password,
-                    testUser.confirmPass
-                );
+            await Accounts.register(
+                testUser.username,
+                testUser.password,
+                testUser.confirmPass
+            );
+            console.log('finish registering account');
+
+            console.log('finish seeding db');
+        } catch (error) {
+            console.log(error);
+        }
+        done();
+    });
+
+    // After hook
+    after('After hook running', async function (done) {
+        try {
+            const db = await mongo;
+            db.collection('messages').deleteOne({
+                _id: testMessage._id,
+            });
+
+            db.collection('sessions').deleteOne({
+                _id: testSession._id,
+            });
+
+            db.collection('users').deleteOne({
+                _id: testUser._id,
             });
         } catch (error) {
             console.log(error);
         }
-
         done();
-        console.log('Hi before the tests in this block run');
+        // call close here???
+        //close()
+        console.log('Hi after all the tests in this block ran');
     });
-
-    // After hook
-    // after('After hook running', async function () {
-    //     await mongo.then((db) => {
-    //         db.collection('messages')
-    //             .deleteOne({
-    //                 _id: testMessage._id,
-    //             })
-    //             .then(() => {
-    //                 console.log('finish deleting seeded message');
-    //             })
-    //             .catch((error) => console.log(error));
-
-    //         db.collection('sessions')
-    //             .deleteOne({
-    //                 _id: testSession._id,
-    //             })
-    //             .then(() => {
-    //                 console.log('finish deleting seeded session');
-    //             })
-    //             .catch((error) => console.log(error));
-
-    //         db.collection('users')
-    //             .deleteOne({
-    //                 _id: testUser._id,
-    //             })
-    //             .then(() => {
-    //                 console.log('finish deleting seeded user');
-    //             })
-    //             .catch((error) => console.log(error));
-    //     });
-
-    //     // call close here???
-    //     //close()
-    //     console.log('Hi after all the tests in this block ran');
-    // });
 
     // variable to store jason web token
     let jwt;
