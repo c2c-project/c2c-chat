@@ -4,7 +4,7 @@ import * as use from '@tensorflow-models/universal-sentence-encoder';
 import * as math from 'mathjs';
 import Messages from '../db/collections/messsages';
 import Questions from '../db/collections/questions';
-import ioInterface from './socket-io';
+import ioInterface from '../socket-io';
 
 /**
  * A question

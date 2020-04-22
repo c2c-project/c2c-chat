@@ -1,22 +1,18 @@
 import express from 'express';
 import passport from 'passport';
 import Sessions from '../db/collections/sessions';
-import SessionModel from '../models/session.model';
 import Questions from '../db/collections/questions';
-import Chat from '../db/collections/chat';
-import ioInterface from '../lib/socket-io';
-import { setCurrentQuestion } from '../lib/socket-io';
-import { UserRefreshClient } from 'google-auth-library';
+import { setCurrentQuestion } from '../socket-io/questions';
 
 const router = express.Router();
 
 router.route('/').get((req, res) => {
     console.log('Getting sessions: ');
     Sessions.findAllSessions()
-        .then(sess => {
+        .then((sess) => {
             res.json(sess);
         })
-        .catch(err => res.status(400).json(`Error: ${err}`));
+        .catch((err) => res.status(400).json(`Error: ${err}`));
 });
 
 // NOTE: remove passport auth if we don't want to require the user to be logged in
@@ -26,7 +22,7 @@ router.get(
     passport.authenticate('jwt', { session: false }),
     (req, res, next) => {
         Sessions.findAllSessions()
-            .then(r => res.json(r))
+            .then((r) => res.json(r))
             .catch(next);
     }
 );
@@ -38,7 +34,7 @@ router.get(
     (req, res, next) => {
         const { sessionId } = req.params;
         Sessions.findSessionById(sessionId)
-            .then(r => {
+            .then((r) => {
                 res.json(r);
             })
             .catch(next);
@@ -62,7 +58,7 @@ router.post(
         const { user } = req;
         const addSession = Sessions.privilegedActions('ADD_SESSION', user);
         addSession(form)
-            .then(mongoRes =>
+            .then((mongoRes) =>
                 res
                     .status(200)
                     .send(
@@ -84,7 +80,7 @@ router.post(
             user
         );
         updateSession(sessionId, form)
-            .then(mongoRes =>
+            .then((mongoRes) =>
                 res
                     .status(200)
                     .send(
@@ -103,8 +99,8 @@ router.post(
         const { sessionId, changes } = req.body;
 
         Sessions.updateSessionClips({ sessionId, changes })
-            .then(r => res.json(r))
-            .catch(err => console.log('Error', err));
+            .then((r) => res.json(r))
+            .catch((err) => console.log('Error', err));
     }
 );
 ////
@@ -119,7 +115,7 @@ router.post(
             user
         );
         deleteSession(sessionId)
-            .then(mongoRes =>
+            .then((mongoRes) =>
                 res
                     .status(200)
                     .send(
@@ -151,7 +147,7 @@ router.get(
     '/session-summary',
     passport.authenticate('jwt', { session: false }),
     (req, res) => {
-        Sessions.findAllSessions().then(r => {
+        Sessions.findAllSessions().then((r) => {
             res.json(r);
         });
     }

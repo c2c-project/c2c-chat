@@ -1,0 +1,12 @@
+{
+    "plugins": ["plugins/markdown", "plugins/summarize"],
+    "source": {
+        "include": ["server/lib"],
+        "exclude": [],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "opts": {
+        "destination": "./docs/code"
+    }
+}

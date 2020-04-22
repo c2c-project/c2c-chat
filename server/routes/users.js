@@ -1,116 +1,146 @@
 import express from 'express';
 import passport from 'passport';
-import jwt from 'jsonwebtoken';
+import jwt from '../lib/jwt';
 import Accounts from '../lib/accounts';
-import userConnection from '../lib/user-connection';
+import Emails from '../lib/email';
+import { ClientError } from '../lib/errors';
+
 const router = express.Router();
 
-router.post('/register', (req, res, next) => {
+router.post('/register', async (req, res, next) => {
     const { form } = req.body;
     const { username, email, password, confirmPass } = form;
-    Accounts.register(username, password, confirmPass, { email })
-        .then(() => {
-            res.status(200).send();
-        })
-        .catch(next);
+    try {
+        const { _id } = await Accounts.register(
+            username,
+            password,
+            confirmPass,
+            {
+                email,
+            }
+        );
+        // TODO: provide option to re-send verification email
+        Emails.sendEmailVerification(email, _id);
+        res.status(200).send();
+    } catch (e) {
+        next(e);
+    }
 });
 
 router.post(
     '/login',
     passport.authenticate('login', { session: false }),
-    (req, res) => {
+    async (req, res, next) => {
         const { user } = req;
-        const clientUser = Accounts.filterSensitiveData(user);
-        jwt.sign(clientUser, process.env.JWT_SECRET, {}, (err, token) => {
-            if (err) {
-                // NOTE: maybe throw a server error?
-                res.status(400).send();
-            } else {
-                console.log(userConnection.connectingList.addUser(user));
-                res.status(200).send({ jwt: token });
-            }
-        });
+        try {
+            const clientUser = await Accounts.filterSensitiveData(user);
+            const token = await jwt.sign(
+                clientUser,
+                process.env.JWT_SECRET,
+                {}
+            );
+            res.status(200).send({ jwt: token });
+        } catch (e) {
+            next(e);
+        }
     }
 );
 
 // NOTE: unprotected route here
-router.post('/login-temporary', (req, res, next) => {
+// TODO: rate limit this
+router.post('/login-temporary', async (req, res, next) => {
     const { username } = req.body;
-    Accounts.registerTemporary(username, { roles: ['user'] })
-        .then(userDoc => {
-            jwt.sign(userDoc, process.env.JWT_SECRET, {}, (err, token) => {
-                if (!err) {
-                    userConnection.connectingList.addUser(userDoc);
-                    res.status(200).send({ jwt: token });
-                } else {
-                    console.log(err);
-                    res.status(400).send();
-                }
-            });
-        })
-        .catch(next);
+    try {
+        const userDoc = await Accounts.registerTemporary(username, {
+            roles: ['user'],
+        });
+        const token = jwt.sign(userDoc, process.env.JWT_SECRET, {});
+        res.status(200).send({ jwt: token });
+    } catch (e) {
+        next(e);
+    }
 });
 
 router.post(
     '/authenticate',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    async (req, res, next) => {
         const { user } = req;
         const { requiredAny, requiredAll, requiredNot } = req.body;
-        const allowed = Accounts.isAllowed(user.roles, {
+        const allowed = await Accounts.isAllowed(user.roles, {
             requiredAll,
             requiredAny,
-            requiredNot
-        });
-        res.send({
-            allowed
+            requiredNot,
+        }).catch(next);
+        res.status(200).send({
+            allowed,
         });
     }
 );
 
-router.post('/verification', (req, res, next) => {
+router.post('/verification', async (req, res, next) => {
     const { userId } = req.body;
-    Accounts.verifyUser(userId)
-        .then(() => {
-            res.status(200).send();
-        })
-        .catch(next);
+    // we want to wait for this before sending a success message
+    try {
+        await Accounts.verifyUser(userId);
+        res.status(200).send();
+    } catch (e) {
+        next(e);
+    }
 });
 
-//Call to send password reset email
-router.post(
-    '/request-password-reset', (req, res, next) => {
-        if(req.body.form.email !== undefined) {
-            Accounts.sendPasswordResetEmail(req.body.form.email).then(() => {
-                res.status(200).send();
-            }).catch(next)
-        } else {
-            res.statusText = 'Email Missing';
-            res.status(400).send();
+// Call to send password reset email
+router.post('/request-password-reset', async (req, res, next) => {
+    if (req.body.form.email !== undefined) {
+        try {
+            await Accounts.sendPasswordResetEmail(req.body.form.email);
+            res.status(200).send();
+        } catch (e) {
+            next(e);
         }
+    } else {
+        next(new ClientError('Email Missing'));
     }
-);
+});
 
-//Call to update to new password
-router.post(
-    '/consume-password-reset-token', (req, res, next) => {
-        if(req.body.token !== undefined && req.body.form.password !== undefined && req.body.form.confirmPassword !== undefined) {
-            const { token, form } = req.body;
-            Accounts.updatePassword(token, form.password, form.confirmPassword).then(() => {
-                res.status(200).send('Password Reset');
-            }).catch(next)
-        } else {
-            if(req.body.token === undefined) {
-                res.statusText = 'Token Missing';
-                res.status(400).send();
-            } else if(req.body.form.password === undefined || req.body.form.confirmPassword === undefined) {
-                res.statusText = 'Invalid Password';
-                res.status(400).send();
+// Call to update to new password
+router.post('/consume-password-reset-token', async (req, res, next) => {
+    const { token, form } = req.body;
+    const { password, confirmPassword } = form;
+    if (
+        token !== undefined &&
+        password !== undefined &&
+        confirmPassword !== undefined
+    ) {
+        try {
+            const decodedJwt = await jwt.verify(token, process.env.JWT_SECRET);
+            await Accounts.updatePassword(
+                decodedJwt,
+                form.password,
+                form.confirmPassword
+            );
+            res.status(200).send('Password Reset');
+        } catch (e) {
+            if (e instanceof ClientError) {
+                next(e);
             } else {
-                res.status(400).send();
+                const { message } = e;
+                if (message === 'jwt expired') {
+                    next(new ClientError('Expired Link'));
+                } else {
+                    next(new ClientError('Invalid Link'));
+                }
             }
         }
+    } else {
+        let errorText = '';
+        if (token === undefined) {
+            errorText = 'Token Missing';
+        } else if (password === undefined || confirmPassword === undefined) {
+            errorText = 'Invalid Password';
+        }
+        next(new ClientError(errorText));
     }
-);
+});
 
 module.exports = router;
