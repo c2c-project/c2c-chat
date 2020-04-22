@@ -10,6 +10,7 @@ import chatRouter from './routes/chat';
 import sessionRouter from './routes/sessions';
 import questionRouter from './routes/questions';
 import analyticsRouter from './routes/analytics';
+import userListRouter from './routes/userList';
 import './lib/passport';
 import { errorHandler } from './lib/errors';
 
@@ -28,6 +29,7 @@ app.use('/api/chat', chatRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/questions', questionRouter);
+app.use('/api/userList', userListRouter);
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'client/build')));

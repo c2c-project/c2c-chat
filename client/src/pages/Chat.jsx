@@ -17,6 +17,7 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
+import UserListWindow from '../components/userList';
 import useJwt from '../hooks/useJwt';
 // import Speaker from '../components/Speaker';
 // import ModDashboard from '../components/ModDashboard';
@@ -203,6 +204,10 @@ export default function Chat() {
                                 <QuestionWindow
                                     roomId={roomId}
                                     title='Incoming Questions'
+                                />
+                                <UserListWindow
+                                    roomId={roomId}
+                                    title='User List'
                                 />
                                 {/* <Chat roomId={roomId} /> */}
                                 {/* <ModDashboard data={data} /> */}

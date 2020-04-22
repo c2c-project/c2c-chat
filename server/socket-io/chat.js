@@ -94,7 +94,17 @@ async function onConnection(socket) {
     
     
 }
-
+async function onDisConnection(socket) {
+    // roomId is just the sessionId -- we have different chatrooms for every session
+    console.log("disconnect")
+    
+    // TODO: load current question
+    // TODO: 193
+    // register that a user joined this chatroom
+    
+    
+}
 ioChat.on('connection', onConnection);
+ioChat.on('disconnect', onDisConnection);
 
 export default ioChat;

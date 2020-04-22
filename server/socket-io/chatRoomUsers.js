@@ -7,6 +7,9 @@ class ChatRoom {
     getRoomId() {
         return this.roomId;
     }
+    getUserList() {
+        return this.ChatRoomUsers;
+    }
     addUser (newUser) {
         if(this.checkUser(newUser._id) < 0)
             this.ChatRoomUsers.push(newUser)
@@ -20,14 +23,7 @@ class ChatRoom {
 
 const roomList = []
 const GetChatRoom = (roomId) => {
-    for (let i = 0; i < roomList.length; i++) {
-        if (roomList[i].getRoomId.toString() === roomId.toString()) {
-            return roomList[i]
-        }
-    }
-    const newRoom = new ChatRoom(roomId);
-    roomList.push(newRoom);
-    return newRoom;
+    return roomList.find(room => room.roomId === roomId);
 }
 
 const CheckRoom = (roomId) => {

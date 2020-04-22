@@ -16,8 +16,7 @@ io.on('connection', socket => {
     // eslint-disable-next-line
     socket.on('disconnect', data => {
         // TODO: decrement # of users here
-        console.log("disconnect data")
-        console.log(data)
+        console.log("disconnecting")
     });
 });
 

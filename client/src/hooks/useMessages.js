@@ -1,11 +1,14 @@
 import React from 'react';
 import io from 'socket.io-client';
 import useJwt from './useJwt';
+import { func } from 'prop-types';
 
 function connect(roomId = 'chat', jwt) {
     const url = `${process.env.REACT_APP_SERVER}/chat`;
     return io.connect(url, { query: `roomId=${roomId}&jwt=${jwt}`});
 }
+
+
 
 function isModerator(jwt) {
     return new Promise(function (resolve) {
@@ -112,6 +115,8 @@ function useMessages(roomId = 'session') {
             console.log('closing');
             isMounted = false;
             chat.close();
+            if(sendFunc) 
+                sendFunc.emit('disconnect', {});
         };
     }, [roomId, jwt]);
 
