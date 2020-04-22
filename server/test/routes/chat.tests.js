@@ -54,7 +54,7 @@ describe('chat', function () {
     // Before hook
     before('Before hook running', async function (done) {
         try {
-            amongo.then((db) => {
+            mongo.then((db) => {
                 await db.collection('messages').insertOne(testMessage);
 
                 await db.collection('sessions').insertOne(testSession);
