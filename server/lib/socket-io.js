@@ -18,11 +18,6 @@ io.on('connection', socket => {
         // TODO: decrement # of users here
         console.log("disconnect data")
         console.log(data)
-        passport.authenticate('jwt', { session: false }),
-        (req, res, next) => {
-            const { user } = req;
-            userConnection.userDisConnect(user._id).catch(e => console.log(e));
-        }
     });
 });
 

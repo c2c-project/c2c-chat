@@ -4,6 +4,8 @@ import Messages from '../db/collections/messsages';
 import Log from '../lib/log';
 import tf from '../lib/tf';
 import { ClientError } from '../lib/errors';
+import chatRoomUsers from './chatRoomUsers';
+
 
 const ioChat = io.of('/chat');
 /**
@@ -79,13 +81,18 @@ function joinChatRoom(roomId, socket) {
  * @description function run when a new user connects and joins the appropriate chatroom
  * @arg {Object} socket given by socketio
  */
-function onConnection(socket) {
+async function onConnection(socket) {
     // roomId is just the sessionId -- we have different chatrooms for every session
-    const { roomId } = socket.handshake.query;
+    const { roomId, jwt} = socket.handshake.query;
+    const { username, _id } = await JWT.verify(jwt, process.env.JWT_SECRET);
     joinChatRoom(roomId, socket);
+    console.log(chatRoomUsers.AddNewUser(roomId, {username, _id}));
+    
     // TODO: load current question
     // TODO: 193
     // register that a user joined this chatroom
+    
+    
 }
 
 ioChat.on('connection', onConnection);

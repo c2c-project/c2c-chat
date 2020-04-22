@@ -2,9 +2,9 @@ import React from 'react';
 import io from 'socket.io-client';
 import useJwt from './useJwt';
 
-function connect(roomId = 'chat') {
+function connect(roomId = 'chat', jwt) {
     const url = `${process.env.REACT_APP_SERVER}/chat`;
-    return io.connect(url, { query: `roomId=${roomId}` });
+    return io.connect(url, { query: `roomId=${roomId}&jwt=${jwt}`});
 }
 
 function isModerator(jwt) {
@@ -37,7 +37,7 @@ function useMessages(roomId = 'session') {
     React.useEffect(() => {
         let isMounted = true;
         // SOCKET IO
-        const chat = connect(roomId);
+        const chat = connect(roomId, jwt);
         chat.on('connect', function () {
             // TODO: login tokens here? or some kind of security?
             // chat.emit('new-user');
