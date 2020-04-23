@@ -53,7 +53,9 @@ function useMessages(roomId = 'session') {
                 setMessages((state) => [...state, message]);
             }
         });
-        chat.on('disconnect', () => console.log('disconnected'));
+        chat.on('disconnect', () => {
+            console.log('disconnected')
+        });
         chat.on('error', (err) => console.log(err));
         chat.on('moderate', async (messageId) => {
             if (isMounted) {
@@ -115,8 +117,7 @@ function useMessages(roomId = 'session') {
             console.log('closing');
             isMounted = false;
             chat.close();
-            if(sendFunc) 
-                sendFunc.emit('disconnect', {});
+            
         };
     }, [roomId, jwt]);
 
