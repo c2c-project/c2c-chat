@@ -2,10 +2,9 @@ import bcrypt from 'bcrypt';
 import Users from '../db/collections/users';
 import { ClientError } from './errors';
 
-
 const SALT_ROUNDS = 10;
 const BASE_USER = {
-    roles: ['user']
+    roles: ['user'],
 };
 
 // TODO: use this when I allow promotion
@@ -36,15 +35,15 @@ const isAllowed = (
     }
     const every =
         requiredAll.length > 0
-            ? requiredAll.every(role => userRoles.includes(role))
+            ? requiredAll.every((role) => userRoles.includes(role))
             : true;
     const any =
         requiredAny.length > 0
-            ? userRoles.some(role => requiredAny.includes(role))
+            ? userRoles.some((role) => requiredAny.includes(role))
             : true;
     const not =
         requiredNot.length > 0
-            ? userRoles.every(role => !requiredNot.includes(role))
+            ? userRoles.every((role) => !requiredNot.includes(role))
             : true;
 
     return every && any && not;
@@ -61,20 +60,20 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
     // because both should be unique, otherwise just find by username
     const query = email ? { $or: [{ email }, { username }] } : { username };
     if (password === confirmPass) {
-        return Users.find(query).then(docArray => {
+        return Users.find(query).then((docArray) => {
             if (!docArray[0]) {
                 return bcrypt
                     .hash(password, SALT_ROUNDS)
-                    .then(hash =>
+                    .then((hash) =>
                         Users.addUser({
                             username,
                             password: hash,
                             // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
                             ...BASE_USER,
-                            ...additionalFields
-                        }).catch(err => console.log(err))
+                            ...additionalFields,
+                        }).catch((err) => console.log(err))
                     )
-                    .catch(err => console.log(err));
+                    .catch((err) => console.log(err));
             }
             console.log(docArray);
             throw new ClientError('Username or E-mail already exists');
@@ -85,13 +84,13 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
 };
 
 const registerTemporary = (username, additionalFields = {}) =>
-    Users.findByUsername({ username }).then(doc => {
+    Users.findByUsername({ username }).then((doc) => {
         if (!doc) {
             return Users.addUser({
                 username,
                 ...additionalFields,
-                temporary: true
-            }).catch(err => console.log(err));
+                temporary: true,
+            }).catch((err) => console.log(err));
         }
         throw new ClientError('Username already exists');
     });
@@ -100,7 +99,7 @@ const registerTemporary = (username, additionalFields = {}) =>
  *  use whitelist method instead of blacklist
  * */
 
-const filterSensitiveData = userDoc => {
+const filterSensitiveData = (userDoc) => {
     // okay fields to send to client via jwt or any given time
     const okayFields = ['_id', 'email', 'username', 'roles', 'name'];
     return Object.entries(userDoc).reduce((accum, [key, value]) => {
@@ -116,8 +115,7 @@ const filterSensitiveData = userDoc => {
  * Bug:
  * doc.userId field is of type string while userId is type object. For the comparison to work userId has to be converted to a string
  */
-const isOwner = (userId, doc) => {
-    console.log(doc.userId === String(userId));
+const isOwner = (userId = {}, doc = '') => {
     return doc.userId === String(userId);
 };
 
@@ -127,5 +125,5 @@ export default {
     verifyPassword,
     isAllowed,
     filterSensitiveData,
-    isOwner
+    isOwner,
 };
