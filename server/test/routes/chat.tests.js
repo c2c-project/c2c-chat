@@ -17,8 +17,9 @@ describe('chat', function () {
     // test documents
     const testUser = {
         _id: userId,
-        username: 'qqqq@example.com',
-        email: 'qqqq@example.com',
+        username: '__testuser__',
+        email: '__testemail__@example.com',
+        roles: ['user'],
         password: '1',
         confirmPass: '1',
     };
@@ -36,27 +37,25 @@ describe('chat', function () {
     };
 
     // Before hook
-    before('Before hook running', function (done) {
+    before('Before hook running', async function () {
         try {
             const db = await mongo;
+
             const a = db.collection('messages').insertOne(testMessage);
-            console.log('finish seeding message');
             const b = db.collection('sessions').insertOne(testSession);
-            console.log('finish seeding session');
             const c = Accounts.register(
                 testUser.username,
                 testUser.password,
-                testUser.confirmPass
-                //{
-                //    _id: testUser._id,
-                //}
+                testUser.confirmPass,
+                {
+                    _id: testUser._id,
+                }
             );
-            // console.log('finish registering account');
-            await Promise.all([a, b, c]);
-            // console.log('finish seeding db');
+
+            return Promise.all([a, b, c]);
         } catch (error) {
             console.log(error);
-            await Promise.reject();
+            return Promise.reject();
         }
     });
 
@@ -116,7 +115,7 @@ describe('chat', function () {
                 .post('/api/chat/update-message')
                 .set('Authorization', `bearer ${jwt}`)
                 .end(function (err, res) {
-                    res.should.have.status(500);
+                    res.should.have.status(400);
                     done();
                 });
         });
@@ -190,7 +189,7 @@ describe('chat', function () {
                 .post(deleteMessageEndpoint)
                 .set('Authorization', `bearer ${jwt}`)
                 .end(function (err, res) {
-                    res.should.have.status(500);
+                    res.should.have.status(400);
                     done();
                 });
         });
