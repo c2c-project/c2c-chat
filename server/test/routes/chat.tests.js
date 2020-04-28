@@ -17,30 +17,14 @@ describe('chat', function () {
     // test documents
     const testUser = {
         _id: userId,
-        username: 'abcd@example.com',
-        email: 'abcd@example.com',
-        roles: ['user'],
+        username: 'qqqq@example.com',
+        email: 'qqqq@example.com',
         password: '1',
         confirmPass: '1',
-        // name: {
-        //    first: 'Robert',
-        //    last: 'Downey',
-        // },
     };
 
     const testSession = {
         _id: sessionId,
-        // speaker: 'George Washington',
-        // moderator: 'Darth Vader',
-        // attendees: {
-        // unique: 20,
-        // peak: 10
-        // TODO: what other attendance data would we want?
-        // },
-        // messages: {
-        //  sent: 100,
-        // asked: 10
-        // }
     };
 
     const testMessage = {
@@ -52,26 +36,27 @@ describe('chat', function () {
     };
 
     // Before hook
-    before('Before hook running', async function () {
+    before('Before hook running', function (done) {
         try {
             const db = await mongo;
-            await db.collection('messages').insertOne(testMessage);
+            const a = db.collection('messages').insertOne(testMessage);
             console.log('finish seeding message');
-
-            await db.collection('sessions').insertOne(testSession);
+            const b = db.collection('sessions').insertOne(testSession);
             console.log('finish seeding session');
-
-            return Accounts.register(
+            const c = Accounts.register(
                 testUser.username,
                 testUser.password,
                 testUser.confirmPass
+                //{
+                //    _id: testUser._id,
+                //}
             );
             // console.log('finish registering account');
-
+            await Promise.all([a, b, c]);
             // console.log('finish seeding db');
         } catch (error) {
             console.log(error);
-            return Promise.reject();
+            await Promise.reject();
         }
     });
 
@@ -87,9 +72,11 @@ describe('chat', function () {
                 _id: testSession._id,
             });
 
+            // This is not actually deleting the user registered
             const c = db.collection('users').deleteOne({
                 _id: testUser._id,
             });
+
             return Promise.all([a, b, c]);
         } catch (error) {
             console.log(error);
@@ -156,7 +143,7 @@ describe('chat', function () {
                 .send({
                     message: {
                         _id: testMessage._id,
-                        userId: testMessage.userId,
+                        userId: String(testMessage.userId),
                     },
                     newMessage: 'boo boo got fixed again',
                 })

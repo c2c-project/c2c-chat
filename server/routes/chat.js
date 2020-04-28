@@ -40,9 +40,6 @@ router.post(
     (req, res) => {
         const { user } = req;
         const { newMessage, message, roomId } = req.body;
-        // console.log(newMessage, roomId);
-        // console.log(user);
-        // console.log(message);
         if (Accounts.isOwner(user._id, message)) {
             // console.log("Enter if branch");
             Chat.updateMessage({ messageId: message._id, newMessage })
