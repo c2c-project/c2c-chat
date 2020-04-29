@@ -62,18 +62,15 @@ const register = (username, password, confirmPass, additionalFields = {}) => {
     if (password === confirmPass) {
         return Users.find(query).then((docArray) => {
             if (!docArray[0]) {
-                return bcrypt
-                    .hash(password, SALT_ROUNDS)
-                    .then((hash) =>
-                        Users.addUser({
-                            username,
-                            password: hash,
-                            // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
-                            ...BASE_USER,
-                            ...additionalFields,
-                        }).catch((err) => console.log(err))
-                    )
-                    .catch((err) => console.log(err));
+                return bcrypt.hash(password, SALT_ROUNDS).then((hash) =>
+                    Users.addUser({
+                        username,
+                        password: hash,
+                        // BASE_USER before additionalFields so that way additionalFields can override defaults if necessary
+                        ...BASE_USER,
+                        ...additionalFields,
+                    })
+                );
             }
             console.log(docArray);
             throw new ClientError('Username or E-mail already exists');
