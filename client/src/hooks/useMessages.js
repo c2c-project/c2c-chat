@@ -5,10 +5,8 @@ import { func } from 'prop-types';
 
 function connect(roomId = 'chat', jwt) {
     const url = `${process.env.REACT_APP_SERVER}/chat`;
-    return io.connect(url, { query: `roomId=${roomId}&jwt=${jwt}`});
+    return io.connect(url, { query: `roomId=${roomId}&jwt=${jwt}` });
 }
-
-
 
 function isModerator(jwt) {
     return new Promise(function (resolve) {
@@ -54,45 +52,48 @@ function useMessages(roomId = 'session') {
             }
         });
         chat.on('disconnect', () => {
-            console.log('disconnected')
+            console.log('disconnected');
         });
         chat.on('error', (err) => console.log(err));
         chat.on('moderate', async (messageId) => {
             if (isMounted) {
-                if (await isModerator(jwt) === true) {
-                    setMessages((curMessages) => curMessages.map((msg) => {
-                        let copy = { ...msg };
-                        if (copy._id === messageId) {
-                            copy.moderated = true;
-                        }
-                        return copy;
-                    }))
-                }
-                else {
-                    setMessages((curMessages) => curMessages.filter(
-                        (msg) => msg._id !== messageId
-                    ));
+                if ((await isModerator(jwt)) === true) {
+                    setMessages((curMessages) =>
+                        curMessages.map((msg) => {
+                            const copy = { ...msg };
+                            if (copy._id === messageId) {
+                                copy.moderated = true;
+                            }
+                            return copy;
+                        })
+                    );
+                } else {
+                    setMessages((curMessages) =>
+                        curMessages.filter((msg) => msg._id !== messageId)
+                    );
                 }
             }
         });
 
-        chat.on('unmoderate',async (message) => {
+        chat.on('unmoderate', async (message) => {
             if (isMounted) {
-                if (await isModerator(jwt) === true) {
+                if ((await isModerator(jwt)) === true) {
                     console.log('unmoderating message');
-                   setMessages((curMessages) => curMessages.map((msg) => {
-                        let copy = { ...msg };
-                        if (copy._id === message._id) {
-                            copy.moderated = false;
-                        }
-                        return copy;
-                    }));
-                }else {
+                    setMessages((curMessages) =>
+                        curMessages.map((msg) => {
+                            const copy = { ...msg };
+                            if (copy._id === message._id) {
+                                copy.moderated = false;
+                            }
+                            return copy;
+                        })
+                    );
+                } else {
                     setMessages((curMessages) => {
-                        curMessages.push(message)
+                        curMessages.push(message);
                         return curMessages.sort(function (a, b) {
                             return a.sentOn - b.sendOn;
-                        })
+                        });
                     });
                 }
             }
@@ -117,7 +118,6 @@ function useMessages(roomId = 'session') {
             console.log('closing');
             isMounted = false;
             chat.close();
-            
         };
     }, [roomId, jwt]);
 
