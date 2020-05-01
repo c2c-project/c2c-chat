@@ -10,7 +10,7 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Loader from '../components/Loader';
 import ChatWindow from '../components/chat';
-import { QuestionWindow } from '../components/chat/ChatWindow';
+import QuestionWindow from '../components/question';
 import VideoPlayer from '../components/video-player';
 import CurrentQuestion from '../components/CurrentQuestion';
 import Dialog from '../components/Dialoag';

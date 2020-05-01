@@ -12,30 +12,44 @@ export default function MessageActions({ targetMsg, onClick }) {
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
-
-    const handleModerate = () => {
-        fetch(`/api/chat/remove-message/${roomId}/${targetMsg._id}`, {
+    const handleAction = () => {
+        fetch(`/api/chat/message-action/${roomId}/${targetMsg._id}`, {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ moderateAction: !targetMsg.moderated }),
         })
-            .then(r => {
-                r.json().then(res => {
-                    if (res.success) {
-                        snack('Successfully moderated messsage', 'success');
-                        onClick();
+            .then((res) => {
+                if (res.status === 200) {
+                    if (targetMsg.moderated) {
+                        snack('Successfully unmoderated messsage', 'success');
                     } else {
-                        snack('Something went wrong! Try again.', 'error');
+                        snack('Successfully moderated messsage', 'success');
                     }
-                });
+                    onClick();
+                } else {
+                    snack('Something went wrong! Try again.', 'error');
+                }
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 snack('Something went wrong! Try again.', 'error');
             });
     };
+
+    // const handleSetCurrent = () => {
+    // fetch(`/api/sessions/set-question/:${roomId}`, {
+    //     method: 'POST',
+    //     headers: {
+    //         Authorization: `bearer ${jwt}`,
+    //         'Content-Type': 'application/json'
+    //     }
+    // }).then( res => {
+
+    // });
+    // };
     return (
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
@@ -57,9 +71,11 @@ export default function MessageActions({ targetMsg, onClick }) {
                     color='secondary'
                     variant='contained'
                     fullWidth
-                    onClick={handleModerate}
+                    onClick={handleAction}
                 >
-                    Moderate/Hide
+                    {targetMsg.moderated
+                        ? 'Cancel-Moderate/Show'
+                        : 'Moderate/Hide'}
                 </Button>
             </Grid>
         </Grid>
@@ -67,14 +83,15 @@ export default function MessageActions({ targetMsg, onClick }) {
 }
 
 MessageActions.defaultProps = {
-    onClick: () => {}
+    onClick: () => {},
 };
 
 MessageActions.propTypes = {
     targetMsg: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         message: PropTypes.string.isRequired,
-        username: PropTypes.string.isRequired
+        username: PropTypes.string.isRequired,
+        moderated: PropTypes.bool.isRequired,
     }).isRequired,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
 };

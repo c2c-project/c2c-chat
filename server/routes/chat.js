@@ -1,36 +1,66 @@
 import express from 'express';
 import passport from 'passport';
-import Chat from '../db/collections/chat';
-import { moderate, update, remove } from '../lib/socket-io';
+import { moderate, unmoderate, update, remove } from '../socket-io/chat';
 import Accounts from '../lib/accounts';
+import Messages from '../db/collections/messsages';
 
 const router = express.Router();
 
+// NOTE: only care if the user is logged in to see chat messages
 router.get(
     '/:roomId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { roomId } = req.params;
-        Chat.findMessages({ sessionId: roomId }).then((r) => res.json(r));
+        Messages.findMessages({ sessionId: roomId })
+            .then((r) => res.json(r))
+            .catch(next);
+    }
+);
+
+router.get(
+    '/find-messages/:sessionId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { sessionId } = req.params;
+        Messages.countMessagesBySession(sessionId).then((r) => res.json(r));
     }
 );
 
 router.post(
-    '/remove-message/:roomId/:messageId',
+    '/message-action/:roomId/:messageId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req, res, next) => {
         const { user } = req;
+        const { moderateAction } = req.body;
         const { messageId, roomId } = req.params;
-        const removeMessage = Chat.privilegedActions('REMOVE_MESSAGE', user);
-        removeMessage(messageId)
+        const MessageAction =
+            moderateAction === true
+                ? Messages.privilegedActions('REMOVE_MESSAGE', user)
+                : Messages.privilegedActions('RECOVER_MESSAGE', user);
+        const message = Messages.findMessage({ messageId });
+        MessageAction(messageId)
             .then(() => {
+                if (moderateAction === true) {
+                    moderate(roomId, messageId);
+                    res.status(200).send();
+                } else {
+                    message
+                        .then((r) => {
+                            if (r != null) {
+                                unmoderate(roomId, r);
+                            } else {
+                                console.log("Couldn't find the target message");
+                                res.status(404).send();
+                            }
+                        })
+                        .catch(next);
+                }
                 moderate(roomId, messageId);
-                res.send({ success: true });
+                res.status(200).send();
             })
-            .catch((err) => {
-                console.log(err);
-                res.send({ success: false });
-            });
+            .catch(next);
+        res.status(200).send();
     }
 );
 
@@ -42,8 +72,8 @@ router.post(
         const { newMessage, message, roomId } = req.body;
         if (Accounts.isOwner(user._id, message)) {
             // console.log("Enter if branch");
-            Chat.updateMessage({ messageId: message._id, newMessage })
-                .then((response) => {
+            Messages.updateMessage({ messageId: message._id, newMessage })
+                .then(() => {
                     // console.log("Enter promise");
                     // console.log(response);
                     update(roomId, message._id, newMessage);
@@ -67,9 +97,8 @@ router.post(
         const { roomId } = req.params;
         const { message } = req.body;
         if (Accounts.isOwner(user._id, message)) {
-            Chat.deleteMessage({ messageId: message._id })
-                .then((response) => {
-                    //console.log(response);
+            Messages.deleteMessage({ messageId: message._id })
+                .then(() => {
                     remove(roomId, message._id);
                     res.status(200).send({ success: true });
                 })
@@ -82,5 +111,7 @@ router.post(
         }
     }
 );
+
+// Will get to this get request once chat is implemented
 
 module.exports = router;

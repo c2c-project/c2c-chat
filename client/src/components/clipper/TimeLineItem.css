@@ -18,6 +18,8 @@ body {
     margin: 0;
 }
 
+
+
 /* makes the elements use 100% of its width */
 #root {
     width: 100%;
@@ -36,7 +38,7 @@ h1 {
 
 /* bar or line of the timeline*/
 .timeline-container::after {
-    background-color: orangered;
+    background-color: rgb(0, 132, 255);
     content: '';
     position: absolute;
     /* sets our line at the center */
@@ -52,6 +54,8 @@ h1 {
     margin: 10px 0;
     width: 50%;
 }
+
+
 
 /* swaps each other timeline node to the other side of the line */
 .timeline-item:nth-child(odd) {
@@ -74,6 +78,11 @@ h1 {
     width: 400px;
     max-width: 70%;
     text-align: right;
+}
+
+.timeline-item-content:hover {
+    transform: scale(1.01);
+    z-index: 1;
 }
 
 /* the arrow that points to the timeline transform a square into a triangle*/
@@ -141,7 +150,7 @@ h1 {
 /* circle on the bar */
 .timeline-item-content .circle {
     background-color: white;
-    border: 3px solid orangered; 
+    border: 3px solid rgb(0, 132, 255); 
     border-radius: 50%;
     position: absolute;
     top: calc(50% - 10px);

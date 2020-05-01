@@ -10,22 +10,21 @@ import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
 import useSnack from '../../hooks/useSnack';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     Message: {
         width: 330,
     },
-    UserName : {
-        margin: theme.spacing(2)
+    UserName: {
+        margin: theme.spacing(2),
     },
-    DangerButton : {
+    DangerButton: {
         color: theme.palette.getContrastText(red[500]),
         backgroundColor: red[500],
         '&:hover': {
             backgroundColor: red[700],
         },
-    }
+    },
 }));
-
 
 export default function UserMessageActions({ targetMsg, onClick }) {
     const classes = useStyles();
@@ -40,31 +39,28 @@ export default function UserMessageActions({ targetMsg, onClick }) {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(
-                {
-                    newMessage : message,
-                    message : targetMsg,
-                    roomId
-                }
-            )
+            body: JSON.stringify({
+                newMessage: message,
+                message: targetMsg,
+                roomId,
+            }),
         })
-            .then(r => {
-                r.json().then(res => {
-                    if (res.success){
-                        snack('Message edited sucessfully', 'success');
+            .then((r) => {
+                r.json().then((res) => {
+                    if (res.success) {
+                        snack('Message edited successfully', 'success');
                         onClick();
-                    }
-                    else {
+                    } else {
                         snack('Something went wrong! Try again.', 'error');
                     }
                 });
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 snack('Something went wrong! Try again.', 'error');
-            })
+            });
     };
 
     // Change the delete message to just hide it. ie markit as deleted
@@ -73,30 +69,28 @@ export default function UserMessageActions({ targetMsg, onClick }) {
             method: 'POST',
             headers: {
                 Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(
-                {
-                    message : targetMsg,
-                }
-            )
+            body: JSON.stringify({
+                message: targetMsg,
+            }),
         })
-            .then(r => {
-                r.json().then(res => {
+            .then((r) => {
+                r.json().then((res) => {
                     if (res.success) {
-                        snack('Successfully deleted messsage', 'success');
+                        snack('Successfully deleted message', 'success');
                         onClick();
                     } else {
                         snack('Something went wrong! Try again.', 'error');
                     }
                 });
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 snack('Something went wrong! Try again.', 'error');
             });
     };
- 
+
     return (
         <Grid container justify='center' spacing={3}>
             <Grid item xs={12}>
@@ -109,7 +103,7 @@ export default function UserMessageActions({ targetMsg, onClick }) {
                             <form onSubmit={handleEdit}>
                                 <TextField
                                     value={message}
-                                    onChange={e => setMessage(e.target.value)}
+                                    onChange={(e) => setMessage(e.target.value)}
                                     fullWidth='true'
                                     color='secondary'
                                     variant='outlined'
@@ -146,14 +140,14 @@ export default function UserMessageActions({ targetMsg, onClick }) {
 }
 
 UserMessageActions.defaultProps = {
-    onClick: () => {}
+    onClick: () => {},
 };
 
 UserMessageActions.propTypes = {
     targetMsg: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         message: PropTypes.string.isRequired,
-        username: PropTypes.string.isRequired
+        username: PropTypes.string.isRequired,
     }).isRequired,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
 };

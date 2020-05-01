@@ -50,6 +50,8 @@ export default function RegisterPage() {
             if (res.status === 200) {
                 history.push('/login');
                 snack('You may now login', 'success');
+            } else if (res.status === 400) {
+                snack(`Error: ${res.statusText}`, 'error');
             } else {
                 snack(`Error: ${res.statusText}`, 'error');
             }
@@ -127,9 +129,19 @@ export default function RegisterPage() {
                                         label='Confirm Password'
                                     />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid 
+                                    container
+                                    item
+                                    item xs={12}
+                                    justify='space-between'
+                                >
                                     <Button
-                                        fullWidth
+                                        onClick={e => {e.preventDefault(); history.push('/login');}}
+                                        variant='text'
+                                    >
+                                        Login
+                                    </Button>
+                                    <Button
                                         type='submit'
                                         variant='contained'
                                         color='primary'

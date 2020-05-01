@@ -3,8 +3,9 @@
  */
 
 export default class ClientError extends Error {
-    constructor(message) {
-        super(message);
+    constructor(clientMessage, serverMessage = '') {
+        super(clientMessage);
         this.name = 'ClientError';
+        this.internalError = `${serverMessage}`;
     }
 }

@@ -7,6 +7,23 @@ function connect(roomId = 'chat') {
     return io.connect(url, { query: `roomId=${roomId}` });
 }
 
+function isModerator(jwt) {
+    return new Promise(function (resolve) {
+        fetch('/api/users/authenticate', {
+            method: 'POST',
+            body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
+            headers: {
+                Authorization: `bearer ${jwt}`,
+                'Content-Type': 'application/json',
+            },
+        }).then((r) => {
+            r.json().then((result) => {
+                resolve(result.allowed);
+            });
+        });
+    });
+}
+
 function useMessages(roomId = 'session') {
     const [messages, setMessages] = React.useState([]);
     const [jwt] = useJwt();
@@ -21,52 +38,95 @@ function useMessages(roomId = 'session') {
         let isMounted = true;
         // SOCKET IO
         const chat = connect(roomId);
-        chat.on('connect', function() {
+        chat.on('connect', function () {
             // TODO: login tokens here? or some kind of security?
             // chat.emit('new-user');
             if (isMounted) {
                 setFunc(chat);
             }
         });
-        chat.on('message', function(message) {
+        chat.on('message', function (message) {
             if (isMounted) {
-                setMessages(state => [...state, message]);
+                setMessages((state) => [...state, message]);
             }
         });
         chat.on('disconnect', () => console.log('disconnected'));
-        chat.on('error', err => console.log(err));
-        chat.on('moderate', messageId => {
+        chat.on('error', (err) => console.log(err));
+        chat.on('moderate', (messageId) => {
             if (isMounted) {
-                setMessages(curMessages =>
-                    curMessages.filter(msg => msg._id !== messageId)
+                setMessages((curMessages) => {
+                    let message = curMessages;
+                    isModerator(jwt).then((value) => {
+                        if (value === true) {
+                            message = curMessages.map((msg) => {
+                                let copy = { ...msg };
+                                if (copy._id === messageId) {
+                                    copy.moderated = true;
+                                }
+                                return copy;
+                            });
+                        } else {
+                            message = curMessages.filter(
+                                (msg) => msg._id !== messageId
+                            );
+                        }
+                    });
+                    return message;
+                });
+            }
+        });
+        chat.on('remove', (messageId) => {
+            if (isMounted) {
+                setMessages((curMessages) =>
+                    curMessages.filter((msg) => msg._id !== messageId)
                 );
             }
         });
-        chat.on('remove', messageId => {
-            if (isMounted){
-                setMessages(curMessages => 
-                    curMessages.filter(msg => msg._id !== messageId)
-                );
-            }
-        });
-        chat.on('update', message => {
+        chat.on('update', (message) => {
             if (isMounted) {
-                setMessages(curMessages => {
-                    const index = curMessages.findIndex(msg => msg._id === message.messageId);
+                setMessages((curMessages) => {
+                    const index = curMessages.findIndex(
+                        (msg) => msg._id === message.messageId
+                    );
                     curMessages[index].message = message.newMessage;
                     return curMessages;
-                })
+                });
             }
         });
+
+        chat.on('unmoderate', (message) => {
+            if (isMounted) {
+                setMessages((curMessages) => {
+                    // TODO: make sure this evaluates
+                    if (isModerator(jwt)) {
+                        console.log('is mod');
+                        console.log(message);
+                        return curMessages.map((msg) => {
+                            if (msg._id === message._id) {
+                                msg.moderated = false;
+                            }
+                            return msg;
+                        });
+                    }
+                    curMessages.push(message);
+                    return curMessages.sort(function (a, b) {
+                        return a.sentOn - b.sendOn;
+                    });
+                });
+            }
+        });
+
         // FETCH
         fetch(`/api/chat/${roomId}`, {
             headers: {
-                Authorization: `bearer ${jwt}`
-            }
-        }).then(r => {
-            r.json().then(history => {
+                Authorization: `bearer ${jwt}`,
+            },
+        }).then((r) => {
+            r.json().then((history) => {
                 if (isMounted) {
-                    setMessages(history.filter(m => !m.moderated && !m.deletedByUser));
+                    setMessages(
+                        history.filter((m) => !m.moderated && !m.deletedByUser)
+                    );
                 }
             });
         });
@@ -81,12 +141,12 @@ function useMessages(roomId = 'session') {
 
     return [
         messages,
-        message => {
-            // prevent a blank message or a message with only spaces from being s   ent
+        (message) => {
+            // prevent a blank message or a message with only spaces from being sent
             if (message.trim()) {
                 sendFunc.emit('message', { jwt, message });
             }
-        }
+        },
     ];
 }
 

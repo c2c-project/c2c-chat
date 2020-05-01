@@ -4,7 +4,7 @@
 node_modules/
 /.pnp
 .pnp.js
-/server/package-lock.json
+**/package-lock.json
 
 # testing
 /coverage
@@ -31,3 +31,6 @@ build
 
 # build
 *.tar.gz
+
+# docs
+docs/code

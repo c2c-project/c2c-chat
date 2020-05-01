@@ -1,6 +1,6 @@
 import socketio from 'socket.io';
 import JWT from 'jsonwebtoken';
-import Chat from '../db/collections/chat';
+import Chat from '../db/collections/messsages';
 import tf from './tf';
 
 /**
@@ -63,19 +63,6 @@ export function moderate(roomId, messageId) {
     io.of('/chat')
         .to(roomId)
         .emit('moderate', messageId);
-}
-
-export function update(roomId, messageId, newMessage) {
-    io.of('/chat')
-        .to(roomId)
-        .emit('update', {messageId, newMessage});
-}
-
-// This remove function does the same as the moderate function. This was done on purpose, for code clarity purposes. 
-export function remove(roomId, messageId) {
-    io.of('/chat')
-        .to(roomId)
-        .emit('remove', messageId);
 }
 /**
  * QUESTIONS

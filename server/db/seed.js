@@ -69,9 +69,15 @@ const sessions = [
             peak: 10
             // TODO: what other attendance data would we want?
         },
+        session: {
+            duration: '3:30',
+            start: '4:00',
+            end: '7:30'
+        },
         messages: {
             sent: 100,
-            asked: 10
+            asked: 10,
+            unanswered: 7
         }
     },
     {
@@ -83,9 +89,15 @@ const sessions = [
             peak: 5
             // TODO: what other attendance data would we want?
         },
+        session: {
+            duration: '2:00',
+            start: '2:00',
+            end: '4:00'
+        },
         messages: {
             sent: 50,
-            asked: 5
+            asked: 5,
+            unanswered: 2
         }
     }
 ];
@@ -114,10 +126,11 @@ function seedSessions() {
     );
 }
 
+
 function seedMessages() {
-    console.log('messages');
+    console.log('chat');
     return mongo.then(db =>
-        db.collection('messages').insertMany(messages, (err, r) => {
+        db.collection('chat').insertMany(messages, (err, r) => {
             assert.equal(null, err);
             assert.equal(2, r.insertedCount);
             // close();

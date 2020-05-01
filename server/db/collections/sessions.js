@@ -1,6 +1,7 @@
 import { ObjectID } from 'mongodb';
 import { mongo } from '..';
 import Accounts from '../../lib/accounts';
+import { ClientError } from '../../lib/errors';
 
 const findAllSessions = () =>
     mongo.then(db =>
@@ -26,7 +27,7 @@ const addSession = ({ speaker, moderator, description, date, url }) =>
             .insertOne({ speaker, moderator, description, date, url })
     );
 
-const removeSession = ({ sessionId }) =>
+const deleteSession = ({ sessionId }) =>
     mongo.then(db =>
         db.collection('sessions').remove({ _id: new ObjectID(sessionId) })
     );
@@ -37,9 +38,18 @@ const updateSession = ({ sessionId, changes }) =>
             .collection('sessions')
             .updateOne({ _id: new ObjectID(sessionId) }, { $set: changes })
     );
-
+////
+const updateSessionClips = ({ sessionId, changes }) =>
+    mongo.then(db =>
+        db
+            .collection('sessions')
+            .updateOne({ _id: new ObjectID(sessionId) }, { $set: { clips: changes }}, {upsert: true})
+    );
+////
 const privilegedActions = (action, userDoc) => {
     const { roles } = userDoc;
+    const standardError = () =>
+        Promise.reject(new ClientError('Not allowed to do that!'));
     switch (action) {
         case 'SET_QUESTION': {
             const requiredAny = ['admin', 'moderator'];
@@ -59,10 +69,47 @@ const privilegedActions = (action, userDoc) => {
                         )
                     );
                 }
-                console.log(
-                    'TODO:  not allowed but trying to set the question'
-                );
-                return Promise.reject(Error('Not allowed'));
+                // TODO: log this properly?
+                return standardError();
+            };
+        }
+        case 'ADD_SESSION': {
+            const requiredAny = ['admin', 'moderator'];
+            return form => {
+                const { speaker, moderator, description, date, url } = form;
+                if (Accounts.isAllowed(roles, { requiredAny })) {
+                    return addSession({
+                        speaker,
+                        moderator,
+                        description,
+                        date,
+                        url
+                    });
+                }
+                // TODO: log this properly?
+                return standardError();
+            };
+        }
+        case 'UPDATE_SESSION': {
+            const requiredAny = ['admin', 'moderator'];
+            return (sessionId, form) => {
+                const { speaker, moderator, description, date, url } = form;
+                if (Accounts.isAllowed(roles, { requiredAny })) {
+                    return updateSession({
+                        sessionId,
+                        changes: { speaker, moderator, description, date, url }
+                    });
+                }
+                return standardError();
+            };
+        }
+        case 'DELETE_SESSION': {
+            const requiredAny = ['admin', 'moderator'];
+            return sessionId => {
+                if (Accounts.isAllowed(roles, { requiredAny })) {
+                    return deleteSession({ sessionId });
+                }
+                return standardError();
             };
         }
         default: {
@@ -75,7 +122,8 @@ export default {
     findAllSessions,
     findSessionById,
     addSession,
-    removeSession,
+    deleteSession,
     updateSession,
+    updateSessionClips,
     privilegedActions
 };

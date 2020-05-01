@@ -10,24 +10,21 @@ import Container from '@material-ui/core/Container';
 import useJwt from '../../hooks/useJwt';
 import MessageActions from './MessageActions';
 import UserMessageActions from './UserMessageActions';
-import QuestionActions from './QuestionActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
-
-
 
 const useStyles = makeStyles({
     root: {
         height: '100%',
-        width: '100%'
+        width: '100%',
         // overflowY: 'scroll'
     },
     message: {
-        width: '100%'
+        width: '100%',
     },
     maxHeight: {
-        height: '100%'
-    }
+        height: '100%',
+    },
 });
 
 // eslint-disable-next-line
@@ -39,21 +36,36 @@ const SystemMessages = ({ children }) => (
 
 const checkIsOwner = (user, messageUserId) => {
     return user._id === messageUserId;
-}
+};
 
-function Messages({ messages, variant }) {
+function Messages({ messages, filter }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const [jwt, user] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
-    const Actions = variant === 'questions' ? QuestionActions : MessageActions;
+    const Actions = MessageActions;
     const firstRender = React.useRef(true);
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
-            behavior: firstRender.current ? 'smooth' : 'auto'
+            behavior: firstRender.current ? 'smooth' : 'auto',
         });
         firstRender.current = !messages.length;
+    };
+    const filterQuestions = () => {
+        if (isModerator) {
+            return messages.filter((m) => {
+                if (filter.moderated && m.moderated) {
+                    //show message that m.moderated === true
+                    return true;
+                }
+                if (filter.normal && !m.moderated) {
+                    return true;
+                }
+            });
+        } else {
+            return messages.filter((m) => !m.moderated);
+        }
     };
 
     React.useEffect(() => {
@@ -63,10 +75,10 @@ function Messages({ messages, variant }) {
             body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
             headers: {
                 Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
-            }
-        }).then(r => {
-            r.json().then(result => {
+                'Content-Type': 'application/json',
+            },
+        }).then((r) => {
+            r.json().then((result) => {
                 if (isMounted) {
                     setModerator(result.allowed);
                 }
@@ -78,16 +90,16 @@ function Messages({ messages, variant }) {
     }, [jwt]);
 
     React.useEffect(scrollToBottom, [messages]);
-
     return (
         <div className={classes.root}>
             <List dense>
-                {messages.map(
+                {filterQuestions().map(
                     ({
                         username = 'author',
                         message = 'message',
                         _id,
-                        userId
+                        userId,
+                        moderated = 'moderated',
                     } = {}) => (
                         <ListItem
                             // If user is moderator on the owner of the message then this ListItem is rendered as a button
@@ -99,7 +111,8 @@ function Messages({ messages, variant }) {
                                         _id,
                                         message,
                                         username,
-                                        userId
+                                        userId,
+                                        moderated,
                                     });
                                 }
                             }}
@@ -112,7 +125,11 @@ function Messages({ messages, variant }) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color='textPrimary'
+                                        color={
+                                            moderated === true
+                                                ? 'textSecondary'
+                                                : 'textPrimary'
+                                        }
                                         variant='body1'
                                     >
                                         {message}
@@ -143,7 +160,7 @@ function Messages({ messages, variant }) {
                         )}
 
                         {/* If the (user is a moderator) AND (is not the owner of the message) then render Actions */}
-                        {targetMsg && isModerator && !checkIsOwner(user, targetMsg.userId) &&  (
+                        {targetMsg && isModerator && !checkIsOwner(user, targetMsg.userId) && (
                             <Actions
                                 targetMsg={targetMsg}
                                 onClick={() => setTargetMsg(null)}
@@ -157,12 +174,16 @@ function Messages({ messages, variant }) {
 }
 
 Messages.defaultProps = {
-    messages: []
+    messages: [],
+    filter: {
+        moderated: false,
+        normal: true,
+    },
 };
 
 Messages.propTypes = {
     messages: PropTypes.array,
-    variant: PropTypes.oneOf(['questions', 'messages']).isRequired
+    filter: PropTypes.object.isRequired,
 };
 
 export default Messages;
