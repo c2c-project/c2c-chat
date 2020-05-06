@@ -68,7 +68,7 @@ const findMessage = ({ messageId }) =>
 
 const countMessagesBySession = (sessionId) =>
     mongo.then((db) =>
-        db.collection('messages').find({ sessionId: sessionId }).count()
+        db.collection('messages').find({ sessionId }).count()
     );
 
 const updateMessageToxicity = ({ messageId, result, toxicityReason }) => {

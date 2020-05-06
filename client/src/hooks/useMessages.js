@@ -1,7 +1,6 @@
 import React from 'react';
 import io from 'socket.io-client';
 import useJwt from './useJwt';
-import { func } from 'prop-types';
 
 function connect(roomId = 'chat', jwt) {
     const url = `${process.env.REACT_APP_SERVER}/chat`;

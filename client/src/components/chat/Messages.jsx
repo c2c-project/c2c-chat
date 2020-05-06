@@ -15,15 +15,15 @@ import Bold from '../Bold';
 const useStyles = makeStyles({
     root: {
         height: '100%',
-        width: '100%'
+        width: '100%',
         // overflowY: 'scroll'
     },
     message: {
-        width: '100%'
+        width: '100%',
     },
     maxHeight: {
-        height: '100%'
-    }
+        height: '100%',
+    },
 });
 
 // eslint-disable-next-line
@@ -33,7 +33,7 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
-function Messages({ messages, filter}) {
+function Messages({ messages, filter }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
     const [jwt] = useJwt();
@@ -43,29 +43,29 @@ function Messages({ messages, filter}) {
     const firstRender = React.useRef(true);
     const scrollToBottom = () => {
         lastMessageRef.current.scrollIntoView({
-            behavior: firstRender.current ? 'smooth' : 'auto'
+            behavior: firstRender.current ? 'smooth' : 'auto',
         });
         firstRender.current = !messages.length;
-    }
+    };
     const filterQuestions = () => {
-        
-        if (! Array.isArray(messages)) {
-            console.log("message is not an array");
+        if (!Array.isArray(messages)) {
+            console.log('message is not an array');
             return [];
         }
         if (isModerator) {
-            return messages.filter(m => {
-                if (filter.moderated && m.moderated) { //show message that m.moderated === true
+            return messages.filter((m) => {
+                if (filter.moderated && m.moderated) {
+                    // show message that m.moderated === true
                     return true;
                 }
-                if (filter.normal && !m.moderated){
+                if (filter.normal && !m.moderated) {
                     return true;
                 }
-            })
-        }else{
-            return messages.filter(m => !m.moderated)
+                return false;
+            });
         }
-    }
+        return messages.filter((m) => !m.moderated);
+    };
 
     React.useEffect(() => {
         let isMounted = true;
@@ -74,10 +74,10 @@ function Messages({ messages, filter}) {
             body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
             headers: {
                 Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json'
-            }
-        }).then(r => {
-            r.json().then(result => {
+                'Content-Type': 'application/json',
+            },
+        }).then((r) => {
+            r.json().then((result) => {
                 if (isMounted) {
                     setModerator(result.allowed);
                 }
@@ -97,7 +97,7 @@ function Messages({ messages, filter}) {
                         username = 'author',
                         message = 'message',
                         moderated = 'moderated',
-                        _id
+                        _id,
                     } = {}) => (
                         <ListItem
                             button={isModerator}
@@ -120,7 +120,11 @@ function Messages({ messages, filter}) {
                                 </Grid>
                                 <Grid item xs='auto'>
                                     <Typography
-                                        color={moderated === true? 'textSecondary':'textPrimary'}
+                                        color={
+                                            moderated === true
+                                                ? 'textSecondary'
+                                                : 'textPrimary'
+                                        }
                                         variant='body1'
                                     >
                                         {message}
@@ -161,13 +165,13 @@ Messages.defaultProps = {
     messages: [],
     filter: {
         moderated: false,
-        normal: true
-    }
+        normal: true,
+    },
 };
 
 Messages.propTypes = {
     messages: PropTypes.array,
-    filter: PropTypes.object.isRequired,
+    filter: PropTypes.object,
 };
 
 export default Messages;

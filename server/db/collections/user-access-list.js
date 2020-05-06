@@ -9,14 +9,12 @@ const collectionName = 'user-access-list';
  * @returns {Promise}
  */
 const createAccessList = ({ sessionId }) =>
-    mongo.then(db =>
-        db
-            .collection(collectionName)
-            .insertOne({
-                sessionId,
-                userlist: new Array(),
-                startTime: new Date()
-            })
+    mongo.then((db) =>
+        db.collection(collectionName).insertOne({
+            sessionId,
+            userlist: [],
+            startTime: new Date(),
+        })
     );
 
 /**
@@ -25,11 +23,7 @@ const createAccessList = ({ sessionId }) =>
  * @returns {Object} the user list according to the sessionId
  */
 const getAccessList = ({ sessionId }) => 
-    mongo.then(db =>
-        db
-            .collection(collectionName)
-            .findOne({ sessionId })
-    )
+    mongo.then((db) => db.collection(collectionName).findOne({ sessionId }));
 
 /**
  * @description internal function to use mg api to send email
@@ -44,15 +38,13 @@ const newUserAccessRecord = ({ accesslistId, userId, from, to}) =>
         db
             .collection(collectionName)
             .updateOne(
-                {_id: new ObjectID(accesslistId)},
-                { $push: {userlist: {userId, from, to}}}
+                { _id: new ObjectID(accesslistId) },
+                { $push: { userlist: { userId, from, to } } }
             )
-    ); 
-
+    );
 
 export default {
     createAccessList,
     getAccessList,
-    newUserAccessRecord
+    newUserAccessRecord,
 };
-    
