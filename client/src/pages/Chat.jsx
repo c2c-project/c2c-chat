@@ -151,6 +151,7 @@ export default function Chat() {
             .catch(e => console.log(e));
     }, [jwt, roomId]);
 
+  
     // const sessionData = JSON.parse(localStorage.getItem('session'));
     const modView = sessionData && (
         <Tabs
@@ -197,21 +198,34 @@ export default function Chat() {
                     )
                 },
                 {
-                    label: 'Mod View',
+                    label: 'Question Window',
                     component: (
                         <Grid container className={classes.modView}>
-                            <Grid item xs={12}>
-                                <QuestionWindow
-                                    roomId={roomId}
-                                    title='Incoming Questions'
-                                />
-                                <UserListWindow
-                                    roomId={roomId}
-                                    title='User List'
-                                />
-                                {/* <Chat roomId={roomId} /> */}
-                                {/* <ModDashboard data={data} /> */}
+                            <Grid item xs={12}>         
+                                    <QuestionWindow
+                                            roomId={roomId}
+                                            title='Incoming Questions'
+                                        />
+                                    {/* <Chat roomId={roomId} /> */}
+                                    {/* <ModDashboard data={data} /> */}
                             </Grid>
+                            
+                        </Grid>
+                    )
+                },
+                {
+                    label: 'User List Window',
+                    component: (
+                        <Grid container className={classes.modView}>
+                            <Grid item xs={12}>         
+                                    <UserListWindow
+                                            roomId={roomId}
+                                            title='User List'
+                                        />
+                                    {/* <Chat roomId={roomId} /> */}
+                                    {/* <ModDashboard data={data} /> */}
+                            </Grid>
+                            
                         </Grid>
                     )
                 }
