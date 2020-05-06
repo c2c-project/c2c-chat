@@ -14,7 +14,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Bold from '../Bold';
 import Dialog from '../Dialoag';
-import QuestionActions from './QuestionActions';
+import QuestionActions from '../question/QuestionActions';
 import MessageActions from '../chat/MessageActions';
 import useJwt from '../../hooks/useJwt';
 
