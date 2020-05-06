@@ -38,15 +38,14 @@ const removeMessage = ({ messageId, reason }) =>
     );
 
 const deleteMessage = ({ messageId }) =>
-    mongo.then(
-        db =>
-            db.collection('messages').updateOne(
-                {
-                    _id: new ObjectID(messageId)
-                },
-                { $set: { deletedByUser: true } }
-            )
-);
+    mongo.then((db) =>
+        db.collection('messages').updateOne(
+            {
+                _id: new ObjectID(messageId),
+            },
+            { $set: { deletedByUser: true } }
+        )
+    );
 
 const recoverMessage = ({ messageId, reason }) =>
     mongo.then(
@@ -63,10 +62,11 @@ const recoverMessage = ({ messageId, reason }) =>
 const updateMessage = ({ messageId, message }) =>
     mongo.then((db) => {
         db.collection('messages').updateOne(
-            { _id: messageId },
-            { $set: message }
+            { _id: new ObjectID(messageId) },
+            { $set: { message } }
         );
         // close();
+    });
 
 const findMessages = ({ sessionId }) =>
     mongo.then((db) => db.collection('messages').find({ sessionId }).toArray());
@@ -90,8 +90,6 @@ const updateMessageToxicity = ({ messageId, result, toxicityReason }) => {
         // close();
     });
 };
-
-
 
 /**
  * Actions that a non-owner may take and the permissions required to do so
