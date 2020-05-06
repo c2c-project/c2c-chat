@@ -38,19 +38,12 @@ export function UserListWindow({ title, roomId }) {
                         <Typography variant='h4'>{title}</Typography>
                     </Grid>
                 </Grid>
-<<<<<<< HEAD
                 <Grid container direction='row' spacing={2} >
                         { userList.map(user => (
                             <Grid item >
                                 <Typography  variant='h6'>{user.username}</Typography>
                             </Grid>
                         ))}
-=======
-                <Grid item xs={5}>
-                    {userList.map((user) => (
-                        <p>{user.username}</p>
-                    ))}
->>>>>>> 5d561be8f4e68463db3145c98e65267764dd2d2a
                 </Grid>
 
             </Grid>
