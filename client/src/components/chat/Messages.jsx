@@ -53,19 +53,23 @@ function Messages({ messages, filter }) {
         firstRender.current = !messages.length;
     };
     const filterQuestions = () => {
+        if (!Array.isArray(messages)) {
+            console.log('message is not an array');
+            return [];
+        }
         if (isModerator) {
             return messages.filter((m) => {
                 if (filter.moderated && m.moderated) {
-                    //show message that m.moderated === true
+                    // show message that m.moderated === true
                     return true;
                 }
                 if (filter.normal && !m.moderated) {
                     return true;
                 }
+                return false;
             });
-        } else {
-            return messages.filter((m) => !m.moderated);
         }
+        return messages.filter((m) => !m.moderated);
     };
 
     React.useEffect(() => {
@@ -183,7 +187,7 @@ Messages.defaultProps = {
 
 Messages.propTypes = {
     messages: PropTypes.array,
-    filter: PropTypes.object.isRequired,
+    filter: PropTypes.object,
 };
 
 export default Messages;

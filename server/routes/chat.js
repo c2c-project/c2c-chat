@@ -41,6 +41,7 @@ router.post(
         const message = Messages.findMessage({ messageId });
         MessageAction(messageId)
             .then(() => {
+                console.log(moderateAction);
                 if (moderateAction === true) {
                     moderate(roomId, messageId);
                     res.status(200).send();
@@ -70,8 +71,6 @@ router.post(
     (req, res) => {
         const { user } = req;
         const { newMessage, message, roomId } = req.body;
-        console.log(newMessage);
-        console.log(message);
         if (Accounts.isOwner(user._id, message)) {
             Messages.updateMessage({
                 messageId: message._id,
@@ -113,7 +112,5 @@ router.post(
         }
     }
 );
-
-// Will get to this get request once chat is implemented
 
 module.exports = router;

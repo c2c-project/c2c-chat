@@ -1,8 +1,8 @@
 {
     "plugins": ["plugins/markdown", "plugins/summarize"],
     "source": {
-        "include": ["server/lib"],
-        "exclude": [],
+        "include": ["server/"],
+        "exclude": ["server/node_modules", "server/samples", "server/bin"],
         "includePattern": ".+\\.js(doc|x)?$",
         "excludePattern": "(^|\\/|\\\\)_"
     },

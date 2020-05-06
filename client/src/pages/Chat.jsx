@@ -17,29 +17,30 @@ import Dialog from '../components/Dialoag';
 import FormQuestion from '../components/FormQuestion';
 import Tabs from '../components/Tabs';
 import GateKeep from '../components/GateKeep';
+import UserListWindow from '../components/userList';
 import useJwt from '../hooks/useJwt';
 // import Speaker from '../components/Speaker';
 // import ModDashboard from '../components/ModDashboard';
 
-const useVideoStyles = makeStyles(theme => ({
+const useVideoStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
         display: 'flex',
         flex: 1,
-        flexBasis: 'auto'
+        flexBasis: 'auto',
     },
     question: {
-        width: '100%'
+        width: '100%',
     },
     btn: {
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
     },
     questionContent: {
-        paddingTop: theme.spacing(8)
+        paddingTop: theme.spacing(8),
     },
     title: {
-        paddingBottom: theme.spacing(3)
-    }
+        paddingBottom: theme.spacing(3),
+    },
 }));
 
 // eslint-disable-next-line
@@ -90,25 +91,25 @@ const Video = ({ roomId, url, disableQuestion }) => {
     );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         height: '100%',
-        flex: 1
+        flex: 1,
     },
     video: {
         [theme.breakpoints.down('sm')]: {
-            maxHeight: '30vh'
+            maxHeight: '30vh',
         },
         alignSelf: 'center',
         [theme.breakpoints.down('md')]: {
-            maxWidth: '100vw'
-        }
+            maxWidth: '100vw',
+        },
         // flexBasis: 'auto',
         // flexGrow: 0
     },
     chat: {
         [theme.breakpoints.down('md')]: {
-            maxWidth: '100vw'
+            maxWidth: '100vw',
         },
         // [theme.breakpoints.up('md')]: {
         //     height: '100%'
@@ -117,17 +118,17 @@ const useStyles = makeStyles(theme => ({
         //     height: '50vh'
         // }
         flexBasis: '100%',
-        flexGrow: 1
+        flexGrow: 1,
         // border: '1px solid #80808029'
         // minHeight: '50vh'
     },
     modView: {
         padding: theme.spacing(2),
         width: '100%',
-        height: '100%'
+        height: '100%',
         // display: 'flex',
         // flex: 1
-    }
+    },
 }));
 
 export default function Chat() {
@@ -139,15 +140,15 @@ export default function Chat() {
         fetch(`/api/sessions/find/${roomId}`, {
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `bearer ${jwt}`
-            }
+                Authorization: `bearer ${jwt}`,
+            },
         })
-            .then(res => {
-                res.json().then(sessionDoc => {
+            .then((res) => {
+                res.json().then((sessionDoc) => {
                     setSessionData(sessionDoc);
                 });
             })
-            .catch(e => console.log(e));
+            .catch((e) => console.log(e));
     }, [jwt, roomId]);
 
     // const sessionData = JSON.parse(localStorage.getItem('session'));
@@ -193,10 +194,10 @@ export default function Chat() {
                             </Grid>
                             {/* </Slide> */}
                         </Grid>
-                    )
+                    ),
                 },
                 {
-                    label: 'Mod View',
+                    label: 'Question Window',
                     component: (
                         <Grid container className={classes.modView}>
                             <Grid item xs={12}>
@@ -208,8 +209,23 @@ export default function Chat() {
                                 {/* <ModDashboard data={data} /> */}
                             </Grid>
                         </Grid>
-                    )
-                }
+                    ),
+                },
+                {
+                    label: 'User List Window',
+                    component: (
+                        <Grid container className={classes.modView}>
+                            <Grid item xs={12}>
+                                <UserListWindow
+                                    roomId={roomId}
+                                    title='User List'
+                                />
+                                {/* <Chat roomId={roomId} /> */}
+                                {/* <ModDashboard data={data} /> */}
+                            </Grid>
+                        </Grid>
+                    ),
+                },
             ]}
         />
     );
