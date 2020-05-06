@@ -32,18 +32,18 @@ function useUsers(roomId = 'session') {
         });
         board.on('error', (err) => console.log(err));
 
-        board.on('userConnect', async (user) => {
+        board.on('user-connect', async (user) => {
             console.log('someone is connecting');
             setUserList((curr) => [...curr, user]);
         });
 
-        board.on('userDisconnect', async (userJwt) => {
+        board.on('user-disconnect', async (userJwt) => {
             console.log('someone is disconnecting');
             setUserList((curr) => curr.filter((user) => user.jwt !== userJwt));
         });
 
         // FETCH
-        fetch(`/api/userList/${roomId}`, {
+        fetch(`/api/sessions/userlist/${roomId}`, {
             headers: {
                 Authorization: `bearer ${jwt}`,
             },

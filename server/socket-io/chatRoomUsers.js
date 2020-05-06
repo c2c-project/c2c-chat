@@ -1,5 +1,6 @@
 import io from '.';
 import userlistCollection from '../db/collections/user-access-list';
+
 const ioUserList = io.of('/userList');
 
 /**
@@ -9,16 +10,16 @@ const ioUserList = io.of('/userList');
  */
 class ChatRoom {
     constructor(roomId) {
-        userlistCollection.getAccessList({sessionId: roomId}).then(
-            result => {
-                console.log(result)
-                if(result === null) {
-                    userlistCollection.createAccessList({sessionId: roomId})
-                }else {
-                    this.accesslistId = result._id
+        userlistCollection
+            .getAccessList({ sessionId: roomId })
+            .then((result) => {
+                console.log(result);
+                if (result === null) {
+                    userlistCollection.createAccessList({ sessionId: roomId });
+                } else {
+                    this.accesslistId = result._id;
                 }
-            }
-        )
+            });
         this.roomId = roomId;
         this.ChatRoomUsers = [];
     }
@@ -45,7 +46,8 @@ class ChatRoom {
      */
     addUser(newUser) {
         if (this.checkUser(newUser.jwt) < 0) {
-            newUser.from = new Date();
+            const newUserCopy = newUser;
+            newUserCopy.from = new Date();
             this.ChatRoomUsers.push(newUser);
         }
         console.log(this.ChatRoomUsers);
@@ -57,10 +59,15 @@ class ChatRoom {
      * @arg {String} jwt the user jwt
      */
     removeUserByJWT(jwt) {
-        const userIndex = this.checkUser(jwt)
+        const userIndex = this.checkUser(jwt);
         if (userIndex >= 0) {
-            const user =  this.ChatRoomUsers[userIndex];
-            userlistCollection.newUserAccessRecord({accesslistId: this.accesslistId, userId: user._id, from: user.from, to: new Date() })
+            const user = this.ChatRoomUsers[userIndex];
+            userlistCollection.newUserAccessRecord({
+                accesslistId: this.accesslistId,
+                userId: user._id,
+                from: user.from,
+                to: new Date(),
+            });
             this.ChatRoomUsers = this.ChatRoomUsers.filter(function (value) {
                 return value.jwt !== jwt;
             });
@@ -141,7 +148,7 @@ const AddNewUser = async (roomId, user) => {
     const { roomIndex } = CheckUser(roomId, user.jwt);
     if (roomIndex >= 0) {
         roomList[roomIndex].addUser(user);
-        ioUserList.to(roomId).emit('userConnect', user);
+        ioUserList.to(roomId).emit('user-connect', user);
         return roomList;
     }
     const newRoom = new ChatRoom(roomId);
@@ -160,7 +167,7 @@ const DisConnectUser = async (roomId, user) => {
     const { roomIndex, userIndex } = CheckUser(roomId, user.jwt);
     if (roomIndex >= 0 && userIndex >= 0) {
         roomList[roomIndex].removeUserByJWT(user.jwt);
-        ioUserList.to(roomId).emit('userDisconnect', user.jwt);
+        ioUserList.to(roomId).emit('user-disconnect', user.jwt);
     }
     return roomList;
 };

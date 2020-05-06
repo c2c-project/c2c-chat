@@ -3,6 +3,8 @@ import passport from 'passport';
 import Sessions from '../db/collections/sessions';
 import Questions from '../db/collections/questions';
 import { setCurrentQuestion } from '../socket-io/questions';
+import chatRoomUsers from '../socket-io/chatRoomUsers';
+import Accounts from '../lib/accounts';
 
 const router = express.Router();
 
@@ -44,7 +46,7 @@ router.get(
 router.get(
     '/find-summary/:sessionId',
     passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    (req) => {
         const { sessionId } = req.params;
         Questions.countQuestionsBySession(sessionId);
     }
@@ -150,6 +152,24 @@ router.get(
         Sessions.findAllSessions().then((r) => {
             res.json(r);
         });
+    }
+);
+
+router.get(
+    '/userlist/:roomId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { user } = req;
+        const { roomId } = req.params;
+        if (
+            Accounts.isAllowed(user.roles, {
+                requiredAny: ['moderator', 'admin'],
+            })
+        ) {
+            res.json(chatRoomUsers.GetChatRoom(roomId).getUserList());
+            return;
+        }
+        res.json({ reject: 'no permission' });
     }
 );
 

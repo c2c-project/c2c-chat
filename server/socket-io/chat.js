@@ -94,7 +94,5 @@ async function onConnection(socket) {
     // register that a user joined this chatroom
 }
 ioChat.on('connection', onConnection);
-ioChat.on('myCustomEvent', (data) => {
-    console.log(data);
-});
+
 export default ioChat;
