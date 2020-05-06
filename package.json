@@ -11,7 +11,8 @@
         "server": "cd server && npm start",
         "start": "concurrently - k \"npm run server --scripts-prepend-node-path\" \"npm run client --scripts-prepend-node-path\"",
         "serve": "node server/dist/bin/www.js",
-        "jsdoc": "./node_modules/.bin/jsdoc -c ./.jsdoc.json -r"
+        "jsdoc": "./node_modules/.bin/jsdoc -c ./.jsdoc.json -r",
+        "test": "cd server && yarn test"
     },
     "dependencies": {},
     "devDependencies": {
