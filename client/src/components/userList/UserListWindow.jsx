@@ -33,15 +33,18 @@ export function UserListWindow({ title, roomId }) {
         <Paper className={classes.paper}>
             <Grid container direction='column' spacing={2}>
                 <Grid container direction='row' spacing={2} justify='center'>
-                    <Grid item xs={5}>
+                    <Grid item>
                         <Typography variant='h4'>{title}</Typography>
                     </Grid>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid container direction='row' spacing={2} >
                         { userList.map(user => (
-                            <p>{user.username}</p>
+                            <Grid item >
+                                <Typography  variant='h6'>{user.username}</Typography>
+                            </Grid>
                         ))}
                 </Grid>
+
             </Grid>
         </Paper>
     );

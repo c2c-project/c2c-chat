@@ -53,7 +53,7 @@ class ChatRoom {
 
     /**
      * @description remove the user from this user list by the specific jwt,
-     * Normally we use this function to remove user from the list because user might using the same username to login from multiple devices
+     * @description Normally we use this function to remove user from the list because user might using the same username to login from multiple devices
      * @arg {String} jwt the user jwt
      */
     removeUserByJWT(jwt) {
