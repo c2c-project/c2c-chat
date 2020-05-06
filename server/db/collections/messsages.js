@@ -37,6 +37,16 @@ const removeMessage = ({ messageId, reason }) =>
         // close();
     );
 
+const deleteMessage = ({ messageId }) =>
+    mongo.then((db) =>
+        db.collection('messages').updateOne(
+            {
+                _id: new ObjectID(messageId),
+            },
+            { $set: { deletedByUser: true } }
+        )
+    );
+
 const recoverMessage = ({ messageId, reason }) =>
     mongo.then(
         (db) =>
@@ -52,8 +62,8 @@ const recoverMessage = ({ messageId, reason }) =>
 const updateMessage = ({ messageId, message }) =>
     mongo.then((db) => {
         db.collection('messages').updateOne(
-            { _id: messageId },
-            { $set: message }
+            { _id: new ObjectID(messageId) },
+            { $set: { message } }
         );
         // close();
     });
@@ -97,6 +107,7 @@ const privilegedActions = (action, userDoc) => {
             const requiredAny = ['admin', 'moderator'];
             return (messageId) => {
                 if (Accounts.isAllowed(roles, { requiredAny })) {
+                    console.log('Switch statement remove', messageId);
                     return removeMessage({
                         messageId,
                         reason: 'Removed by moderator',
@@ -136,6 +147,7 @@ const privilegedActions = (action, userDoc) => {
 
 export default {
     createMessage,
+    deleteMessage,
     removeMessage,
     updateMessage,
     findMessages,

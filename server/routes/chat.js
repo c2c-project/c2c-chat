@@ -1,7 +1,8 @@
 import express from 'express';
 import passport from 'passport';
+import { moderate, unmoderate, update, remove } from '../socket-io/chat';
+import Accounts from '../lib/accounts';
 import Messages from '../db/collections/messsages';
-import { moderate, unmoderate } from '../socket-io/chat';
 
 const router = express.Router();
 
@@ -43,25 +44,73 @@ router.post(
                 console.log(moderateAction);
                 if (moderateAction === true) {
                     moderate(roomId, messageId);
-                    return res.status(200).send();
+                    res.status(200).send();
+                } else {
+                    message
+                        .then((r) => {
+                            if (r != null) {
+                                unmoderate(roomId, r);
+                            } else {
+                                console.log("Couldn't find the target message");
+                                res.status(404).send();
+                            }
+                        })
+                        .catch(next);
                 }
-                message
-                    .then((r) => {
-                        if (r != null) {
-                            unmoderate(roomId, r);
-                        }
-                        console.log('Couldn\'t find the target message');
-                        return res.status(404).send();
-                    })
-                    .catch(next);
-                console.log(message);
-                return res.status(404).send();
+                moderate(roomId, messageId);
+                res.status(200).send();
             })
             .catch(next);
         res.status(200).send();
     }
 );
 
-// Will get to this get request once chat is implemented
+router.post(
+    '/update-message',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { user } = req;
+        const { newMessage, message, roomId } = req.body;
+        if (Accounts.isOwner(user._id, message)) {
+            Messages.updateMessage({
+                messageId: message._id,
+                message: newMessage,
+            })
+                .then(() => {
+                    update(roomId, message._id, newMessage);
+                    res.status(200).send({ success: true });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(400).send({ success: false });
+                });
+        } else {
+            res.status(400).send({ success: false });
+        }
+    }
+);
+
+router.post(
+    '/delete-message/:roomId',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { user } = req;
+        const { roomId } = req.params;
+        const { message } = req.body;
+        if (Accounts.isOwner(user._id, message)) {
+            Messages.deleteMessage({ messageId: message._id })
+                .then(() => {
+                    remove(roomId, message._id);
+                    res.status(200).send({ success: true });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(400).send({ success: false });
+                });
+        } else {
+            res.status(400).send({ success: false });
+        }
+    }
+);
 
 module.exports = router;

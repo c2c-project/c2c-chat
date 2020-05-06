@@ -73,6 +73,24 @@ function useMessages(roomId = 'session') {
                 }
             }
         });
+        chat.on('remove', (messageId) => {
+            if (isMounted) {
+                setMessages((curMessages) =>
+                    curMessages.filter((msg) => msg._id !== messageId)
+                );
+            }
+        });
+        chat.on('update', (message) => {
+            if (isMounted) {
+                setMessages((curMessages) => {
+                    const index = curMessages.findIndex(
+                        (msg) => msg._id === message.messageId
+                    );
+                    curMessages[index].message = message.newMessage;
+                    return curMessages;
+                });
+            }
+        });
 
         chat.on('unmoderate', async (message) => {
             if (isMounted) {
@@ -106,8 +124,9 @@ function useMessages(roomId = 'session') {
         }).then((r) => {
             r.json().then((history) => {
                 if (isMounted) {
-                    setMessages(history);
-                    // setMessages(history.filter(m => !m.moderated));
+                    setMessages(
+                        history.filter((m) => !m.moderated && !m.deletedByUser)
+                    );
                 }
             });
         });

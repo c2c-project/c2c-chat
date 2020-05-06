@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import useJwt from '../../hooks/useJwt';
 import MessageActions from './MessageActions';
+import UserMessageActions from './UserMessageActions';
 import Dialog from '../Dialoag';
 import Bold from '../Bold';
 
@@ -33,10 +34,14 @@ const SystemMessages = ({ children }) => (
     </Typography>
 );
 
+const checkIsOwner = (user, messageUserId) => {
+    return user._id === messageUserId;
+};
+
 function Messages({ messages, filter }) {
     const classes = useStyles();
     const lastMessageRef = React.useRef(null);
-    const [jwt] = useJwt();
+    const [jwt, user] = useJwt();
     const [isModerator, setModerator] = React.useState(false);
     const [targetMsg, setTargetMsg] = React.useState(null);
     const Actions = MessageActions;
@@ -96,17 +101,21 @@ function Messages({ messages, filter }) {
                     ({
                         username = 'author',
                         message = 'message',
-                        moderated = 'moderated',
                         _id,
+                        userId,
+                        moderated = 'moderated',
                     } = {}) => (
                         <ListItem
-                            button={isModerator}
+                            // If user is moderator on the owner of the message then this ListItem is rendered as a button
+                            button={isModerator || checkIsOwner(user, userId)}
+                            // If user is moderator on the owner of the message then this ListItem's onClick event calls setTargetMsg
                             onClick={() => {
-                                if (isModerator) {
+                                if (isModerator || checkIsOwner(user, userId)) {
                                     setTargetMsg({
                                         _id,
                                         message,
                                         username,
+                                        userId,
                                         moderated,
                                     });
                                 }
@@ -146,13 +155,20 @@ function Messages({ messages, filter }) {
                         className={classes.maxHeight}
                         alignContent='center'
                     >
-                        {targetMsg && isModerator ? (
+                        {/* If the (user is not a moderator) OR (user is a moderator and is the owner of the message) then render UserMessageActions */}
+                        {targetMsg && (!isModerator || (isModerator && checkIsOwner(user, targetMsg.userId))) && (
+                            <UserMessageActions
+                                targetMsg={targetMsg}
+                                onClick={() => setTargetMsg(null)}
+                            />
+                        )}
+
+                        {/* If the (user is a moderator) AND (is not the owner of the message) then render Actions */}
+                        {targetMsg && isModerator && !checkIsOwner(user, targetMsg.userId) && (
                             <Actions
                                 targetMsg={targetMsg}
                                 onClick={() => setTargetMsg(null)}
                             />
-                        ) : (
-                            <></>
                         )}
                     </Grid>
                 </Container>

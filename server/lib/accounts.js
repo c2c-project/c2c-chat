@@ -195,8 +195,8 @@ const filterSensitiveData = async (userDoc) => {
  * @arg {Object} doc
  * @returns {Boolean} whether or not the user is the owner of a particular document
  */
-const isOwner = (userId, doc) => {
-    return doc.userId === userId;
+const isOwner = (userId = {}, doc = '') => {
+    return doc.userId === String(userId);
 };
 
 export default {

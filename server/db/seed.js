@@ -132,7 +132,7 @@ function seedMessages() {
     return mongo.then(db =>
         db.collection('chat').insertMany(messages, (err, r) => {
             assert.equal(null, err);
-            assert.equal(1, r.insertedCount);
+            assert.equal(2, r.insertedCount);
             // close();
         })
     );

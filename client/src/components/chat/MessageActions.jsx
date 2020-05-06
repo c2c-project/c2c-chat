@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import Bold from '../Bold';
 import useJwt from '../../hooks/useJwt';
@@ -12,9 +12,6 @@ export default function MessageActions({ targetMsg, onClick }) {
     const [jwt] = useJwt();
     const [snack] = useSnack();
     const { roomId } = useParams();
-    const handleEdit = () => {
-        console.log('TODO: handlEdit');
-    };
     const handleAction = () => {
         fetch(`/api/chat/message-action/${roomId}/${targetMsg._id}`, {
             method: 'POST',
@@ -68,26 +65,6 @@ export default function MessageActions({ targetMsg, onClick }) {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-            {/* <Grid item xs={12}>
-                <Button
-                    color='secondary'
-                    variant='contained'
-                    fullWidth
-                    onClick={handleSetCurrent}
-                >
-                    Set as Current Question
-                </Button>
-            </Grid> */}
-            <Grid item xs={12}>
-                <Button
-                    color='secondary'
-                    variant='contained'
-                    fullWidth
-                    onClick={handleEdit}
-                >
-                    Edit
-                </Button>
             </Grid>
             <Grid item xs={12}>
                 <Button

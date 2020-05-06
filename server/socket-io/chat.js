@@ -28,6 +28,28 @@ export function unmoderate(roomId, message) {
 }
 
 /**
+ * @description updates a chat message
+ * @arg {String} roomId corresponds to sessionId of the session
+ * @arg {String} messageId id of the message to update
+ * @arg {String} messageId new message
+ * @returns {undefined}
+ */
+export function update(roomId, messageId, newMessage) {
+    io.of('/chat').to(roomId).emit('update', { messageId, newMessage });
+}
+
+/**
+ * @description removes a chat message
+ * @arg {String} roomId corresponds to sessionId of the session
+ * @arg {String} messageId id of the message to remove
+ * @returns {undefined}
+ */
+// This remove function does the same as the moderate function. This was done on purpose, for code clarity purposes.
+export function remove(roomId, messageId) {
+    io.of('/chat').to(roomId).emit('remove', messageId);
+}
+
+/**
  * @description function that runs after server emits a new message to all clients
  * @arg {Object} message message document
  * @arg {Object} roomId id of the room
