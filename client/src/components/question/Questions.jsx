@@ -136,7 +136,7 @@ function Question({
         if (q.length > 0) {
             return (
                 <>
-                    <p>{q} </p>
+                    <p>{q}</p>
                     <p>{generateTimeElapsed(time)}</p>
                     <p>{question}</p>
                 </>
@@ -248,8 +248,7 @@ function Question({
                                         center._id,
                                         center.question,
                                         center.username
-                                    )
-                                }
+                                    )}
                                 onFocus={(event) => event.stopPropagation()}
                                 size='small'
                             >
@@ -277,8 +276,7 @@ function Question({
                                     center._id,
                                     center.question,
                                     center.username
-                                )
-                            }
+                                )}
                             onFocus={(event) => event.stopPropagation()}
                         >
                             {center.toxicity === true ? ' (toxic) ' : ''}
@@ -301,8 +299,8 @@ function Question({
                                     currentQuestion._id === center._id
                                         ? 'error'
                                         : center.asked
-                                        ? 'textSecondary'
-                                        : 'textPrimary'
+                                            ? 'textSecondary'
+                                            : 'textPrimary'
                                 }
                                 variant='body1'
                                 onClick={(event) =>
@@ -311,8 +309,7 @@ function Question({
                                         center._id,
                                         center.question,
                                         center.username
-                                    )
-                                }
+                                    )}
                                 onFocus={(event) => event.stopPropagation()}
                             >
                                 {center.question}
@@ -346,11 +343,9 @@ function Question({
                                                 center._id,
                                                 center.question,
                                                 center.username
-                                            )
-                                        }
+                                            )}
                                         onFocus={(event) =>
-                                            event.stopPropagation()
-                                        }
+                                            event.stopPropagation()}
                                         size='small'
                                     >
                                         <QuestionAnswerIcon
@@ -392,8 +387,8 @@ function Question({
                                             currentQuestion._id === _id
                                                 ? 'error'
                                                 : asked
-                                                ? 'textSecondary'
-                                                : 'textPrimary'
+                                                    ? 'textSecondary'
+                                                    : 'textPrimary'
                                         }
                                         variant='body1'
                                         onClick={(event) =>
@@ -402,8 +397,7 @@ function Question({
                                                 _id,
                                                 message,
                                                 username
-                                            )
-                                        }
+                                            )}
                                     >
                                         {message}
                                     </Typography>

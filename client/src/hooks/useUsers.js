@@ -4,24 +4,7 @@ import useJwt from './useJwt';
 
 function connect(roomId = 'userList') {
     const url = `${process.env.REACT_APP_SERVER}/userList`;
-    return io.connect(url, { query: `roomId=${roomId}`});
-}
-
-function isModerator(jwt) {
-    return new Promise(function (resolve) {
-        fetch('/api/users/authenticate', {
-            method: 'POST',
-            body: JSON.stringify({ requiredAny: ['moderator', 'admin'] }),
-            headers: {
-                Authorization: `bearer ${jwt}`,
-                'Content-Type': 'application/json',
-            },
-        }).then((r) => {
-            r.json().then((result) => {
-                resolve(result.allowed);
-            });
-        });
-    });
+    return io.connect(url, { query: `roomId=${roomId}` });
 }
 
 function useUsers(roomId = 'session') {
@@ -39,28 +22,25 @@ function useUsers(roomId = 'session') {
         // SOCKET IO
         const board = connect(roomId);
         board.on('connect', function () {
-            console.log("board connect")
+            console.log('board connect');
             if (isMounted) {
                 setFunc(board);
             }
         });
         board.on('disconnect', () => {
-            console.log('board disconnected')
+            console.log('board disconnected');
         });
         board.on('error', (err) => console.log(err));
 
         board.on('userConnect', async (user) => {
-            console.log("someone is connecting")
-            setUserList(curr => [ ... curr, user]);
+            console.log('someone is connecting');
+            setUserList((curr) => [...curr, user]);
         });
 
-        board.on('userDisconnect', async(jwt) =>{
-            console.log( 'someone is disconnecting')
-            setUserList(curr => curr.filter( (user) => 
-                user.jwt !== jwt
-            ))
+        board.on('userDisconnect', async (userJwt) => {
+            console.log('someone is disconnecting');
+            setUserList((curr) => curr.filter((user) => user.jwt !== userJwt));
         });
-        
 
         // FETCH
         fetch(`/api/userList/${roomId}`, {
@@ -84,9 +64,7 @@ function useUsers(roomId = 'session') {
         };
     }, [roomId, jwt]);
 
-    return [
-        userList
-    ];
+    return [userList];
 }
 
 export default useUsers;

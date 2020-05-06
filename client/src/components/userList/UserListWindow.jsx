@@ -5,29 +5,30 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import useUsers from '../../hooks/useUsers';
-const useStyles = makeStyles(theme => ({
+
+const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         display: 'flex',
         flex: 1,
-        height: '100%'
+        height: '100%',
     },
     divider: {
-        margin: `${theme.spacing(1)}px 0 ${theme.spacing(1)}px 0`
+        margin: `${theme.spacing(1)}px 0 ${theme.spacing(1)}px 0`,
     },
     chatbar: {
-        flexBasis: 0
+        flexBasis: 0,
     },
     messages: {
         flexBasis: 0,
         overflowY: 'scroll',
-        flexGrow: 1
-    }
+        flexGrow: 1,
+    },
 }));
 
 export function UserListWindow({ title, roomId }) {
     const [userList] = useUsers(roomId);
-    console.log(userList)
+    console.log(userList);
     const classes = useStyles();
     return (
         <Paper className={classes.paper}>
@@ -38,9 +39,9 @@ export function UserListWindow({ title, roomId }) {
                     </Grid>
                 </Grid>
                 <Grid item xs={5}>
-                        { userList.map(user => (
-                            <p>{user.username}</p>
-                        ))}
+                    {userList.map((user) => (
+                        <p>{user.username}</p>
+                    ))}
                 </Grid>
             </Grid>
         </Paper>
@@ -48,7 +49,8 @@ export function UserListWindow({ title, roomId }) {
 }
 
 UserListWindow.propTypes = {
-    title: PropTypes.string.isRequired
+    title: PropTypes.string.isRequired,
+    roomId: PropTypes.string.isRequired,
 };
 
 export default UserListWindow;

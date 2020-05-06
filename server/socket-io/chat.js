@@ -6,7 +6,6 @@ import tf from '../lib/tf';
 import { ClientError } from '../lib/errors';
 import chatRoomUsers from './chatRoomUsers';
 
-
 const ioChat = io.of('/chat');
 /**
  * @description moderate the chat message
@@ -83,21 +82,19 @@ function joinChatRoom(roomId, socket) {
  */
 async function onConnection(socket) {
     // roomId is just the sessionId -- we have different chatrooms for every session
-    const { roomId, jwt} = socket.handshake.query;
+    const { roomId, jwt } = socket.handshake.query;
     const { username, _id } = await JWT.verify(jwt, process.env.JWT_SECRET);
     joinChatRoom(roomId, socket);
-    chatRoomUsers.AddNewUser(roomId, {username, _id, jwt});
-    socket.on("disconnect",() => {
-        chatRoomUsers.DisConnectUser(roomId, {username, _id, jwt});
+    chatRoomUsers.AddNewUser(roomId, { username, _id, jwt });
+    socket.on('disconnect', () => {
+        chatRoomUsers.DisConnectUser(roomId, { username, _id, jwt });
     });
     // TODO: load current question
     // TODO: 193
     // register that a user joined this chatroom
-    
-    
 }
-ioChat.on('connection', onConnection); 
+ioChat.on('connection', onConnection);
 ioChat.on('myCustomEvent', (data) => {
-    console.log(data)
-})
+    console.log(data);
+});
 export default ioChat;
