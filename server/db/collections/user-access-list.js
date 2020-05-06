@@ -22,7 +22,7 @@ const createAccessList = ({ sessionId }) =>
  * @arg {String} sessionId corresponds to sessionId of the session
  * @returns {Object} the user list according to the sessionId
  */
-const getAccessList = ({ sessionId }) => 
+const getAccessList = ({ sessionId }) =>
     mongo.then((db) => db.collection(collectionName).findOne({ sessionId }));
 
 /**
@@ -33,8 +33,8 @@ const getAccessList = ({ sessionId }) =>
  * @arg {Date} to corresponds to the time that user leave the room
  * @returns {Promise}
  */
-const newUserAccessRecord = ({ accesslistId, userId, from, to}) => 
-    mongo.then(db =>
+const newUserAccessRecord = ({ accesslistId, userId, from, to }) =>
+    mongo.then((db) =>
         db
             .collection(collectionName)
             .updateOne(
