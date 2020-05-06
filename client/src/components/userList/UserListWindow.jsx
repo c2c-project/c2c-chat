@@ -45,7 +45,6 @@ export function UserListWindow({ title, roomId }) {
                             </Grid>
                         ))}
                 </Grid>
-
             </Grid>
         </Paper>
     );

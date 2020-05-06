@@ -26,7 +26,7 @@ const getAccessList = ({ sessionId }) =>
     mongo.then((db) => db.collection(collectionName).findOne({ sessionId }));
 
 /**
- * @description internal function to use mg api to send email
+ * @description adding a new user access record into the user access list collection  
  * @arg {String} sessionId corresponds to sessionId of the session
  * @arg {String} userId corresponds to userId of the user
  * @arg {Date} from corresponds to the time that user enter the room
