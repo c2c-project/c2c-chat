@@ -10,7 +10,7 @@ jobs:
             - checkout
             - run:
                 name: Setup .env
-                command: cat server/.env.example > server/.env
+                command: cat server/.example.env > server/.env
             - restore_cache:
                 key: dependency-cache-{{ checksum "yarn.lock" }}
             - run:
