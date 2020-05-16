@@ -1,17 +1,27 @@
 version: 2.1
-orbs:
-  node: circleci/node@1.1.6
+# orbs:
+#   node: circleci/node@1.1.6
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: yarn install
-            - run: yarn test
+    build-and-test:
+        docker:
+            - image: circleci/node:latest
+            - image: circleci/mongo:latest
+        steps:
+            - checkout
+            - run:
+                name: Setup .env
+                command: cat server/.env.example > server/.env
+        - restore_cache:
+            key: dependency-cache-{{ checksum "yarn.lock" }}
+        - run:
+            name: install
+            command: yarn install
+        - save_cache:
+            key: dependency-cache-{{ checksum "yarn.lock" }}
+            paths:
+                - node_modules
+        - run: yarn test
 workflows:
     build-and-test:
-      jobs:
-        - build-and-test
+        jobs:
+            - build-and-test
